@@ -1,0 +1,18 @@
+{
+	"name": "Publication",
+	"targetDef": {
+		"query":"SELECT ?x WHERE {?x a ub:Publication}",
+		"class": "ub:Publication"
+	},
+	"constraintDef": {
+		"conjunctions": [
+			[
+				{ "path": "ub:name", "min": 1 },
+				{ "path": "ub:name", "max": 1 },
+				{ "path": "ub:publicationAuthor", "min": 1 },
+				{ "path": "ub:publicationAuthor", "max": 7 },
+				{ "path": "ub:publicationAuthor", "max": 0, "shape": "UndergraduateStudent" }
+            ]
+		]
+	}
+}

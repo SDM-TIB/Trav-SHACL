@@ -1,0 +1,16 @@
+{
+	"name": "GraduateCourse",
+	"targetDef": {
+		"query":"SELECT ?x WHERE {?x a ub:GraduateCourse}",
+		"class": "ub:GraduateCourse"
+	},
+	"constraintDef": {
+		"conjunctions": [
+			[
+				{ "path": "ub:name", "min":  1},
+				{ "path": "ub:name", "max":  1},
+				{ "path": "rdf:type", "min": 1, "value": "ub:GraduateCourse" }
+			]
+		]
+	}
+}

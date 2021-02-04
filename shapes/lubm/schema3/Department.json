@@ -1,0 +1,17 @@
+{
+	"name": "Department",
+	"targetDef": {
+		"query":"SELECT ?x WHERE {?x a ub:Department}",
+		"class": "ub:Department"
+	},
+	"constraintDef": {
+		"conjunctions": [
+			[
+				{ "path": "ub:name", "min":  1},
+				{ "path": "ub:name", "max":  1},
+				{ "path": "ub:subOrganizationOf", "min": 1, "shape": "University" },
+				{ "path": "ub:subOrganizationOf", "max": 1, "shape": "University" }
+            ]
+		]
+	}
+}

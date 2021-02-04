@@ -1,0 +1,19 @@
+version: '2'
+
+services:
+  resultanalysis:
+    container_name: resultanalysis
+    build: .
+    image: analysis:www2021
+    command: ["tail", "-f", "/dev/null"]
+    networks:
+      - shacl_experiment
+    volumes:
+      - ../results:/results
+    mem_limit: 32g
+
+networks:
+  shacl_experiment:
+    external:
+      name: shacl_experiment
+    

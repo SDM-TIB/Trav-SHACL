@@ -1,0 +1,119 @@
+version: '2'
+
+services:
+  lubm_skg_1:
+    container_name: lubm_skg_1
+    image: kemele/virtuoso:7-stable
+    restart: always
+    networks:
+      - shacl_experiment
+    volumes:
+      - ./lubm-skg-1:/data
+      - ./virtuoso.ini:/data/virtuoso.ini
+    mem_limit: 32g
+    ports:
+      - '14000:8890'
+  lubm_skg_2:
+    container_name: lubm_skg_2
+    image: kemele/virtuoso:7-stable
+    restart: always
+    networks:
+      - shacl_experiment
+    volumes:
+      - ./lubm-skg-2:/data
+      - ./virtuoso.ini:/data/virtuoso.ini
+    mem_limit: 32g
+    ports:
+      - '14001:8890'
+  lubm_skg_3:
+    container_name: lubm_skg_3
+    image: kemele/virtuoso:7-stable
+    restart: always
+    networks:
+      - shacl_experiment
+    volumes:
+      - ./lubm-skg-3:/data
+      - ./virtuoso.ini:/data/virtuoso.ini
+    mem_limit: 32g
+    ports:
+      - '14002:8890'
+
+  lubm_mkg_1:
+    container_name: lubm_mkg_1
+    image: kemele/virtuoso:7-stable
+    restart: always
+    networks:
+      - shacl_experiment
+    volumes:
+      - ./lubm-mkg-1:/data
+      - ./virtuoso.ini:/data/virtuoso.ini
+    mem_limit: 32g
+    ports:
+      - '14003:8890'
+  lubm_mkg_2:
+    container_name: lubm_mkg_2
+    image: kemele/virtuoso:7-stable
+    restart: always
+    networks:
+      - shacl_experiment
+    volumes:
+      - ./lubm-mkg-2:/data
+      - ./virtuoso.ini:/data/virtuoso.ini
+    mem_limit: 32g
+    ports:
+      - '14004:8890'
+  lubm_mkg_3:
+    container_name: lubm_mkg_3
+    image: kemele/virtuoso:7-stable
+    restart: always
+    networks:
+      - shacl_experiment
+    volumes:
+      - ./lubm-mkg-3:/data
+      - ./virtuoso.ini:/data/virtuoso.ini
+    mem_limit: 32g
+    ports:
+      - '14005:8890'
+      
+  lubm_lkg_1:
+    container_name: lubm_lkg_1
+    image: kemele/virtuoso:7-stable
+    restart: always
+    networks:
+      - shacl_experiment
+    volumes:
+      - ./lubm-lkg-1:/data
+      - ./virtuoso.ini:/data/virtuoso.ini
+    mem_limit: 32g
+    ports:
+      - '14006:8890'
+  lubm_lkg_2:
+    container_name: lubm_lkg_2
+    image: kemele/virtuoso:7-stable
+    restart: always
+    networks:
+      - shacl_experiment
+    volumes:
+      - ./lubm-lkg-2:/data
+      - ./virtuoso.ini:/data/virtuoso.ini
+    mem_limit: 32g
+    ports:
+      - '14007:8890'
+  lubm_lkg_3:
+    container_name: lubm_lkg_3
+    image: kemele/virtuoso:7-stable
+    restart: always
+    networks:
+      - shacl_experiment
+    volumes:
+      - ./lubm-lkg-3:/data
+      - ./virtuoso.ini:/data/virtuoso.ini
+    mem_limit: 32g
+    ports:
+      - '14008:8890'
+
+networks:
+  shacl_experiment:
+    external:
+      name: shacl_experiment
+

@@ -1,0 +1,25 @@
+{
+	"name": "Lecturer",
+	"targetDef": {
+		"query":"SELECT ?x WHERE {?x a ub:Lecturer}",
+		"class": "ub:Lecturer"
+	},
+	"constraintDef": {
+		"conjunctions": [
+			[
+				{ "path": "ub:doctoralDegreeFrom", "min": 1, "shape": "University" },
+				{ "path": "ub:emailAddress", "min": 1 },
+				{ "path": "ub:mastersDegreeFrom", "min": 1, "shape": "University" },
+				{ "path": "ub:name", "min": 1 },
+				{ "path": "ub:name", "max": 1 },
+				{ "path": "ub:teacherOf", "min": 1, "shape": "Course" },
+				{ "path": "ub:teacherOf", "max": 2, "shape": "Course" },
+				{ "path": "ub:teacherOf", "min": 1, "shape": "GraduateCourse" },
+				{ "path": "ub:teacherOf", "max": 2, "shape": "GraduateCourse" },
+				{ "path": "ub:telephone", "min": 1 },
+				{ "path": "ub:undergraduateDegreeFrom", "min": 1, "shape": "University" },
+				{ "path": "ub:worksFor", "min": 1, "shape": "Department" }
+			]
+		]
+	}
+}

@@ -1,0 +1,39 @@
+version: '2'
+
+services:
+  shacl2sparql:
+    container_name: shacl2sparql
+    build: ./shacl2sparql
+    image: shacl2sparql:www2021
+    networks:
+      - shacl_experiment
+    volumes:
+      - ../shapes:/shapes
+      - ../results/shacl2sparql:/output
+    mem_limit: 24g
+  shacl2sparqlpy:
+    container_name: shacl2sparqlpy
+    build: ./shacl2sparqlpy
+    image: shacl2sparql:py-www2021
+    networks:
+      - shacl_experiment
+    volumes:
+      - ../shapes:/shapes
+      - ../results/shacl2sparql-py:/output
+    mem_limit: 24g
+  travshacl:
+    container_name: travshacl
+    build: ./travshacl
+    image: travshacl:www2021
+    networks:
+      - shacl_experiment
+    volumes:
+      - ../shapes:/shapes
+      - ../results/travshacl:/output
+    mem_limit: 24g
+
+networks:
+  shacl_experiment:
+    external:
+      name: shacl_experiment
+    

@@ -1,0 +1,21 @@
+{
+	"name": "UndergraduateStudent",
+	"targetDef": {
+		"query":"SELECT ?x WHERE {?x a ub:UndergraduateStudent}",
+		"class": "ub:UndergraduateStudent"
+	},
+	"constraintDef": {
+		"conjunctions": [
+			[
+				{ "path": "ub:advisor", "max": 1 },
+				{ "path": "ub:emailAddress", "min": 1 },
+				{ "path": "ub:memberOf", "min": 1, "shape": "Department" },
+				{ "path": "ub:name", "min": 1 },
+				{ "path": "ub:name", "max": 1 },
+				{ "path": "ub:takesCourse", "min": 2, "shape": "Course" },
+				{ "path": "ub:takesCourse", "max": 4, "shape": "Course" },
+				{ "path": "ub:telephone", "min": 1 }
+			]
+		]
+	}
+}

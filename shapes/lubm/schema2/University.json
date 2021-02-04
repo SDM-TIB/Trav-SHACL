@@ -1,0 +1,15 @@
+{
+	"name": "University",
+	"targetDef": {
+		"query":"SELECT ?x WHERE {?x a ub:University}",
+		"class": "ub:University"
+	},
+	"constraintDef": {
+		"conjunctions": [
+			[
+				{ "path": "ub:name", "min":  1},
+				{ "path": "ub:name", "max":  1}
+			]
+		]
+	}
+}

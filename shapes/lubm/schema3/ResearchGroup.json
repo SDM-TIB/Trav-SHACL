@@ -1,0 +1,15 @@
+{
+	"name": "ResearchGroup",
+	"targetDef": {
+		"query":"SELECT ?x WHERE {?x a ub:ResearchGroup}",
+		"class": "ub:ResearchGroup"
+	},
+	"constraintDef": {
+		"conjunctions": [
+			[
+				{ "path": "ub:subOrganizationOf", "min": 1, "shape": "Department" },
+				{ "path": "ub:subOrganizationOf", "max": 1, "shape": "Department" }
+            ]
+		]
+	}
+}
