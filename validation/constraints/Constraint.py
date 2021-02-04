@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 __author__ = "Monica Figuera and Philipp D. Rohde"
 
-from validation.core.Literal import Literal
-
 
 class Constraint:
 
@@ -47,7 +45,7 @@ class Constraint:
         return self.variables
 
     def computeRulePatternBody(self):
-        return [Literal(self.shapeRef, v, self.isPos) for v in self.variables] \
+        return [(self.shapeRef, v, self.isPos) for v in self.variables] \
                     if self.shapeRef is not None else []
 
     def isSatisfied(self):

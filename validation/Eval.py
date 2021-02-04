@@ -20,7 +20,7 @@ class Eval:
             self.task = ValidationTask.SHAPE_VALIDATION
         elif args.t:
             self.task = ValidationTask.INSTANCES_VALID
-        elif args.v:
+        elif args.f:
             self.task = ValidationTask.INSTANCES_VIOLATION
         elif args.a:
             self.task = ValidationTask.ALL_INSTANCES
@@ -37,9 +37,10 @@ class Eval:
         maxSplitSize = args.m
         ORDERBYinQueries = args.orderby
         SHACL2SPARQLorder = args.s2s
+        saveOutputs = args.outputs
         self.network = ShapeNetwork(schemaDir, self.shapeFormat, args.endpoint, self.graphTraversal, self.task,
                                     self.parseHeuristics(args.heuristics), useSelectiveQueries, maxSplitSize,
-                                    self.outputDir, ORDERBYinQueries, SHACL2SPARQLorder, workInParallel)
+                                    self.outputDir, ORDERBYinQueries, SHACL2SPARQLorder, saveOutputs, workInParallel)
 
         report = self.network.validate()  # run the evaluation of the SHACL constraints over the specified endpoint
         print("Report:", report)

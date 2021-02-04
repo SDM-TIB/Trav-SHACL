@@ -5,7 +5,7 @@ import time
 
 if __name__ == '__main__':
     '''input example:
-    python3 main.py -d ./shapes/nonRec/2/ -g "http://dbpedia.org/sparql" ./output/ DFS --heuristics TARGET IN BIG'''
+    python3 main.py -d ./shapes/nonRec/2/ -a "http://dbpedia.org/sparql" ./output/ DFS --heuristics TARGET IN BIG'''
     # add the optional flag '--selective' in the command line to use configuration of more selective queries
 
     start = time.time()
@@ -24,7 +24,7 @@ if __name__ == '__main__':
     group.add_argument("-g", action="store_true", help="validate the whole graph")
     group.add_argument("-s", action="store_true", help="validate each shape")
     group.add_argument("-t", action="store_true", help="report valid instances")
-    group.add_argument("-v", action="store_true", help="report violating instances")
+    group.add_argument("-f", action="store_true", help="report violating instances")
     group.add_argument("-a", action="store_true", help="report both valid and violating instances")
 
     parser.add_argument("--heuristics", nargs="*", type=str, default=[],
@@ -43,6 +43,9 @@ if __name__ == '__main__':
 
     parser.add_argument("--s2s", action='store_true', default=False,
                         help="Use SHACL2SPARQL evaluation order to validate", required=False)
+
+    parser.add_argument("--outputs", action='store_true', default=False,
+                        help="Save classified targets to output files", required=False)
 
     args = parser.parse_args()
 

@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
-__author__ = "Philipp D. Rohde"
+__author__ = "Philipp D. Rohde and Monica Figuera"
 
 from validation.core.ValidationTask import ValidationTask
 from validation.ShapeParser import ShapeParser
 from validation.sparql.SPARQLEndpoint import SPARQLEndpoint
 from validation.utils.SourceDescription import SourceDescription
-from validation.utils import fileManagement
-from validation.RuleBasedValidation import RuleBasedValidation
 from validation.rule_based_validation.Validation import Validation
 
 class ShapeNetwork:
 
     def __init__(self, schemaDir, schemaFormat, endpointURL, graphTraversal, validationTask, heuristics,
-                 useSelectiveQueries, maxSplitSize, outputDir, ORDERBYinQueries, SHACL2SPARQLorder, workInParallel=False):
+                 useSelectiveQueries, maxSplitSize, outputDir, ORDERBYinQueries, SHACL2SPARQLorder, saveOutputs,
+                 workInParallel=False):
         self.sourceDescription = SourceDescription("./shapes/source-description.json")  # hardcoded for now
         self.shapes = ShapeParser().parseShapesFromDir(schemaDir, schemaFormat,
                                                        useSelectiveQueries, maxSplitSize, ORDERBYinQueries)
@@ -28,6 +27,8 @@ class ShapeNetwork:
         self.outputDirName = outputDir
         self.selectivityEnabled = useSelectiveQueries
         self.useSHACL2SPARQLORDER = SHACL2SPARQLorder
+        self.saveStats = outputDir is not None
+        self.saveTargetsToFile = saveOutputs
 
     def getStartingPoint(self):
         """Use heuristics to determine the first shape for evaluation of the constraints."""
@@ -105,10 +106,17 @@ class ShapeNetwork:
         else:
             return possible_starting_points
 
+    def setParentShapes(self):
+        for shape_name in self.shapesDict:
+            child_shapes = self.shapesDict[shape_name].referencedShapes
+            for child_name in child_shapes:
+                self.shapesDict[child_name].addParentShape(shape_name)
+
     def validate(self):
         """Execute one of the validation tasks in validation.core.ValidationTask."""
         start = self.getStartingPoint()
         node_order = self.graphTraversal.traverse_graph(self.dependencies, self.reverse_dependencies, start[0])  # TODO: deal with more than one possible starting point
+        self.setParentShapes()
         if self.validationTask == ValidationTask.GRAPH_VALIDATION:
             isSatisfied = self.isSatisfied(node_order)
             return isSatisfied
@@ -172,35 +180,20 @@ class ShapeNetwork:
         :param node_order:
         :param option: has three possible values: 'all', 'valid', 'violated'
         """
-        old_approach = False
-        if old_approach:
-            RuleBasedValidation(
-                self.endpoint,
-                node_order,
-                self.shapesDict,
-                option,
-                fileManagement.openFile(self.outputDirName, "validation.log"),
-                fileManagement.openFile(self.outputDirName, "targets_valid.log"),
-                fileManagement.openFile(self.outputDirName, "targets_violated.log"),
-                fileManagement.openFile(self.outputDirName, "stats.txt")
-            ).exec()
-        else:
-            targetShapes = [s for name, s in self.shapesDict.items()
-                            if self.shapesDict[name].getTargetQuery() is not None]
-            targetShapePredicates = [s.getId() for s in targetShapes]
+        targetShapes = [s for name, s in self.shapesDict.items()
+                        if self.shapesDict[name].getTargetQuery() is not None]
+        targetShapePredicates = [s.getId() for s in targetShapes]
 
-            Validation(
-                self.endpointURL,
-                node_order,
-                self.shapesDict,
-                option,
-                targetShapePredicates,
-                self.selectivityEnabled,
-                self.useSHACL2SPARQLORDER,
-                fileManagement.openFile(self.outputDirName, "validation.log"),
-                fileManagement.openFile(self.outputDirName, "targets_valid.log"),
-                fileManagement.openFile(self.outputDirName, "targets_violated.log"),
-                fileManagement.openFile(self.outputDirName, "stats.txt"),
-                fileManagement.openFile(self.outputDirName, "traces.csv")
-            ).exec()
+        Validation(
+            self.endpointURL,
+            node_order,
+            self.shapesDict,
+            option,
+            targetShapePredicates,
+            self.selectivityEnabled,
+            self.useSHACL2SPARQLORDER,
+            self.outputDirName,
+            self.saveStats,
+            self.saveTargetsToFile
+        ).exec()
         return 'Go to log files in {} folder to see report'.format(self.outputDirName)

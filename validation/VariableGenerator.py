@@ -9,10 +9,6 @@ class VariableGenerator:
     def __init__(self):
         self.index = 0
 
-    #def incrementAndGet(self):
-    #    self.index += 1
-    #    return self.index
-
     @staticmethod
     def generateVariable(type):
         type = "p_"  # *** hardcoded

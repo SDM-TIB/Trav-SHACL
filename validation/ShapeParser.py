@@ -3,7 +3,6 @@ __author__ = "Monica Figuera and Philipp D. Rohde"
 
 import os
 import json
-from validation.sparql.SPARQLPrefixHandler import getPrefixString
 from validation.VariableGenerator import VariableGenerator
 from validation.constraints.MinMaxConstraint import MinMaxConstraint
 from validation.constraints.MinOnlyConstraint import MinOnlyConstraint
@@ -42,6 +41,7 @@ class ShapeParser:
 
     def parseJson(self, path, useSelectiveQueries, maxSplitSize, ORDERBYinQueries):
         targetQuery = None
+        targetType = None
 
         file = open(path, "r")
         obj = json.load(file)
@@ -54,15 +54,18 @@ class ShapeParser:
         referencedShapes = self.shapeReferences(obj["constraintDef"]["conjunctions"][0])
 
         if targetDef is not None:
-            query = targetDef["query"]
-            if query is not None:
-                targetQuery = ''.join([getPrefixString() if includeSPARQLPrefixes else '', query])
-            if urlparse(targetDef["class"]).netloc != '':  # if the target class is a url, add '<>' to it
-                targetDef = '<' + targetDef["class"] + '>'
-            else:
-                targetDef = targetDef["class"]
+            targetQuery = targetDef["query"]
 
-        return Shape(name, targetDef, targetQuery, constraints, id, referencedShapes,
+            targetDefCopy = targetDef.copy()
+            del targetDefCopy["query"]
+            targetType = list(targetDefCopy.keys())[0]
+
+            if urlparse(targetDef[targetType]).netloc != '':  # if the target node is a url, add '<>' to it
+                targetDef = '<' + targetDef[targetType] + '>'
+            else:
+                targetDef = targetDef[targetType]
+
+        return Shape(name, targetDef, targetType, targetQuery, constraints, id, referencedShapes,
                      useSelectiveQueries, maxSplitSize, ORDERBYinQueries, includeSPARQLPrefixes)
 
     def abbreviatedSyntaxUsed(self, constraints):

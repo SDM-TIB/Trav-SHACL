@@ -1,45 +1,50 @@
 # -*- coding: utf-8 -*-
+__author__ = "Monica Figuera"
 
-class RuleBasedValidStats:
+
+class ValidationStats:
     def __init__(self):
-        self.initialTargets = 0
-
+        self.targets = 0
         self.maxRuleNumber = 0
+        self.totalRuleNumber = 0
         self.totalSolutionMappings = 0
         self.maxSolutionMappings = 0
 
         self.totalQueryExectime = 0
         self.maxQueryExectime = 0
-        self.totalGroundingTime = 0
-        self.maxGroundingTime = 0
+        self.totalInterleavingTime = 0
+        self.maxInterleavingTime = 0
         self.totalSaturationTime = 0
         self.maxSaturationTime = 0
         self.numberOfQueries = 0
-
         self.totalTime = 0
 
+        self.validation_log = ''
+
     def writeAll(self, statsOutput):
-        statsOutput.write("(initial) targets:\n" + str(self.initialTargets))
-        statsOutput.write("\nmax number of solution mappings for a query:\n" + str(self.maxSolutionMappings))
-        statsOutput.write("\ntotal number of solution mappings:\n" + str(self.totalSolutionMappings))
-        statsOutput.write("\nmax number of rules in memory:\n" + str(self.maxRuleNumber))
+        statsOutput.write("targets:\n" + str(self.targets))
+        statsOutput.write("\nmax number of rules in memory (2x max number of mappings for a query):\n" + str(self.maxSolutionMappings*2))
+        statsOutput.write("\ntotal number of rules in memory (2x total number of mappings):\n" + str(self.totalSolutionMappings*2))
         statsOutput.write("\nnumber of queries:\n" + str(self.numberOfQueries))
         statsOutput.write("\nmax exec time for a query:\n" + str(self.maxQueryExectime))
         statsOutput.write("\ntotal query exec time:\n" + str(self.totalQueryExectime))
-        statsOutput.write("\nmax grounding time for a query:\n" + str(self.maxGroundingTime))
-        statsOutput.write("\ntotal grounding time:\n" + str(self.totalGroundingTime))
+        statsOutput.write("\nmax interleaving time for a query:\n" + str(self.maxInterleavingTime))
+        statsOutput.write("\ntotal interleaving time:\n" + str(self.totalInterleavingTime))
         statsOutput.write("\nmax saturation time:\n" + str(self.maxSaturationTime))
         statsOutput.write("\ntotal saturation time:\n" + str(self.totalSaturationTime))
         statsOutput.write("\ntotal time:\n" + str(self.totalTime) + "\n")
 
-    def recordInitialTargets(self, k):
-        self.initialTargets = k
+    def writeValidationLog(self, validationLogOutput):
+        validationLogOutput.write(self.validation_log)
 
-    def recordGroundingTime(self, ms):
-        if ms > self.maxGroundingTime:
-            self.maxGroundingTime = ms
+    def recordTargets(self, k):
+        self.targets = k
 
-        self.totalGroundingTime += ms
+    def recordInterleavingTime(self, ms):
+        if ms > self.maxInterleavingTime:
+            self.maxInterleavingTime = ms
+
+        self.totalInterleavingTime += ms
 
     def recordQueryExecTime(self, ms):
         if ms > self.maxQueryExectime:
@@ -53,10 +58,6 @@ class RuleBasedValidStats:
 
         self.totalSaturationTime += ms
 
-    def recordNumberOfRules(self, k):
-        if k > self.maxRuleNumber:
-            self.maxRuleNumber = k
-
     def recordNumberOfSolutionMappings(self, k):
         if k > self.maxSolutionMappings:
             self.maxSolutionMappings = k
@@ -68,3 +69,6 @@ class RuleBasedValidStats:
 
     def recordQuery(self):
         self.numberOfQueries += 1
+
+    def updateValidationLog(self, log):
+        self.validation_log = ''.join([self.validation_log, log])
