@@ -4,7 +4,7 @@ __author__ = "Philipp D. Rohde and Monica Figuera"
 from validation.core.ValidationTask import ValidationTask
 from validation.ShapeParser import ShapeParser
 from validation.sparql.SPARQLEndpoint import SPARQLEndpoint
-from validation.utils.SourceDescription import SourceDescription
+#from validation.utils.SourceDescription import SourceDescription
 from validation.rule_based_validation.Validation import Validation
 
 class ShapeNetwork:
@@ -12,7 +12,7 @@ class ShapeNetwork:
     def __init__(self, schemaDir, schemaFormat, endpointURL, graphTraversal, validationTask, heuristics,
                  useSelectiveQueries, maxSplitSize, outputDir, ORDERBYinQueries, SHACL2SPARQLorder, saveOutputs,
                  workInParallel=False):
-        self.sourceDescription = SourceDescription("./shapes/source-description.json")  # hardcoded for now
+        #self.sourceDescription = SourceDescription("./shapes/source-description.json")  # hardcoded for now
         self.shapes = ShapeParser().parseShapesFromDir(schemaDir, schemaFormat,
                                                        useSelectiveQueries, maxSplitSize, ORDERBYinQueries)
         self.shapesDict = {shape.getId(): shape for shape in self.shapes}  # TODO: use only the dict?
