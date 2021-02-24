@@ -46,7 +46,7 @@ class QueryGenerator:
         target_node = get_target_node_statement(target_query)
         query = ''.join([prefixes,
                          "SELECT DISTINCT ?" + focus_var + " WHERE {\n",
-                         "VALUES ?inst { $to_be_replaced$ }. \n",
+                         "VALUES ?inst { $instances_to_add$ }. \n",
                          "?" + focus_var + " " + ref_path + " ?inst.\n",
                          target_node + "\n}\n",
                          " ORDER BY ?" + focus_var if include_ORDERBY else ''])
@@ -62,7 +62,7 @@ class QueryGenerator:
                          "SELECT DISTINCT ?" + focus_var + " WHERE {\n",
                          "?" + focus_var + " " + ref_path + " ?inst.\n",
                          target_node + "\n",
-                         "FILTER (?inst NOT IN ( $to_be_replaced$ )). }\n",
+                         "FILTER (?inst NOT IN ( $instances_to_add$ )). }\n",
                          " ORDER BY ?" + focus_var if include_ORDERBY else ''])
         return Query(None, None, query)
 
@@ -123,6 +123,7 @@ class QueryBuilder:
         self.target_query = target_query
         self.constraints = constraints
         self.include_ORDERBY = include_ORDERBY if include_ORDERBY is not None else False
+        self.inter_shape_refs = {}
 
     def add_triple(self, path, object):
         self.triples.append(
@@ -166,7 +167,7 @@ class QueryBuilder:
         if include_prefixes:
             if "_pos" in self.id or "_max_" in self.id:
                 # add VALUES clause to external query
-                temp_string = "$to_be_replaced$"
+                temp_string = "$filter_clause_to_add$"
 
         triple_patterns = self.get_triple_patterns()
         if triple_patterns != '':
@@ -217,14 +218,14 @@ class QueryBuilder:
         if isinstance(c, Constraint):
             path = c.path
 
-            if c.getValue() is not None:        # if there is a existing reference to another shape
+            if c.getValue() is not None:  # if there is an existing reference to another shape
                 self.add_triple(path, c.getValue())
                 return
 
             for v in variables:
                 if c.getShapeRef() is not None and c.max == 0:
-                    # constraint to target node of referenced shape
-                    # e.g.: self.triples.append("?" + v + " a ub:" + c.getShapeRef() + ".")  # TODO
+                    self.inter_shape_refs[v] = c.getShapeRef()
+                    self.triples.append("\n$inter_shape_type_to_add$")
                     pass
                 self.add_triple(path, "?" + v)
 
@@ -246,5 +247,6 @@ class QueryBuilder:
         return Query(
                 self.id,
                 rule_pattern,
-                self.get_SPARQL(include_prefixes, False)
+                self.get_SPARQL(include_prefixes, False),
+                self.inter_shape_refs
         )

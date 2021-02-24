@@ -7,6 +7,7 @@ from validation.sparql.SPARQLEndpoint import SPARQLEndpoint
 #from validation.utils.SourceDescription import SourceDescription
 from validation.rule_based_validation.Validation import Validation
 
+
 class ShapeNetwork:
 
     def __init__(self, schemaDir, schemaFormat, endpointURL, graphTraversal, validationTask, heuristics,
@@ -15,7 +16,7 @@ class ShapeNetwork:
         #self.sourceDescription = SourceDescription("./shapes/source-description.json")  # hardcoded for now
         self.shapes = ShapeParser().parseShapesFromDir(schemaDir, schemaFormat,
                                                        useSelectiveQueries, maxSplitSize, ORDERBYinQueries)
-        self.shapesDict = {shape.getId(): shape for shape in self.shapes}  # TODO: use only the dict?
+        self.shapesDict = {shape.get_id(): shape for shape in self.shapes}  # TODO: use only the dict?
         self.endpointURL = endpointURL
         self.endpoint = SPARQLEndpoint(endpointURL)  # used in old_approach
         self.graphTraversal = graphTraversal
@@ -82,7 +83,7 @@ class ShapeNetwork:
 
         if not possible_starting_points:
             possible_starting_points = all
-        return [s.getId() for s in possible_starting_points]
+        return [s.get_id() for s in possible_starting_points]
 
     def _indegree(self, possible_starting_points):
         if len(possible_starting_points) > 1:
@@ -143,18 +144,18 @@ class ShapeNetwork:
     def computeInAndOutDegree(self):
         """Computes the in- and outdegree of each shape."""
         for s in self.shapes:
-            s.outDegree = len(self.dependencies[s.getId()]) if s.getId() in self.dependencies.keys() else 0
-            s.inDegree = len(self.reverse_dependencies[s.getId()]) if s.getId() in self.reverse_dependencies.keys() else 0
+            s.outDegree = len(self.dependencies[s.get_id()]) if s.get_id() in self.dependencies.keys() else 0
+            s.inDegree = len(self.reverse_dependencies[s.get_id()]) if s.get_id() in self.reverse_dependencies.keys() else 0
         return
 
     def computeEdges(self):
         """Computes the edges in the network."""
-        dependencies = {s.getId(): [] for s in self.shapes}
-        reverse_dependencies = {s.getId(): [] for s in self.shapes}
+        dependencies = {s.get_id(): [] for s in self.shapes}
+        reverse_dependencies = {s.get_id(): [] for s in self.shapes}
         for s in self.shapes:
             refs = s.getShapeRefs()
             if refs:
-                name = s.getId()
+                name = s.get_id()
                 dependencies[name] = refs
                 for ref in refs:
                     reverse_dependencies[ref].append(name)
@@ -181,8 +182,8 @@ class ShapeNetwork:
         :param option: has three possible values: 'all', 'valid', 'violated'
         """
         targetShapes = [s for name, s in self.shapesDict.items()
-                        if self.shapesDict[name].getTargetQuery() is not None]
-        targetShapePredicates = [s.getId() for s in targetShapes]
+                        if self.shapesDict[name].get_target_query() is not None]
+        targetShapePredicates = [s.get_id() for s in targetShapes]
 
         Validation(
             self.endpointURL,

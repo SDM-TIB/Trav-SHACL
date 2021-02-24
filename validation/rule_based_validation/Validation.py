@@ -25,7 +25,7 @@ class Validation:
         self.stats = ValidationStats()
         self.traces = set()
 
-        self.stats.updateValidationLog("Node order: " + str(self.node_order) + '\n')
+        self.stats.update_log("Node order: " + str(self.node_order) + '\n')
         self.InstRetrieval = InstancesRetrieval(endpoint_URL, shapes_dict, self.stats)
         self.valid_targets_after_termination = set()
         self.start_of_verification = time.time() * 1000.0
@@ -35,16 +35,16 @@ class Validation:
         state = ValidationState(self.shapes_dict)
         initial_targets = self.retrieve_next_targets(state, focus_shape, state.shapes_state)
         state.remaining_targets.update(initial_targets)
-        state.shapes_state[focus_shape.getId()]['remaining_targets_count'] = len(initial_targets)
+        state.shapes_state[focus_shape.get_id()]['remaining_targets_count'] = len(initial_targets)
 
         start = time.time() * 1000.0
         self.validate(state, focus_shape)
         finish = time.time() * 1000.0
         elapsed = round(finish - start)
-        self.stats.recordTotalTime(elapsed)
+        self.stats.record_total_time(elapsed)
         print("Total execution time: ", str(elapsed), " ms")
-        self.stats.updateValidationLog("\n\nTotal number of rules: " + str(self.stats.totalSolutionMappings*2))
-        self.stats.updateValidationLog("\nMaximal number or rules in memory: " + str(self.stats.maxSolutionMappings*2))
+        self.stats.update_log("\n\nTotal number of rules: " + str(self.stats.total_sol_mappings*2))
+        self.stats.update_log("\nMaximal number or rules in memory: " + str(self.stats.max_sol_mappings*2))
         return self.validation_output(state.shapes_state)
 
     def validate(self, state, focus_shape):
@@ -53,8 +53,8 @@ class Validation:
                 self.valid_targets_after_termination.update(state.remaining_targets)
             return
 
-        self.stats.updateValidationLog("\n\n>>>>> Starting validation of shape: " + focus_shape.getId())
-        state.evaluated_predicates.add(focus_shape.getId())
+        self.stats.update_log("\n\n>>>>> Starting validation of shape: " + focus_shape.get_id())
+        state.evaluated_predicates.add(focus_shape.get_id())
         self.eval_shape(state, focus_shape, state.shapes_state)
 
         next_focus_shape = None
@@ -67,49 +67,40 @@ class Validation:
 
     def eval_shape(self, state, shape, shapes_state):
         """
-        Starts evaluation of focus shape (interleave + saturation). After interleaving process, the focus shape can
-        continue validating its remaining targets when all its referenced shapes were already validated.
+        Starts evaluation of focus 'shape'. After interleaving, pending targets are validated in remaining saturation.
         """
-        shape_name = shape.getId()
+        shape_name = shape.get_id()
         if shapes_state[shape_name]['remaining_targets_count'] > 0:
-            self.eval_constraints_queries(state, shape, state.prev_eval_shape_name)  # interleave
+            self.eval_constraints_queries(state, shape, shapes_state[shape_name]['filtering_shape_name'])  # interleave
 
-            self.stats.updateValidationLog("\nStarting saturation ...")
+            self.stats.update_log("\nStarting saturation ...")
             start = time.time() * 1000.0
-            if shapes_state[shape_name]['pending_refs_to_saturate'] == 0:  # ready to saturate
-                self.saturate_remaining(state, shape_name, shape_name, shapes_state)
+            self.saturate_remaining(state, shape_name, shape_name, shapes_state)
             end = time.time() * 1000.0
 
-            self.stats.recordSaturationTime(end - start)
-            self.stats.updateValidationLog("\nsaturation ...\nelapsed: " + str(end - start) + " ms")
+            self.stats.record_saturation_time(end - start)
+            self.stats.update_log("\nsaturation ...\nelapsed: " + str(end - start) + " ms")
         else:
-            self.stats.updateValidationLog("\nNo further saturation for shape " + shape_name)
+            self.stats.update_log("\nNo further saturation for shape " + shape_name)
 
         state.visited_shapes.add(shape)
-        self.stats.updateValidationLog("\nRemaining targets: " + str(len(state.remaining_targets)))
+        self.stats.update_log("\nRemaining targets: " + str(len(state.remaining_targets)))
 
-    def eval_constraints_queries(self, state, shape, filter_ref_shape_name):
+    def eval_constraints_queries(self, state, shape, filtering_shape_name):
         """
-        Evaluates all constraints queries of focus shape 'shape'.
-        Skips evaluation of remaining queries if all the targets of a shape were already violated during interleaving.
-        Per shape, there is one query with all min constraints (unless partitioned) and one query per max constraint.
-
-        :param state: state of the validation
-        :param shape: focus shape
-        :param filter_ref_shape_name: name of a shape referenced by 'shape' which provides filtering instances
+        Evaluates all constraints queries of focus 'shape'.
+        Per shape, there is one query with all min constraints and one query per max constraint.
         """
-        shape_name = shape.getId()
-        shape_rp = shape.getRulePatterns()[0]
+        shape_name = shape.get_id()
+        shape_rp = shape.get_rule_pattern()
 
-        min_query_rp = shape.minQuery.getRulePattern()
-        skip_q = self.eval_constraints_query(state, shape, shape.minQuery, filter_ref_shape_name, min_query_rp, shape_rp, "min")
+        min_query_rp = shape.minQuery.get_rule_pattern()
+        self.eval_constraints_query(state, shape, shape.minQuery, filtering_shape_name, min_query_rp, shape_rp, "min")
 
         for q in shape.maxQueries:
-            if q.getId() not in skip_q \
-               and shape_name in self.target_shape_predicates \
-               and state.shapes_state[shape_name]['remaining_targets_count'] > 0:
-                max_query_rp = q.getRulePattern()
-                self.eval_constraints_query(state, shape, q, filter_ref_shape_name, max_query_rp, shape_rp, "max")
+            if shape_name in self.target_shape_predicates and state.shapes_state[shape_name]['remaining_targets_count'] > 0:
+                max_query_rp = q.get_rule_pattern()
+                self.eval_constraints_query(state, shape, q, filtering_shape_name, max_query_rp, shape_rp, "max")
 
     def saturate_remaining(self, state, shape_name, shape_invalidating_name, shapes_state):
         """
@@ -129,30 +120,28 @@ class Validation:
         if negated or inferred:
             self.saturate_remaining(state, shape_name, shape_invalidating_name, shapes_state)
         else:
-            for parent_name in self.shapes_dict[shape_name].getParentShapes():
-                shapes_state[parent_name]['pending_refs_to_saturate'] -= 1
-                if shapes_state[parent_name]['pending_refs_to_saturate'] == 0 \
-                   and shapes_state[parent_name]['remaining_targets_count'] > 0:
+            for parent_name in self.shapes_dict[shape_name].get_parent_shapes():
+                if shapes_state[parent_name]['remaining_targets_count'] > 0:
                     self.saturate_remaining(state, parent_name, shape_invalidating_name, shapes_state)
 
     def negate_unmatchable_heads(self, state, rule_map, shape_invalidating_name, evaluated_predicates, shapes_state, preds_to_shapes):
         """
-        Derives negation of atoms that are not satisfiable. An atom 'a' is not satisfiable when:
-        its query (predicate of 'a') was already evaluated, no rule has 'a' as its head, and 'a' is not inferred yet.
+        Derives negation of atoms that are not satisfied. An atom 'a' is not satisfied when:
+        its query (predicate) was already evaluated, positive 'a' is not a rule head, and 'a' is not inferred yet.
 
         :param state: current state of the validation
-        :param rule_map: set of rules associated to focus shape or any of its parents
+        :param rule_map: set of pending rules associated to either focus shape or an incoming neighbor after recursion
         :param shape_invalidating_name: name of the shape that started the saturation before recursion
         :param evaluated_predicates: target/min/max query predicates evaluated so far
-        :return: True if new unsatisfied rule head literals were found, False otherwise
+        :return: True if new negative inferences were found, False otherwise
         """
         new_negated_atom_found = False
         all_body_atoms = set(frozenset().union(*set().union(*rule_map.values())))
         for a in all_body_atoms:
-            a_state = shapes_state[preds_to_shapes[a[0]]]  # atom's shape state (e.g., Dept_d1_pos -> Dept)
+            a_state = shapes_state[preds_to_shapes[a[0]]]  # atom's shape state (gets shape id from the constraint id)
             if a[0] in evaluated_predicates \
-               and (a[0], a[1], True) not in a_state['rule_map'] \
-               and (a[0], a[1], True) not in a_state['inferred']:  # if atom 'a' is not satisfiable
+                    and a_state['rule_map'].get((a[0], a[1], True)) is None \
+                    and a not in a_state['inferred']:  # if atom 'a' is not satisfied
                 negated_atom = (a[0], a[1], False)
                 if negated_atom not in a_state['inferred']:
                     new_negated_atom_found = True
@@ -162,8 +151,8 @@ class Validation:
         for a in state.remaining_targets:
             t_state = shapes_state[a[0]]  # target's shape state
             if a[0] in evaluated_predicates \
-               and (a[0], a[1], True) not in t_state['rule_map'] \
-               and (a[0], a[1], True) not in t_state['inferred']:  # if atom 'a' is not satisfiable
+                    and t_state['rule_map'].get((a[0], a[1], True)) is None \
+                    and a not in t_state['inferred']:  # if atom 'a' is not satisfied
                 self.register_target(a, "violated", shape_invalidating_name, shapes_state)
                 t_state['inferred'].add((a[0], a[1], not a[2]))
                 t_state['remaining_targets_count'] -= 1
@@ -175,22 +164,29 @@ class Validation:
     def apply_rules(self, remaining_targets, rule_map, shape_invalidating_name, shapes_state, preds_to_shapes):
         """
         Performs two types of inferences:
-        # case (1): If the rule map contains a rule and some of its bodies was already inferred
+        # case (1): If the rule map contains a rule and some of the rule bodies was inferred
                     => head of the rule is inferred, rule dropped.
-        # case (2): If the negation of any rule body was already inferred
+        # case (2): If the negation of any rule body was inferred
                     => the rule cannot be applied (rule head not inferred), rule dropped.
 
-        :param rule_map: set of rules associated to focus shape or any of its parents
-        :param shape_invalidating_name: name of the shape that started the saturation before recursion
         :return: True if new inferences were found, False otherwise
         """
         fresh_literals = False
         rule_map_copy = rule_map.copy()
         for head, bodies in rule_map_copy.items():
             head_shape_name = preds_to_shapes[head[0]]
-            inferred_bodies = {"F" if (a[0], a[1], False) in shapes_state[preds_to_shapes[a[0]]]['inferred']
-                                   else ("T" if a in shapes_state[preds_to_shapes[a[0]]]['inferred']
-                                       else "P") for body in bodies for a in body}
+            inferred_bodies = set()
+            for body in bodies:
+                inferred_atoms = {"F_atom" if (a[0], a[1], not a[2]) in shapes_state[preds_to_shapes[a[0]]]['inferred']
+                                  else ("T_atom" if a in shapes_state[preds_to_shapes[a[0]]]['inferred']
+                                        else "P_atom") for a in body}
+                if 'T_atom' in inferred_atoms and len(inferred_atoms) == 1:
+                    inferred_bodies.add('T')
+                elif 'F_atom' in inferred_atoms:
+                    inferred_bodies.add('F')
+                else:
+                    inferred_bodies.add('P')
+
             if 'T' in inferred_bodies:  # case (1)
                 fresh_literals = True
                 if head in remaining_targets:
@@ -199,7 +195,8 @@ class Validation:
                     shapes_state[head_shape_name]['remaining_targets_count'] -= 1
                 shapes_state[head_shape_name]['inferred'].add(head)
                 del rule_map[head]
-            elif 'F' in inferred_bodies:  # case (2)
+            elif 'F' in inferred_bodies and 'P' not in inferred_bodies:  # case (2)
+                fresh_literals = True
                 if head in remaining_targets:
                     self.register_target(head, "violated", shape_invalidating_name, shapes_state)
                     remaining_targets.discard(head)
@@ -209,20 +206,23 @@ class Validation:
 
         if not fresh_literals:
             return False
-        self.stats.updateValidationLog("\nRemaining targets: " + str(len(remaining_targets)))
+        self.stats.update_log("\nRemaining targets: " + str(len(remaining_targets)))
         return True
 
-    def eval_constraints_query(self, state, shape, q, filter_ref_shape_name, q_rule_pattern, s_rule_pattern, q_type):
+    def eval_constraints_query(self, state, shape, q, filtering_shape_name, q_rule_pattern, s_rule_pattern, q_type):
         """
         Evaluates corresponding min/max query of 'shape' and starts interleaving process for all answers retrieved.
 
-        The focus shape applies knowledge gained from the validated referenced shape 'filter_ref_shape_name'. The query
-        'q' is rewritten to include a filter (VALUES clause) containing the targets of 'filter_ref_shape_name'.
+        Query 'q' can be rewritten to include a filter (VALUES clause) with the targets of 'filtering_shape_name' and
+        (possibly) partitioned when the number of filtering instances exceeds a given threshold.
+
+        Each grounded rule is composed of literals (an atom or its negation).
+        Each atom 'a' is a tuple with 3 fields: a[0] - predicate, a[1] - instance (entity), a[2] - sign (True or False)
 
         :param state: current state of the validation
         :param shape: focus shape
-        :param q: query to be evaluated
-        :param filter_ref_shape_name: name of a shape referenced by 'shape' which provides filtering instances
+        :param q: constraint query to be evaluated
+        :param filtering_shape_name: name of a shape (referenced by focus 'shape') providing filtering instances
         :param q_rule_pattern: query rule pattern
         :param s_rule_pattern: shape rule pattern
         :param q_type: query type ("min" or "max")
@@ -230,24 +230,21 @@ class Validation:
         """
         shapes_state = state.shapes_state
         preds_to_shapes = state.preds_to_shapes
-        shape_name = shape.getId()
+        shape_name = shape.get_id()
+        t_state = shapes_state[shape_name]  # focus shape's state
+
         query_rp_head = q_rule_pattern.getHead()
-        shape_rp_head = s_rule_pattern.getHead()
         query_rp_body = q_rule_pattern.getBody()
+        shape_rp_head = s_rule_pattern.getHead()
         shape_rp_body = s_rule_pattern.getBody()
 
-        focus_shape_state = shapes_state[shape_name]
-        remaining_targets = state.remaining_targets
-
-        q_body_eval_pred = [pattern[0] in state.evaluated_predicates for pattern in query_rp_body]
-        s_body_eval_pred = [pattern[0] in state.evaluated_predicates for pattern in shape_rp_body]
         q_body_ref_shapes = [preds_to_shapes[pattern[0]] for pattern in query_rp_body]
         s_body_ref_shapes = [preds_to_shapes[pattern[0]] for pattern in shape_rp_body]
 
-        shape_max_refs, skip_q = self.get_max_refs(shape, state.evaluated_predicates)
+        shape_max_refs = shape.get_max_query_valid_refs()
         inter_constr_count = {}
 
-        for query_str in self.InstRetrieval.filter_constraint_query(shape, q.getSparql(), filter_ref_shape_name, q_type):
+        for query_str in self.InstRetrieval.rewrite_constraint_query(shape, q, filtering_shape_name, q_type, self.shapes_dict):
             start = time.time() * 1000.0
             for b in self.InstRetrieval.run_constraint_query(q, query_str):
                 q_head = (query_rp_head[0], b[query_rp_head[1]]["value"], query_rp_head[2])
@@ -257,193 +254,167 @@ class Validation:
                 is_body_inferred = True
                 negated_body = False
                 for i, atom_pattern in enumerate(query_rp_body):
-                    atom_shape_state = shapes_state[q_body_ref_shapes[i]]
+                    a_state = shapes_state[q_body_ref_shapes[i]]  # body atom's shape state
                     a = (atom_pattern[0], b[atom_pattern[1]]["value"], atom_pattern[2])
                     body.add(a)
-                    if a not in atom_shape_state['inferred']:
-                        if (a[0], a[1], not a[2]) not in focus_shape_state['inferred'] and q_body_eval_pred[i]:
-                            continue
+                    if a[0] in state.evaluated_predicates:  # exclude not yet evaluated atom's query
+                        if a not in a_state['inferred']:
+                            if (a[0], a[1], not a[2]) not in a_state['inferred']:
+                                is_body_inferred = False
+                                continue  # exclude non-selective answers from interleaving
 
-                        # step (1) - negate (unmatchable body atoms)
-                        if q_body_eval_pred[i] \
-                           and (a[0], a[1], True) not in focus_shape_state['rule_map'] \
-                           and (a[0], a[1], True) not in focus_shape_state['inferred']:  # a not satisf
-                            atom_shape_state['inferred'].add((a[0], a[1], False))
+                            # case (1) - negate (unmatchable body atoms)
+                            elif a_state['rule_map'].get((a[0], a[1], True)) is None:
+                                a_state['inferred'].add((a[0], a[1], False))  # infer negated atom
 
-                            # step (2) - infer negation of rule head (negated body atom)
-                            negated_body = True
-                            break  # if at least one negated body atom, the rule cannot be inferred -> halt the loop
-                        else:
-                            is_body_inferred = False
-                    ##########
-                    elif q_type == "min" and shape_max_refs.get(q_body_ref_shapes[i]) is not None:
-                        if inter_constr_count.get(s_head) is None:
-                            inter_constr_count[s_head] = {inter_constraint: set() for inter_constraint in shape_max_refs}
-                        inter_constr_count[s_head][q_body_ref_shapes[i]].add(a)
-                        if len(inter_constr_count[s_head][q_body_ref_shapes[i]]) > shape_max_refs[q_body_ref_shapes[i]]:
-                            negated_body = True
-                    ##########
+                                negated_body = True
+                                break  # if at least one negated body atom, rule cannot be inferred -> halt loop
+                            else:
+                                is_body_inferred = False
+
+                        # If interleaving min-query with an upper bound <> None -> verify upper bound violations
+                        elif q_type == "min" and shape_max_refs.get(q_body_ref_shapes[i]) is not None:
+                            if inter_constr_count.get(s_head) is None:
+                                inter_constr_count[s_head] = {inter_constraint: set() for inter_constraint in shape_max_refs}
+                            inter_constr_count[s_head][q_body_ref_shapes[i]].add(a)
+                            if len(inter_constr_count[s_head][q_body_ref_shapes[i]]) > shape_max_refs[q_body_ref_shapes[i]]:
+                                negated_body = True  # if number of instantiations exceeds max value -> infer negation
+                    else:
+                        is_body_inferred = False
 
                 if negated_body:
-                    focus_shape_state['inferred'].add((q_head[0], q_head[1], False))
-                    if s_head[2] and s_head in remaining_targets:
+                    # case (2) - infer negation of rule head (given negated body atom)
+                    t_state['inferred'].add((q_head[0], q_head[1], False))
+                    if s_head[2] and s_head in state.remaining_targets:
                         self.register_target(s_head, "violated", shape_name, shapes_state)
                         state.remaining_targets.discard(s_head)
-                        focus_shape_state['remaining_targets_count'] -= 1
+                        t_state['remaining_targets_count'] -= 1
                     continue
 
-                # step (3) - add pending rule / add inferred query head
+                # case (3) - add pending rule / infer query head
                 if not is_body_inferred:
-                    if q_head not in focus_shape_state['rule_map']:
+                    if q_head not in t_state['rule_map']:
                         s = set()
                         s.add(frozenset(body))
-                        focus_shape_state['rule_map'][q_head] = s
+                        t_state['rule_map'][q_head] = s
                     else:
-                        focus_shape_state['rule_map'][q_head].add(frozenset(body))
+                        t_state['rule_map'][q_head].add(frozenset(body))
                 else:
-                    focus_shape_state['inferred'].add(q_head)
+                    t_state['inferred'].add(q_head)
 
                 # Shape rule pattern #
                 body = set()
                 is_body_inferred = True
                 negated_body = False
                 for i, atom_pattern in enumerate(shape_rp_body):
-                    atom_shape_state = shapes_state[s_body_ref_shapes[i]]
+                    a_state = shapes_state[s_body_ref_shapes[i]]
                     a = (atom_pattern[0], b[atom_pattern[1]]["value"], atom_pattern[2])
                     body.add(a)
-                    if a not in atom_shape_state['inferred']:
-                        if (a[0], a[1], not a[2]) not in focus_shape_state['inferred'] and s_body_eval_pred[i]:
-                            continue
+                    if a not in a_state['inferred']:
+                        if (a[0], a[1], not a[2]) not in a_state['inferred']:
+                            is_body_inferred = False
+                            continue  # non-selective (when retrieved objects of a triple that do not match any target)
 
-                        # step (1) - negate (unmatchable body atoms)
-                        elif s_body_eval_pred[i] \
-                            and (a[0], a[1], True) not in focus_shape_state['rule_map'] \
-                                and (a[0], a[1], True) not in focus_shape_state['inferred']:
-
-                            atom_shape_state['inferred'].add((a[0], a[1], False))
-
-                            # step (2) - infer negation of rule head (negated body atom)
-                            focus_shape_state['inferred'].add((s_head[0], s_head[1], not s_head[2]))
-                            if s_head[2] and s_head in remaining_targets:
-                                self.register_target(s_head, "violated", shape_name, shapes_state)
-                                state.remaining_targets.discard(s_head)
-                                focus_shape_state['remaining_targets_count'] -= 1
-                                negated_body = True
+                        # case (1) - if negated (unmatchable) body atoms
+                        elif (a[0], a[1], not a[2]) in a_state['inferred']:
+                            negated_body = True
                             break
                         else:
                             is_body_inferred = False
 
                 if negated_body:
+                    # case (2) - infer negation of rule head (negated body atom)
+                    t_state['inferred'].add((s_head[0], s_head[1], False))
+                    if s_head[2] and s_head in state.remaining_targets:
+                        self.register_target(s_head, "violated", shape_name, shapes_state)
+                        state.remaining_targets.discard(s_head)
+                        t_state['remaining_targets_count'] -= 1
                     continue
 
-                # step (3) - add pending rule / classify valid target (all body inferred)
+                # case (3) - add pending rule / classify valid target (all body inferred)
                 if not is_body_inferred:
-                    if s_head not in focus_shape_state['rule_map']:
+                    if s_head not in t_state['rule_map']:
                         s = set()
                         s.add(frozenset(body))
-                        focus_shape_state['rule_map'][s_head] = s
+                        t_state['rule_map'][s_head] = s
                     else:
-                        focus_shape_state['rule_map'][s_head].add(frozenset(body))
+                        t_state['rule_map'][s_head].add(frozenset(body))
                 else:
-                    if s_head not in focus_shape_state['inferred']:
-                        focus_shape_state['inferred'].add(s_head)
-                    if s_head in remaining_targets:
+                    if s_head not in t_state['inferred']:
+                        t_state['inferred'].add(s_head)
+                    if s_head in state.remaining_targets:
                         for a in body:
-                            focus_shape_state['inferred'].discard(a)  # de-allocating memory
+                            t_state['inferred'].discard(a)  # de-allocating memory
 
                         self.register_target(s_head, "valid", shape_name, shapes_state)
                         state.remaining_targets.discard(s_head)
-                        focus_shape_state['remaining_targets_count'] -= 1
+                        t_state['remaining_targets_count'] -= 1
 
-            self.stats.updateValidationLog("\nGrounded rules. \n")
+            self.stats.update_log("\nGrounded rules. \n")
             end = time.time()*1000.0
-            self.stats.recordInterleavingTime(end - start)
+            self.stats.record_interleaving_time(end - start)
             state.evaluated_predicates.add(query_rp_head[0])
-        return skip_q
-
-    @staticmethod
-    def get_max_refs(shape, evaluated_predicates):
-        """
-        Checks if min&max query with the same inter-shape constraint exists and return all the shape names for those
-        references that were already validated
-
-        :param shape:
-        :param evaluated_predicates:
-        :return:
-        """
-        max_refs = {}
-        skip_q = set()
-        for max_c in shape.getConstraints():
-            if max_c.max != -1 and max_c.shapeRef is not None and max_c.shapeRef in evaluated_predicates:
-                for min_c in shape.getConstraints():
-                    if min_c.min != -1 and min_c.shapeRef == max_c.shapeRef:
-                        max_refs[max_c.shapeRef] = max_c.max
-                        for constrRef, query_id in shape.maxConstrId.items():
-                            if constrRef.shapeRef == max_c.shapeRef:
-                                skip_q.add(query_id)
-        return max_refs, skip_q
 
     def retrieve_next_targets(self, state, next_focus_shape, shapes_state):
         """
-        Runs query to get targets of the next focus shape. If the query is run using filtering, pending_targets are
+        Runs query to get targets of the next focus shape. If the query was rewritten (filtering), pending_targets are
         added to set of remaining targets and invalid_targets are directly classified.
-        The query can filter its answers using (in)validated targets given by an evaluated referenced shape (if any).
         """
-        self.stats.updateValidationLog("\n\n>>>>>\nRetrieving (next) targets ...")
-        if next_focus_shape.getTargetQuery() is None:
+        self.stats.update_log("\n\n>>>>>\nRetrieving (next) targets ...")
+        if next_focus_shape.get_target_query() is None:
             return set()
 
-        next_focus_shape_name = next_focus_shape.getId()
-        state.prev_eval_shape_name = self.get_eval_child_name(next_focus_shape, state.visited_shapes)
-
-        if self.selectivity_enabled and state.prev_eval_shape_name is not None:
-            pending_targets, invalid_targets = self.InstRetrieval.extract_targets_with_filter(
-                                                    next_focus_shape, self.eval_type, state.prev_eval_shape_name)
-            for t in invalid_targets:
-                self.register_target(t, "violated", next_focus_shape_name, shapes_state)
-                shapes_state[next_focus_shape_name]['inferred'].add((t[0], t[1], not t[2]))
+        next_focus_shape_name = next_focus_shape.get_id()
+        filtering_shape_name = self.get_evaluated_out_neighbor(next_focus_shape, state.visited_shapes)
+        shapes_state[next_focus_shape_name]['filtering_shape_name'] = filtering_shape_name
+        if self.selectivity_enabled and filtering_shape_name is not None:
+            # A query can filter its answers with (in)validated targets given by an evaluated out-neighboring shape
+            pending, invalid = self.InstRetrieval.extract_targets_with_filter(next_focus_shape, self.eval_type, filtering_shape_name)
+            for target in invalid:
+                self.register_target(target, "violated", next_focus_shape_name, shapes_state)
+                shapes_state[next_focus_shape_name]['inferred'].add((target[0], target[1], not target[2]))
                 shapes_state[next_focus_shape_name]['remaining_targets_count'] -= 1
         else:
-            pending_targets = self.InstRetrieval.extract_targets(next_focus_shape)
+            pending = self.InstRetrieval.extract_targets(next_focus_shape)
 
-        shapes_state[next_focus_shape_name]['remaining_targets_count'] = len(pending_targets)
-        return pending_targets
+        shapes_state[next_focus_shape_name]['remaining_targets_count'] = len(pending)
+        return pending
 
     @staticmethod
-    def get_eval_child_name(focus_shape, visited_shapes):
+    def get_evaluated_out_neighbor(focus_shape, visited_shapes):
         """
-        Returns the name of a shape that was already evaluated if it is referenced by the focus shape and contains
-        relevant information for query filtering:
+        Returns the name of an outgoing neighboring shape (i.e., object in inter-shape constraint of 'focus_shape')
+        that was already evaluated and contains relevant information for query filtering:
             - the number of valid or invalid targets is less than a threshold (currently set as 256),
             - the list of invalid targets is not empty,
-            - the referenced shape has a target query defined.
+            - the neighboring shape has a target query defined.
 
         :param focus_shape: current shape being evaluated
         :param visited_shapes: set with names of shapes that were already evaluated
         :return: string with the (best) previously evaluated shape name or None if no shape fulfills the conditions
         """
-        best_ref = None
+        best_filtering_shape_name = None
         best_val_threshold = 256
         best_inv_threshold = 256
         for prev_shape in visited_shapes:
-            prev_shape_name = prev_shape.getId()
+            prev_shape_name = prev_shape.get_id()
             if focus_shape.referencedShapes.get(prev_shape_name) is not None:
-                len_val = len(prev_shape.getValidTargets())
-                len_inv = len(prev_shape.getInvalidTargets())
+                len_val = len(prev_shape.get_valid_targets())
+                len_inv = len(prev_shape.get_invalid_targets())
 
                 if (0 < len_val < best_val_threshold) or (0 < len_inv < best_inv_threshold):
-                    if len_inv > 0 and prev_shape.getTargetQuery() is not None:
-                        best_ref = prev_shape_name
-        return best_ref
+                    if len_inv > 0 and prev_shape.get_target_query() is not None:
+                        best_filtering_shape_name = prev_shape_name
+        return best_filtering_shape_name
 
     def register_target(self, t, t_type, invalidating_shape_name, shapes_state):
         """
         Adds each target to the set of valid/invalid instances of a shape.
 
-        :param t: target
+        :param t: target tuple: t[0] - predicate (string), t[1] - instance (string), t[2] - sign (boolean)
         :param t_type: string value that tells whether 't' is a valid target ('valid') or a 'violated' one
-        :param invalidating_shape_name: name of the shape that (in)validates target 't'
-        :param shapes_state: current validation's state of each shape
+        :param invalidating_shape_name: string name of the shape that (in)validates target 't'
+        :param shapes_state: dictionary storing validation's state of each shape
         """
         instance = "<" + t[1] + ">"
         self.shapes_dict[t[0]].targets[t_type].add(instance)
@@ -501,11 +472,11 @@ class Validation:
             stats = fileManagement.openFile(self.output_dir_name, "stats.txt")
             traces = fileManagement.openFile(self.output_dir_name, "traces.csv")
 
-            self.stats.recordTargets(len(all_valid_targets) + len(all_invalid_targets))
-            self.stats.writeAll(stats)
+            self.stats.record_number_of_targets(len(all_valid_targets), len(all_invalid_targets))
+            self.stats.write_all_stats(stats)
             fileManagement.closeFile(stats)
 
-            self.stats.writeValidationLog(validation_log)
+            self.stats.write_validation_log(validation_log)
             validation_log.write("\nValid targets: " + str(len(all_valid_targets)))
             validation_log.write("\nInvalid targets: " + str(len(all_invalid_targets)))
             fileManagement.closeFile(validation_log)
@@ -525,14 +496,13 @@ class ValidationState:
         self.remaining_targets = set()
         self.visited_shapes = set()
         self.evaluated_predicates = set()
-        self.prev_eval_shape_name = None
         self.shapes_state = {}
-        self.preds_to_shapes = {}
+        self.preds_to_shapes = {}  # maps all constraint ids to their respective shape ids
 
         for shape_name in shapes_dict.keys():
             self.shapes_state[shape_name] = {
+                "filtering_shape_name": None,  # (already evaluated) referenced shape of 'shape_name'
                 "inferred": set(),
-                "pending_refs_to_saturate": len(shapes_dict[shape_name].referencedShapes.keys()),
                 "remaining_targets_count": 0,
                 "rule_map": {},
                 "registered_targets": {"valid": set(), "violated": set()}
