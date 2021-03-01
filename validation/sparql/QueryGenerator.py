@@ -152,7 +152,7 @@ class QueryBuilder:
         outer_query_closing_braces = ''.join(["}\n" if self.subquery is not None else '',
                                               "}" if self.get_triple_patterns() != '' and self.subquery is not None else '',
                                               "}" if self.get_triple_patterns() != '' else ''])
-        selective_closing_braces = "}}" if self.include_selectivity else ''
+        selective_closing_braces = "}}" if self.include_selectivity and self.target_query is not None else ''
 
         return ''.join([prefixes,
                         self.get_selective(),

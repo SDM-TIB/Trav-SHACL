@@ -50,34 +50,34 @@ class InstancesRetrieval:
         self.stats.update_log("\nNumber of targets retrieved: " + str(len(bindings)))
         return {(shape.id, b["x"]["value"], True) for b in bindings}
 
-    def extract_targets_with_filter(self, shape, inst_type, filtering_shape_name):
+    def extract_targets_with_filter(self, shape, inst_type, filtering_shape):
         """
         Retrieves more selective query answers by separating early invalidated targets from the still pending ones.
 
         :param shape: focus shape being evaluated
         :param inst_type: string containing "valid", "violated" or "all"
-        :param filtering_shape_name: string containing the name of the referenced shape used to filter query, or None
+        :param filtering_shape: referenced shape used to filter query, or None
         :return: two sets containing all targets of 'shape': pending targets to validate and directly invalidated targets
         """
         # Valid and invalid instances of the previous evaluated shape (if any)
-        prev_val_list = set() if filtering_shape_name is None else self.shapes_dict[filtering_shape_name].get_valid_targets()
-        prev_inv_list = set() if filtering_shape_name is None else self.shapes_dict[filtering_shape_name].get_invalid_targets()
+        prev_val_list = set() if filtering_shape is None else filtering_shape.get_valid_targets()
+        prev_inv_list = set() if filtering_shape is None else filtering_shape.get_invalid_targets()
 
         pending_targets, inv_targets = set(), set()
         if inst_type == "valid" or inst_type == "all":
-            pending_targets = self.__get_pending_targets(shape, prev_val_list, prev_inv_list, filtering_shape_name)
+            pending_targets = self.__get_pending_targets(shape, prev_val_list, prev_inv_list, filtering_shape)
             self.stats.update_log(''.join(["\nNumber of targets retrieved: ", str(len(pending_targets))]))
         if inst_type == "violated" or inst_type == "all":
-            inv_targets = self.__get_invalid_targets(shape, prev_val_list, prev_inv_list, filtering_shape_name)
+            inv_targets = self.__get_invalid_targets(shape, prev_val_list, prev_inv_list, filtering_shape)
             self.stats.update_log(''.join(["\nNumber of targets retrieved: ", str(len(inv_targets))]))
 
         return pending_targets, inv_targets
 
-    def __get_pending_targets(self, shape, prev_val_list, prev_inv_list, prev_eval_shape_name):
+    def __get_pending_targets(self, shape, prev_val_list, prev_inv_list, prev_eval_shape):
         if len(prev_val_list) == 0:
             return set()
 
-        query = self.__filter_target_query(shape, "valid", prev_val_list, prev_inv_list, prev_eval_shape_name)
+        query = self.__filter_target_query(shape, "valid", prev_val_list, prev_inv_list, prev_eval_shape)
         pending_targets = set()
         start = time.time() * 1000.0
         for q in query:
@@ -89,11 +89,11 @@ class InstancesRetrieval:
         self.stats.record_query()
         return pending_targets
 
-    def __get_invalid_targets(self, shape, prev_val_list, prev_inv_list, prev_eval_shape_name):
+    def __get_invalid_targets(self, shape, prev_val_list, prev_inv_list, prev_eval_shape):
         if len(prev_inv_list) == 0:
             return set()
 
-        query = self.__filter_target_query(shape, "violated", prev_val_list, prev_inv_list, prev_eval_shape_name)
+        query = self.__filter_target_query(shape, "violated", prev_val_list, prev_inv_list, prev_eval_shape)
         inv_targets = set()
         start = time.time() * 1000.0
         for idx, q in enumerate(query):
@@ -108,7 +108,7 @@ class InstancesRetrieval:
         self.stats.record_query()
         return inv_targets
 
-    def __filter_target_query(self, shape, inst_type, prev_val_list, prev_inv_list, prev_eval_shape_name):
+    def __filter_target_query(self, shape, inst_type, prev_val_list, prev_inv_list, prev_eval_shape):
         """
         Gets query template for valid (VALUES) and invalid (FILTER NOT IN) instances of current 'shape' and instantiates
         the $instances_to_add$ string with the actual instances given by the evaluated neighbor shape's list of instances.
@@ -122,7 +122,8 @@ class InstancesRetrieval:
         :return: One or multiple queries depending on whether the instances list was split or not.
                  If the instances list was not split, the variable 'query' returns an array with one single query.
         """
-        self.stats.update_log(''.join(["\n", inst_type, " instances retrieval ", shape.id, ": [out-neighbor's (", prev_eval_shape_name, ")"]))
+        self.stats.update_log(''.join(["\n", inst_type, " instances retrieval ", shape.get_id(),
+                              ": [out-neighbor's (", prev_eval_shape.get_id(), ")"]))
         self.stats.update_log(''.join([" instances: ", str(len(prev_val_list)), " valid ", str(len(prev_inv_list)), " invalid]"]))
         max_split_number = 256
         max_instances_per_query = 115
@@ -135,18 +136,18 @@ class InstancesRetrieval:
 
         if (shortest_inst_list == prev_val_list and inst_type == "valid") \
                 or (shortest_inst_list == prev_inv_list and inst_type == "violated"):
-            query_template = shape.queriesWithVALUES[prev_eval_shape_name].get_SPARQL()
+            query_template = shape.queriesWithVALUES[prev_eval_shape.get_id()].get_SPARQL()
             separator = " "
         else:
-            query_template = shape.queriesWithFILTER_NOT_IN[prev_eval_shape_name].get_SPARQL()
+            query_template = shape.queriesWithFILTER_NOT_IN[prev_eval_shape.get_id()].get_SPARQL()
             separator = ","
 
         split_instances = self.__get_formatted_instances(shortest_inst_list, separator, max_instances_per_query)
         return [query_template.replace("$instances_to_add$", sublist) for sublist in split_instances]
 
-    def rewrite_constraint_query(self, shape, q, filtering_shape_name, q_type, shapes_dict):
+    def rewrite_constraint_query(self, shape, q, filtering_shape, q_type):
         """
-        Filters constraint query with targets from 'filtering_shape_name' (if any).
+        Filters constraint query with targets from 'filtering_shape' (if any).
         The end-user can restrict number of instances allowed for considering a filtering clause.
         Since the length of a query string is restricted by the SPARQL endpoint configuration, the query might be
         divided into several sub-queries, where each subquery contains at most 'max_instances_per_query' (set to 80).
@@ -155,11 +156,11 @@ class InstancesRetrieval:
         """
         max_split_number = shape.get_query_split_threshold()
         max_instances_per_query = 80
-        prev_val_list = set() if filtering_shape_name is None else self.shapes_dict[filtering_shape_name].get_valid_targets()
-        prev_inv_list = set() if filtering_shape_name is None else self.shapes_dict[filtering_shape_name].get_invalid_targets()
+        prev_val_list = set() if filtering_shape is None else filtering_shape.get_valid_targets()
+        prev_inv_list = set() if filtering_shape is None else filtering_shape.get_invalid_targets()
         query_template = q.get_SPARQL()
 
-        if filtering_shape_name is not None and \
+        if filtering_shape is not None and \
                 len(prev_val_list) > 0 and len(prev_inv_list) > 0 and \
                 len(prev_val_list) <= max_split_number:
             VALUES_clauses = ""
@@ -167,7 +168,7 @@ class InstancesRetrieval:
             separator = ""
             split_instances = self.__get_formatted_instances(prev_val_list, separator, max_instances_per_query)
             for c in shape.constraints:
-                if c.shapeRef == filtering_shape_name and c.min == 1:
+                if c.shapeRef == filtering_shape.get_id() and c.min == 1:
                     obj_var = " ?" + c.variables[0]
                     VALUES_clauses += "VALUES" + obj_var + " {$instances$}\n"
                     if q_type == "max":
@@ -179,11 +180,11 @@ class InstancesRetrieval:
                     for sublist in split_instances]
 
         if "$inter_shape_type_to_add$" in query_template:
-            for var, shape_name  in q.get_inter_shape_refs_names().items():
-                shape = shapes_dict[shape_name]
+            for var, inter_shape_name in q.get_inter_shape_refs_names().items():
+                inter_shape = self.shapes_dict[inter_shape_name]
                 inter_shape_triple = ''
-                if shape.targetType == 'class':
-                    inter_shape_triple = "?" + var + " a " + shape.targetDef + "."
+                if inter_shape.targetType == 'class':
+                    inter_shape_triple = "?" + var + " a " + inter_shape.targetDef + "."
                 query_template = query_template.replace("$inter_shape_type_to_add$", inter_shape_triple)
 
         return [query_template.replace("$filter_clause_to_add$", "\n")]
