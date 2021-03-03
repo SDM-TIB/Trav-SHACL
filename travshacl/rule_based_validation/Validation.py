@@ -1,21 +1,32 @@
 # -*- coding: utf-8 -*-
 __author__ = "Monica Figuera"
 
-from validation.utils import fileManagement
-from validation.utils.ValidationStats import ValidationStats
-from validation.utils import SHACL2SPARQLEvalOrder
-from validation.rule_based_validation.InstancesRetrieval import InstancesRetrieval
 import time
+
+from travshacl.rule_based_validation.InstancesRetrieval import InstancesRetrieval
+from travshacl.utils import fileManagement
+from travshacl.utils.ValidationStats import ValidationStats
 
 
 class Validation:
-    def __init__(self, endpoint_URL, node_order, shapes_dict, option, target_shape_predicates, use_selective_queries,
-                       use_SHACL2SPARQL_order, output_dir_name, save_stats, save_targets_to_file):
+    """This class is responsible for managing the validation process."""
 
-        self.node_order = node_order if not use_SHACL2SPARQL_order \
-                                     else SHACL2SPARQLEvalOrder.get_node_order("LUBM", len(shapes_dict))
+    def __init__(self, endpoint_url, node_order, shapes_dict, target_shape_predicates, use_selective_queries,
+                 output_dir_name, save_stats, save_targets_to_file):
+        """
+        Creates a new instance for the validation process.
+
+        :param endpoint_url: URL of the SPARQL endpoint to evaluate
+        :param node_order: indicates the order in which the shapes will be evaluated
+        :param shapes_dict: a Python dictionary holding all shapes of the shape schema
+        :param target_shape_predicates: names of the shapes with a target definition
+        :param use_selective_queries: indicates whether or not selective queries will be used
+        :param output_dir_name: path for the output files
+        :param save_stats: indicates whether or not statistics will be saved to the output path
+        :param save_targets_to_file: indicates whether or not target classifications will be saved to the output path
+        """
+        self.node_order = node_order
         self.shapes_dict = shapes_dict
-        self.eval_type = option  # possible values: "valid", "violated", "all"
         self.target_shape_predicates = target_shape_predicates
         self.selectivity_enabled = use_selective_queries
 
@@ -26,11 +37,12 @@ class Validation:
         self.traces = set()
 
         self.stats.update_log("Node order: " + str(self.node_order) + '\n')
-        self.InstRetrieval = InstancesRetrieval(endpoint_URL, shapes_dict, self.stats)
+        self.InstRetrieval = InstancesRetrieval(endpoint_url, shapes_dict, self.stats)
         self.valid_targets_after_termination = set()
         self.start_of_verification = time.time() * 1000.0
 
     def exec(self):
+        """Executes the validation process of the entire shape schema."""
         focus_shape = self.shapes_dict[self.node_order.pop(0)]
         state = ValidationState(self.shapes_dict)
         initial_targets = self.retrieve_next_targets(state, focus_shape, state.shapes_state)
@@ -48,9 +60,14 @@ class Validation:
         return self.validation_output(state.shapes_state)
 
     def validate(self, state, focus_shape):
+        """
+        Validates a shape.
+
+        :param state: current validation state
+        :param focus_shape: focus shape to be evaluated
+        """
         if len(state.visited_shapes) == len(self.shapes_dict):
-            if self.eval_type == "valid" or self.eval_type == "all":
-                self.valid_targets_after_termination.update(state.remaining_targets)
+            self.valid_targets_after_termination.update(state.remaining_targets)
             return
 
         self.stats.update_log("\n\n>>>>> Starting validation of shape: " + focus_shape.get_id())
@@ -69,6 +86,11 @@ class Validation:
         """
         Runs query to get targets of the next focus shape. If the query was rewritten (filtering), pending_targets are
         added to set of remaining targets and invalid_targets are directly classified.
+
+        :param state: current overall validation state
+        :param next_focus_shape: the upcoming focus shape, i.e., the shape all possible targets need to be collected for
+        :param shapes_state: dictionary storing validation's state of each shape
+        :return: all pending targets for the upcoming focus shape
         """
         self.stats.update_log("\n\n>>>>>\nRetrieving (next) targets ...")
         if next_focus_shape.get_target_query() is None:
@@ -79,7 +101,7 @@ class Validation:
         shapes_state[next_focus_shape_name]['filtering_shape'] = filtering_shape
         if self.selectivity_enabled and filtering_shape is not None:
             # A query can filter its answers with (in)validated targets given by an evaluated out-neighboring shape
-            pending, invalid = self.InstRetrieval.extract_targets_with_filter(next_focus_shape, self.eval_type, filtering_shape)
+            pending, invalid = self.InstRetrieval.extract_targets_with_filter(next_focus_shape, filtering_shape)
             for target in invalid:
                 self.register_target(target, "violated", next_focus_shape_name, shapes_state)
                 shapes_state[next_focus_shape_name]['inferred'].add((target[0], target[1], not target[2]))
@@ -101,6 +123,7 @@ class Validation:
 
         :param focus_shape: current shape being evaluated
         :param visited_shapes: set with names of shapes that were already evaluated
+        :param state: object keeping track of the current validation state
         :return: reference to the (best) previously evaluated shape, or None if no shape fulfills the conditions
         """
         best_filtering_shape = None
@@ -123,6 +146,10 @@ class Validation:
         """
         Interleaves 'shape' entities and performs a deferred saturation for entities that could not be validated during
         the interleave because of missing information to be provided by (not yet evaluated) out-neighboring shapes.
+
+        :param state: object keeping track of the current validation state
+        :param shape: focus shape to be evaluated
+        :param shapes_state: dictionary storing validation's state of each shape
         """
         shape_name = shape.get_id()
 
@@ -143,6 +170,10 @@ class Validation:
         """
         Evaluates all constraints queries of focus 'shape'.
         There is one query with all min constraints and (possibly) one query per max constraint.
+
+        :param state: object keeping track of the current validation state
+        :param shape: focus shape to be evaluated
+        :param filtering_shape: shape (referenced by focus 'shape') providing filtering instances
         """
         shape_rp = shape.get_rule_pattern()
 
@@ -170,17 +201,16 @@ class Validation:
         :param q_rule_pattern: query rule pattern
         :param s_rule_pattern: shape rule pattern
         :param q_type: query type ("min" or "max")
-        :return:
         """
         shapes_state = state.shapes_state
         preds_to_shapes = state.preds_to_shapes
         shape_name = shape.get_id()
         t_state = shapes_state[shape_name]  # focus shape's state
 
-        query_rp_head = q_rule_pattern.getHead()
-        query_rp_body = q_rule_pattern.getBody()
-        shape_rp_head = s_rule_pattern.getHead()
-        shape_rp_body = s_rule_pattern.getBody()
+        query_rp_head = q_rule_pattern.head
+        query_rp_body = q_rule_pattern.body
+        shape_rp_head = s_rule_pattern.head
+        shape_rp_body = s_rule_pattern.body
 
         q_body_ref_shapes = [preds_to_shapes[pattern[0]] for pattern in query_rp_body]
         s_body_ref_shapes = [preds_to_shapes[pattern[0]] for pattern in shape_rp_body]
@@ -310,7 +340,7 @@ class Validation:
 
         :param state: current state of the validation
         :param shape_name: name of focus shape or its "parents" (after recursion)
-        :param shapes_state: current validation's state of each shape
+        :param shapes_state: dictionary storing validation's state of each shape
         """
         rule_map = state.rule_map
         negated = self.negate_unmatchable_heads(state, rule_map, state.evaluated_predicates, shape_name, shapes_state, state.preds_to_shapes)
@@ -327,7 +357,7 @@ class Validation:
         :param rule_map: set of pending rules associated to either focus shape or an incoming neighbor after recursion
         :param evaluated_predicates: target/min/max query predicates evaluated so far
         :param shape_name: string name of the focus shape
-        :param shapes_state: dictionary with information of current state of the focus shape
+        :param shapes_state: dictionary storing validation's state of each shape
         :param preds_to_shapes: dictionary that maps predicate names to shape names
         :return: True if new negative inferences were found, False otherwise
         """
@@ -365,6 +395,11 @@ class Validation:
         # case (2): If the negation of any rule body was inferred
                     => the rule cannot be applied (rule head not inferred), rule dropped.
 
+        :param remaining_targets: pending targets, i.e., targets that are neither valid nor invalid yet
+        :param rule_map: set of pending rules associated to either focus shape or an incoming neighbor after recursion
+        :param shape_name: name of the current focus shape
+        :param shapes_state: dictionary storing validation's state of each shape
+        :param preds_to_shapes: dictionary that maps predicate names to shape names
         :return: True if new inferences were found, False otherwise
         """
         fresh_literals = False
@@ -422,29 +457,28 @@ class Validation:
                                  str(round(time.time() * 1000.0 - self.start_of_verification)), "\n"]))
 
     @staticmethod
-    def write_targets_to_file(output_dir_name, all_valid_targets, all_invalid_targets, eval_type):
-        if eval_type == "valid" or eval_type == "all":
-            valid_targets_file = fileManagement.openFile(output_dir_name, "targets_valid.log")
-            for t in all_valid_targets:
-                lit_sign_str = "" if t[2] else "!"
-                lit_str = lit_sign_str + t[0] + "(" + t[1] + ")"  # get string representation of tuple
-                valid_log = lit_str + ",\n"
-                valid_targets_file.write(valid_log)
-            fileManagement.closeFile(valid_targets_file)
+    def write_targets_to_file(output_dir_name, all_valid_targets, all_invalid_targets):
+        """Writes all target classifications to file, i.e., one file for valid targets and one for invalid ones."""
+        def write_list_to_file(list_, file_):
+            """Helper function to write a list to file."""
+            for elem in list_:
+                lit_sign_str = "" if elem[2] else "!"
+                lit_str = lit_sign_str + elem[0] + "(" + elem[1] + ")"  # get string representation of tuple
+                file_.write(lit_str + ",\n")
 
-        if eval_type == "violated" or eval_type == "all":
-            violated_targets_file = fileManagement.openFile(output_dir_name, "targets_violated.log")
-            for t in all_invalid_targets:
-                lit_sign_str = "" if t[2] else "!"
-                lit_str = lit_sign_str + t[0] + "(" + t[1] + ")"
-                invalid_log = lit_str + ",\n"
-                violated_targets_file.write(invalid_log)
-            fileManagement.closeFile(violated_targets_file)
+        valid_targets_file = fileManagement.open_file(output_dir_name, "targets_valid.log")
+        write_list_to_file(all_valid_targets, valid_targets_file)
+        fileManagement.close_file(valid_targets_file)
+
+        violated_targets_file = fileManagement.open_file(output_dir_name, "targets_violated.log")
+        write_list_to_file(all_invalid_targets, violated_targets_file)
+        fileManagement.close_file(violated_targets_file)
 
     def validation_output(self, shapes_state):
         """
         Saves to local file the (in)validated targets and returns result of validation
 
+        :param shapes_state: dictionary storing validation's state of each shape
         :return: dictionary containing shape names and their respective (in)validated targets
         """
         output = {}
@@ -463,26 +497,26 @@ class Validation:
         all_valid_targets.update(self.valid_targets_after_termination)
 
         if self.save_targets_to_file:
-            self.write_targets_to_file(self.output_dir_name, all_valid_targets, all_invalid_targets, self.eval_type)
+            self.write_targets_to_file(self.output_dir_name, all_valid_targets, all_invalid_targets)
 
         if self.save_stats:
-            validation_log = fileManagement.openFile(self.output_dir_name, "validation.log")
-            stats = fileManagement.openFile(self.output_dir_name, "stats.txt")
-            traces = fileManagement.openFile(self.output_dir_name, "traces.csv")
+            validation_log = fileManagement.open_file(self.output_dir_name, "validation.log")
+            stats = fileManagement.open_file(self.output_dir_name, "stats.txt")
+            traces = fileManagement.open_file(self.output_dir_name, "traces.csv")
 
             self.stats.record_number_of_targets(len(all_valid_targets), len(all_invalid_targets))
             self.stats.write_all_stats(stats)
-            fileManagement.closeFile(stats)
+            fileManagement.close_file(stats)
 
             self.stats.write_validation_log(validation_log)
             validation_log.write("\nValid targets: " + str(len(all_valid_targets)))
             validation_log.write("\nInvalid targets: " + str(len(all_invalid_targets)))
-            fileManagement.closeFile(validation_log)
+            fileManagement.close_file(validation_log)
 
             traces.write("Target, #TripleInThatNode, TimeSinceStartOfVerification(ms)\n")
             for trace in self.traces:
                 traces.write(trace)
-            fileManagement.closeFile(traces)
+            fileManagement.close_file(traces)
 
         # add to output all targets that could not be (in)validated by any shape
         output["unbound"] = {"valid_instances": self.valid_targets_after_termination}
@@ -490,6 +524,8 @@ class Validation:
 
 
 class ValidationState:
+    """This class is responsible for keeping track of the validation state."""
+
     def __init__(self, shapes_dict):
         self.remaining_targets = set()
         self.visited_shapes = set()

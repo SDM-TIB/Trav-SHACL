@@ -1,12 +1,19 @@
 # -*- coding: utf-8 -*-
+__author__ = "Philipp D. Rohde and Monica Figuera"
+
 import argparse
-from validation.Eval import *
 import time
 
+from travshacl.TravSHACL import eval_shape_schema
+
 if __name__ == '__main__':
-    '''input example:
-    python3 main.py -d ./shapes/nonRec/2/ -a "http://dbpedia.org/sparql" ./output/ DFS --heuristics TARGET IN BIG'''
+    """
+    Used as a wrapper to start Trav-SHACL for evaluating a SHACL shape schema against a SPARQL endpoint.
+    
+    Example how to run it:
+    python3 main.py -d ./shapes/nonRec/2/ "http://dbpedia.org/sparql" ./output/ DFS --heuristics TARGET IN BIG"""
     # add the optional flag '--selective' in the command line to use configuration of more selective queries
+    # add the optional flag '--output' in the command line to store the target classifications as well
 
     start = time.time()
 
@@ -19,13 +26,6 @@ if __name__ == '__main__':
                         help='Name of the directory where results of validation will be saved')
     parser.add_argument(dest='graphTraversal', type=str, default='DFS', choices=['BFS', 'DFS'],
                         help='The algorithm used for graph traversal (BFS / DFS)')
-
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument("-g", action="store_true", help="validate the whole graph")
-    group.add_argument("-s", action="store_true", help="validate each shape")
-    group.add_argument("-t", action="store_true", help="report valid instances")
-    group.add_argument("-f", action="store_true", help="report violating instances")
-    group.add_argument("-a", action="store_true", help="report both valid and violating instances")
 
     parser.add_argument("--heuristics", nargs="*", type=str, default=[],
                         help="TARGET if shapes with target definition should be prioritized\n"
@@ -41,15 +41,12 @@ if __name__ == '__main__':
     parser.add_argument("--orderby", action='store_true', default=False,
                         help="Use ORDER BY keyword in queries", required=False)
 
-    parser.add_argument("--s2s", action='store_true', default=False,
-                        help="Use SHACL2SPARQL evaluation order to validate", required=False)
-
     parser.add_argument("--outputs", action='store_true', default=False,
                         help="Save classified targets to output files", required=False)
 
     args = parser.parse_args()
 
-    Eval(args)
+    eval_shape_schema(args)
 
     end = time.time()
     print("Total program runtime:", end - start, "seconds")

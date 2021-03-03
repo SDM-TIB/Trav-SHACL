@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+"""
+For now prefixes used in the definition of SHACL shapes are hardcoded.
+TODO: This should be fixed in a later version to facilitate the use of Trav-SHACL.
+"""
+
 prefixes = {
     "ub": "<http://swat.cse.lehigh.edu/onto/univ-bench.owl#>",
     "rdf": "<http://www.w3.org/1999/02/22-rdf-syntax-ns#>",
@@ -12,8 +17,9 @@ prefixes = {
 prefixString = "\n".join(["".join("PREFIX " + key + ":" + value) for (key, value) in prefixes.items()]) + "\n"
 
 
-def getPrefixString():
+def get_prefix_string():
     return prefixString
 
-def getPrefixes():
+
+def get_prefixes():
     return prefixes

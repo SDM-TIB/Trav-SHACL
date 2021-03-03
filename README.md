@@ -22,7 +22,6 @@ The following guides assume:
 
 ### Parameters
 * `-d schemaDir` (necessary) - path to the directory containing the shape files
-* `-a` (necessary) - report on validations and violations
 * `endpoint` (necessary) - URL of the endpoint the shape schema will be validated against
 * `graphTraversal` (necessary) - defines the graph traversal algorithm to be used, is one of `[BFS, DFS]`
 * `outputDir` (necessary) - directory to be used for storing the result files, has to end on `/`
@@ -44,13 +43,13 @@ docker build -t travshacl .
 docker run --name trav-shacl -v $(pwd)/shapes:/shapes -v $(pwd)/results:/results --network=semantic-web -d travshacl
 
 # Run the Validation
-docker exec -it trav-shacl bash -c "python3 main.py -d /shapes -a http://endpoint1:8890/sparql /results/ DFS --heuristics TARGET IN BIG --orderby --selective --outputs"
+docker exec -it trav-shacl bash -c "python3 main.py -d /shapes http://endpoint1:8890/sparql /results/ DFS --heuristics TARGET IN BIG --orderby --selective --outputs"
 ```
 
 ### Run with Python3
 ```bash
 pip3 install -r requirements.txt
-python3 main.py -d ./shapes -a http://localhost:14000/sparql ./results/ DFS --heuristics TARGET IN BIG --orderby --selective --outputs
+python3 main.py -d ./shapes http://localhost:14000/sparql ./results/ DFS --heuristics TARGET IN BIG --orderby --selective --outputs
 ```
 
 ## Publications

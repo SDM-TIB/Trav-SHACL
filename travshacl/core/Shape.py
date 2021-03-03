@@ -2,24 +2,40 @@
 __author__ = "Monica Figuera and Philipp D. Rohde"
 
 import itertools
-from validation.VariableGenerator import VariableGenerator
-from validation.core.RulePattern import RulePattern
-from validation.utils.SourceDescription import SourceDescription
-from validation.sparql.QueryGenerator import QueryGenerator
+
+from travshacl.utils.VariableGenerator import VariableGenerator
+from travshacl.core.RulePattern import RulePattern
+from travshacl.sparql.QueryGenerator import QueryGenerator
 
 
 class Shape:
+    """This class represents a SHACL shape."""
 
-    def __init__(self, id, targetDef, targetType, targetQuery, constraints, constraintsId, referencedShapes,
-                 useSelectiveQueries, maxSplitSize, ORDERBYinQueries, includeSPARQLPrefixes):
-        self.id = id
+    def __init__(self, id_, target_def, target_type, target_query, constraints, constraints_id, referenced_shapes,
+                 use_selective_queries, max_split_size, order_by_in_queries, include_sparql_prefixes):
+        """
+        Creates a new Shape instance representing a SHACL shape that needs to be evaluated.
+
+        :param id_: the name of the shape
+        :param target_def: target definition of the shape
+        :param target_type: indicates the target type of the shape, e.g., class or node
+        :param target_query: target query of the shape
+        :param constraints: the constraints belonging to the shape
+        :param constraints_id: the constraint ids
+        :param referenced_shapes: a list of shapes that is referenced from this shape
+        :param use_selective_queries: indicates whether or not selective queries are used
+        :param max_split_size: maximum number of instances per query
+        :param order_by_in_queries: indicates whether or not to use the ORDER BY clause
+        :param include_sparql_prefixes: indicates whether or not to include SPARQL prefixes in queries for the shape
+        """
+        self.id = id_
         self.constraints = constraints
-        self.constraintsId = constraintsId
+        self.constraintsId = constraints_id
         self.predicates = []
-        self.targetDef = targetDef
-        self.targetType = targetType          # Might be None
-        self.targetQuery = targetQuery        # Might be None
-        self.targetQueryNoPref = targetQuery  # Might be None
+        self.targetDef = target_def
+        self.targetType = target_type          # Might be None
+        self.targetQuery = target_query        # Might be None
+        self.targetQueryNoPref = target_query  # Might be None
         self.rulePattern = ()
         self.satisfied = None
         self.inDegree = None
@@ -31,16 +47,16 @@ class Shape:
         self.maxValidRefs = {}
         self.skippedQueriesIds = set()
 
-        self.referencedShapes = referencedShapes
+        self.referencedShapes = referenced_shapes
         self.parentShapes = set()
         self.queriesWithVALUES = {}
         self.queriesWithFILTER_NOT_IN = {}  # complement of VALUES
         self.targets = {"valid": set(), "violated": set()}
 
-        self.useSelectiveQueries = useSelectiveQueries
-        self.querySplitThreshold = maxSplitSize
-        self.ORDERBYinQueries = ORDERBYinQueries
-        self.includePrefixes = includeSPARQLPrefixes
+        self.useSelectiveQueries = use_selective_queries
+        self.querySplitThreshold = max_split_size
+        self.ORDERBYinQueries = order_by_in_queries
+        self.includePrefixes = include_sparql_prefixes
         self.maxConstrId = {}
 
         self.QueryGenerator = QueryGenerator()
@@ -49,20 +65,9 @@ class Shape:
     def get_id(self):
         return self.id
 
-    def get_predicates(self):
-        return self.predicates
-
-    def setDegree(self, inDegree, outDegree):
-        self.inDegree = inDegree
-        self.outDegree = outDegree
-
-    def computeTargetDef(self):
-        targets = SourceDescription.instance.get_classes(self.predicates)
-        for c in self.constraints:
-            c.target = targets
-        # fix: set target for constraints only (needed for the queries)
-        # but not for the shape since it will interfere with the heuristics
-        return None
+    def set_degree(self, in_, out_):
+        self.inDegree = in_
+        self.outDegree = out_
 
     def __compute_predicate_set(self, min_query_id, max_queries_ids):
         """ Returns the ids of the queries for this shape """
@@ -74,21 +79,12 @@ class Shape:
     def get_constraints(self):
         return self.constraints
 
-    def getNumberConstraints(self):
+    def get_number_constraints(self):
         """ Gets the number of constraints belonging to this shape """
         return len(self.constraints)
 
-    def getShapeRefs(self):
-        return [c.getShapeRef() for c in self.constraints if c.getShapeRef() is not None]
-
-    def isSatisfied(self):
-        if self.satisfied is None:
-            for c in self.constraints:  # TODO: heuristics for the constraints within a shape?
-                if not c.isSatisfied():
-                    self.satisfied = False
-                    return self.satisfied
-            self.satisfied = True
-        return self.satisfied
+    def get_shape_refs(self):
+        return [c.get_shape_ref() for c in self.constraints if c.get_shape_ref() is not None]
 
     def get_rule_pattern(self):
         return self.rulePattern
@@ -97,6 +93,7 @@ class Shape:
         return self.querySplitThreshold
 
     def __compute_target_queries(self):
+        """Internal method to compute the target query of the shape."""
         self.targetQuery = self.QueryGenerator.generate_target_query(
                                         "plain_target",
                                         None,
@@ -118,7 +115,8 @@ class Shape:
                                         self.includePrefixes,
                                         self.ORDERBYinQueries) for ref in self.referencedShapes.keys()}
 
-    def computeConstraintQueries(self):
+    def compute_constraint_queries(self):
+        """Computes all constraint queries for the shape."""
         min_constraints = [c for c in self.constraints if c.min != -1]
         max_constraints = [c for c in self.constraints if c.max != -1]
 
@@ -128,7 +126,7 @@ class Shape:
         min_id = self.constraintsId + "_pos"
         self.minQuery = self.QueryGenerator.generate_query(
                 min_id,
-                [c for c in min_constraints if c.getShapeRef() is not None],
+                [c for c in min_constraints if c.get_shape_ref() is not None],
                 self.useSelectiveQueries,
                 self.targetQueryNoPref,
                 self.includePrefixes,
@@ -158,18 +156,18 @@ class Shape:
 
     def __compute_rule_pattern(self):
         """ Computes shape rule pattern """
-        focus_node_var = VariableGenerator.getFocusNodeVar()
+        focus_node_var = VariableGenerator.get_focus_node_var()
         head = (self.id, focus_node_var, True)
 
         return RulePattern(head, self.__get_disjunct_rp_body())
 
     def __get_disjunct_rp_body(self):
-        focus_node_var = VariableGenerator.getFocusNodeVar()
+        focus_node_var = VariableGenerator.get_focus_node_var()
         min_query = [(self.minQuery.get_id(), focus_node_var, True)]
         max_queries = [(s, focus_node_var, False) for s in [q.get_id() for q in self.maxQueries]]
         return min_query + max_queries
 
-    def addParentShape(self, name):
+    def add_parent_shape(self, name):
         """ Adds name of incoming neighbor shape in the schema """
         return self.parentShapes.add(name)
 
@@ -202,24 +200,3 @@ class Shape:
 
     def get_max_query_valid_refs(self):
         return self.maxValidRefs
-
-#    def getPosShapeRefs(self):
-#        return [d.getPosShapeRefs() for d in self.disjuncts]
-
-#    def getNegShapeRefs(self):
-#        return [d.getNegShapeRefs() for d in self.disjuncts]
-
-#    def askViolations(self):
-#        if self.targetDef is not None:  # not checking violations on shapes without target definitions
-#            triple = re.findall(r'{.*}', self.targetDef)[0]  # *** considering only one target def
-#            triple = triple[1:len(triple)-1]  # removed curly braces
-#            triple = triple.strip().split()
-#            target = triple[2]
-#
-#            minConstraints = self.disjuncts[0].minConstraints
-#            for c in minConstraints:
-#                c.violated = ASKQuery(c.path, target).evaluate("min", c.min)
-#
-#            maxConstraints = self.disjuncts[0].maxConstraints
-#            for c in maxConstraints:
-#                c.violated = ASKQuery(c.path, target).evaluate("max", c.max)

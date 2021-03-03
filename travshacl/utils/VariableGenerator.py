@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 import itertools
 from enum import Enum
 
@@ -6,17 +7,19 @@ i = itertools.count()
 
 
 class VariableGenerator:
+    """Used to create unused variables for the SPARQL queries."""
+
     def __init__(self):
         self.index = 0
 
     @staticmethod
-    def generateVariable(type):
-        type = "p_"  # *** hardcoded
-        return str(type) + str(next(i))
+    def generate_variable(type_):
+        type_ = "p_"  # *** hardcoded
+        return str(type_) + str(next(i))
 
     @staticmethod
-    def getFocusNodeVar():
-        return "x"  # ***
+    def get_focus_node_var():
+        return "x"  # *** hardcoded
 
 
 class VariableType(Enum):
