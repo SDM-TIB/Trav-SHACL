@@ -19,27 +19,27 @@ def create_plot(title, datasets, results):
     # SHACL2SPARQL
     data_s2s = [float(results[ds]["shacl2sparql"]["mean"])/1000 for ds in datasets]
     err_s2s = [float(results[ds]["shacl2sparql"]["stdev"])/1000 for ds in datasets]
-    ax.errorbar([x1 - 0.5 for x1 in x], data_s2s, yerr=err_s2s, fmt='o', color="#d7c841", label="SHACL2SPARQL") # or #f0bf44
+    ax.errorbar([x1 - 0.375 for x1 in x], data_s2s, yerr=err_s2s, fmt='o', color="#d7c841", label="SHACL2SPARQL") # or #f0bf44
 
     # S2S-py
     data = [float(results[ds]["shacl2sparql-py"]["mean"])/1000 for ds in datasets]
     err = [float(results[ds]["shacl2sparql-py"]["stdev"])/1000 for ds in datasets]
-    ax.errorbar([x1 - 0.4 for x1 in x], data, yerr=err, fmt='o', color="#d85e62", label="SHACL2SPARQL-py") # or #c17471
+    ax.errorbar([x1 - 0.3 for x1 in x], data, yerr=err, fmt='o', color="#d85e62", label="SHACL2SPARQL-py") # or #c17471
 
     # 1: BFS IN BIG
     data = [float(results[ds]["travshacl_config1"]["mean"])/1000 for ds in datasets]
     err = [float(results[ds]["travshacl_config1"]["stdev"])/1000 for ds in datasets]
-    ax.errorbar([x1 - 0.3 for x1 in x], data, yerr=err, fmt='o', color=color[2], label="Trav-SHACL 1")
+    ax.errorbar([x1 - 0.225 for x1 in x], data, yerr=err, fmt='o', color=color[2], label="Trav-SHACL 1")
 
     # 2: BFS IN SMALL
     data = [float(results[ds]["travshacl_config2"]["mean"])/1000 for ds in datasets]
     err = [float(results[ds]["travshacl_config2"]["stdev"])/1000 for ds in datasets]
-    ax.errorbar([x1 - 0.2 for x1 in x], data, yerr=err, fmt='o', color=color[1], label="Trav-SHACL 2")
+    ax.errorbar([x1 - 0.15 for x1 in x], data, yerr=err, fmt='o', color=color[1], label="Trav-SHACL 2")
 
     # 3: BFS OUT BIG
     data = [float(results[ds]["travshacl_config3"]["mean"])/1000 for ds in datasets]
     err = [float(results[ds]["travshacl_config3"]["stdev"])/1000 for ds in datasets]
-    ax.errorbar([x1 - 0.1 for x1 in x], data, yerr=err, fmt='o', color=color[4], label="Trav-SHACL 3")
+    ax.errorbar([x1 - 0.075 for x1 in x], data, yerr=err, fmt='o', color=color[4], label="Trav-SHACL 3")
 
     # 4: BFS OUT SMALL
     data = [float(results[ds]["travshacl_config4"]["mean"])/1000 for ds in datasets]
@@ -49,29 +49,29 @@ def create_plot(title, datasets, results):
     # 5: DFS IN BIG
     data = [float(results[ds]["travshacl_config5"]["mean"])/1000 for ds in datasets]
     err = [float(results[ds]["travshacl_config5"]["stdev"])/1000 for ds in datasets]
-    ax.errorbar([x1 + 0.1 for x1 in x], data, yerr=err, fmt='o', color="#90c0d6", label="Trav-SHACL 5")
+    ax.errorbar([x1 + 0.075 for x1 in x], data, yerr=err, fmt='o', color="#90c0d6", label="Trav-SHACL 5")
 
     # 6: DFS IN SMALL
     data = [float(results[ds]["travshacl_config6"]["mean"])/1000 for ds in datasets]
     err = [float(results[ds]["travshacl_config6"]["stdev"])/1000 for ds in datasets]
-    ax.errorbar([x1 + 0.2 for x1 in x], data, yerr=err, fmt='o', color=color[6], label="Trav-SHACL 6")
+    ax.errorbar([x1 + 0.15 for x1 in x], data, yerr=err, fmt='o', color=color[6], label="Trav-SHACL 6")
 
     # 7: DFS OUT BIG
     data = [float(results[ds]["travshacl_config7"]["mean"])/1000 for ds in datasets]
     err = [float(results[ds]["travshacl_config7"]["stdev"])/1000 for ds in datasets]
-    ax.errorbar([x1 + 0.3 for x1 in x], data, yerr=err, fmt='o', color=color[8], label="Trav-SHACL 7")
+    ax.errorbar([x1 + 0.225 for x1 in x], data, yerr=err, fmt='o', color=color[8], label="Trav-SHACL 7")
 
     # 8: DFS OUT SMALL
     data = [float(results[ds]["travshacl_config8"]["mean"])/1000 for ds in datasets]
     err = [float(results[ds]["travshacl_config8"]["stdev"])/1000 for ds in datasets]
-    ax.errorbar([x1 + 0.4 for x1 in x], data, yerr=err, fmt='o', color="#9c6e1a", label="Trav-SHACL 8")
+    ax.errorbar([x1 + 0.3 for x1 in x], data, yerr=err, fmt='o', color="#9c6e1a", label="Trav-SHACL 8")
 
     # 9: Random
     data = [float(results[ds]["travshacl_config9"]["mean"])/1000 for ds in datasets]
     err = [float(results[ds]["travshacl_config9"]["stdev"])/1000 for ds in datasets]
-    ax.errorbar([x1 + 0.5 for x1 in x], data, yerr=err, fmt='o', color=color[10], label="Trav-SHACL 9")
+    ax.errorbar([x1 + 0.375 for x1 in x], data, yerr=err, fmt='o', color=color[10], label="Trav-SHACL 9")
 
-    plt.legend(title="Engine", loc='upper right', fontsize='small')
+    plt.legend(title="Engine", loc='upper left', bbox_to_anchor=(1.0, 1.0), fontsize='small')
     plt.tight_layout()
     fig.savefig("/results/plots/exec-time/execution_time_" + title.replace(" ", "").lower() + ".png", dpi=300, bbox_inches='tight')
     plt.cla()
