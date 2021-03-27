@@ -5,6 +5,7 @@ import math
 import time
 
 from travshacl.sparql.SPARQLEndpoint import SPARQLEndpoint
+from travshacl.sparql.QueryGenerator import get_target_node_statement
 
 
 class InstancesRetrieval:
@@ -103,7 +104,7 @@ class InstancesRetrieval:
         pending_targets = set()
         start = time.time() * 1000.0
         for q in query:
-            self.stats.update_log("\nEvaluating target query for ", shape.id, ":\n" + q)
+            self.stats.update_log("\nEvaluating target query for " + shape.id + ":\n" + q)
             bindings = self.endpoint.run_query(q)["results"]["bindings"]
             pending_targets.update([(shape.id, b["x"]["value"], True) for b in bindings])
         end = time.time() * 1000.0
@@ -128,7 +129,7 @@ class InstancesRetrieval:
         inv_targets = set()
         start = time.time() * 1000.0
         for idx, q in enumerate(query):
-            self.stats.update_log("\nEvaluating target query for ", shape.id, ":\n" + q)
+            self.stats.update_log("\nEvaluating target query for " + shape.id + ":\n" + q)
             bindings = self.endpoint.run_query(q)["results"]["bindings"]
             if idx == 0:  # update empty set
                 inv_targets.update([(shape.id, b["x"]["value"], True) for b in bindings])
@@ -172,10 +173,10 @@ class InstancesRetrieval:
             return [shape.get_target_query()]
 
         if shortest_inst_list == prev_val_list:
-            query_template = shape.queriesWithVALUES[prev_eval_shape.get_id()].get_SPARQL()
+            query_template = shape.queriesWithVALUES[prev_eval_shape.get_id()].get_sparql()
             separator = " "
         else:
-            query_template = shape.queriesWithFILTER_NOT_IN[prev_eval_shape.get_id()].get_SPARQL()
+            query_template = shape.queriesWithFILTER_NOT_IN[prev_eval_shape.get_id()].get_sparql()
             separator = ","
 
         split_instances = self.__get_formatted_instances(shortest_inst_list, separator, max_instances_per_query)
@@ -224,7 +225,9 @@ class InstancesRetrieval:
                 inter_shape = self.shapes_dict[inter_shape_name]
                 inter_shape_triple = ''
                 if inter_shape.targetType == 'class':
-                    inter_shape_triple = "?" + var + " a " + inter_shape.targetDef + "."
+                    inter_shape_triple = get_target_node_statement(inter_shape.targetQueryNoPref).replace('?x', '?' + var)
+                    if inter_shape_triple[-1] != '}':
+                        inter_shape_triple += '.'
                 query_template = query_template.replace("$inter_shape_type_to_add$", inter_shape_triple)
 
         return [query_template.replace("$filter_clause_to_add$", "\n")]

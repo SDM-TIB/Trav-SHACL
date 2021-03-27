@@ -15,7 +15,7 @@ def get_target_node_statement(target_query):
     :return: query body of the given SPARQL query
     """
     start = target_query.index("{") + len("{")
-    end = target_query.index("}", start)
+    end = target_query.rfind("}")
     return target_query[start:end]
 
 

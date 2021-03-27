@@ -82,7 +82,7 @@ class ShapeSchema:
                 min_con = min([s.get_number_constraints() for s in possible_starting_points])
                 tmp = []
                 for s in possible_starting_points:
-                    if s.getNumberConstraints() == min_con:
+                    if s.get_number_constraints() == min_con:
                         tmp.append(s)
                 possible_starting_points = tmp
         elif self.heuristics['properties'] == 'big':
@@ -90,7 +90,7 @@ class ShapeSchema:
                 max_con = max([s.get_number_constraints() for s in possible_starting_points])
                 tmp = []
                 for s in possible_starting_points:
-                    if s.getNumberConstraints() == max_con:
+                    if s.get_number_constraints() == max_con:
                         tmp.append(s)
                 possible_starting_points = tmp
 
