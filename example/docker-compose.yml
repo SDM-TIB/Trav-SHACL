@@ -1,0 +1,30 @@
+version: '2'
+
+services:
+  example_data:
+    container_name: travshacl_example_data
+    image: kemele/virtuoso:7-stable
+    volumes:
+      - ./data/pre-loaded:/data
+    mem_limit: 4g
+    ports:
+      - '9090:8890'
+    networks:
+      - travshacl
+
+  example_engine:
+    container_name: travshacl_example_engine
+    build: ../
+    image: sdmtib/travshacl:edge
+    volumes:
+      - ./shapes:/shapes
+      - ./output:/output
+    mem_limit: 4g
+    networks:
+      - travshacl
+    depends_on:
+      - example_data
+
+networks:
+  travshacl:
+    driver: bridge
