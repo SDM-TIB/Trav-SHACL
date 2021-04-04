@@ -12,7 +12,7 @@ class Shape:
     """This class represents a SHACL shape."""
 
     def __init__(self, id_, target_def, target_type, target_query, constraints, constraints_id, referenced_shapes,
-                 use_selective_queries, max_split_size, order_by_in_queries, include_sparql_prefixes):
+                 use_selective_queries, max_split_size, order_by_in_queries, include_sparql_prefixes, prefixes=None):
         """
         Creates a new Shape instance representing a SHACL shape that needs to be evaluated.
 
@@ -57,9 +57,13 @@ class Shape:
         self.querySplitThreshold = max_split_size
         self.ORDERBYinQueries = order_by_in_queries
         self.includePrefixes = include_sparql_prefixes
+        if prefixes is None:
+            self.prefixes = {}
+        else:
+            self.prefixes = prefixes
         self.maxConstrId = {}
 
-        self.QueryGenerator = QueryGenerator()
+        self.QueryGenerator = QueryGenerator(self)
         self.__compute_target_queries()
 
     def get_id(self):
@@ -200,3 +204,6 @@ class Shape:
 
     def get_max_query_valid_refs(self):
         return self.maxValidRefs
+
+    def get_prefix_string(self):
+        return "\n".join(["".join("PREFIX " + key + ": " + value) for (key, value) in self.prefixes.items()]) + "\n"

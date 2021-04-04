@@ -80,6 +80,9 @@ class ShapeParser:
         constraints = self.parse_constraints(obj["constraintDef"]["conjunctions"], target_def, id_)
 
         include_sparql_prefixes = self.abbreviated_syntax_used(constraints)
+        prefixes = None
+        if "prefix" in obj.keys():
+            prefixes = obj["prefix"]
         referenced_shapes = self.shape_references(obj["constraintDef"]["conjunctions"][0])
 
         if target_def is not None:
@@ -95,7 +98,7 @@ class ShapeParser:
                 target_def = target_def[target_type]
 
         return Shape(name, target_def, target_type, target_query, constraints, id_, referenced_shapes,
-                     use_selective_queries, max_split_size, order_by_in_queries, include_sparql_prefixes)
+                     use_selective_queries, max_split_size, order_by_in_queries, include_sparql_prefixes, prefixes)
 
     @staticmethod
     def abbreviated_syntax_used(constraints):

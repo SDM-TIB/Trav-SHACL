@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
+from __future__ import annotations
+
 __author__ = "Monica Figuera"
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from travshacl.core.Shape import Shape
 
 from travshacl.utils.VariableGenerator import VariableGenerator
 from travshacl.constraints.Constraint import Constraint
 from travshacl.core.RulePattern import RulePattern
-from travshacl.sparql.SPARQLPrefixHandler import get_prefix_string
 
 
 def get_target_node_statement(target_query):
@@ -52,8 +57,8 @@ class Query:
 class QueryGenerator:
     """This class is responsible for generating target and constraint queries."""
 
-    def __init__(self):
-        pass
+    def __init__(self, shape: Shape):
+        self.shape = shape
 
     # TARGET QUERIES #
 
@@ -78,8 +83,7 @@ class QueryGenerator:
         elif type_ == "template_FILTER_NOT_IN":
             return self._filter_not_in_target_query(ref_constraint, target_query, include_prefixes, include_order_by)
 
-    @staticmethod
-    def _plain_target_query(target_query, include_prefixes, include_order_by):
+    def _plain_target_query(self, target_query, include_prefixes, include_order_by):
         """
         Generates a simple target query from the parsed target query.
 
@@ -88,14 +92,13 @@ class QueryGenerator:
         :param include_order_by: indicates whether or not the ORDER BY clause will be added
         :return: simple target query
         """
-        prefixes = get_prefix_string() if include_prefixes else ''
+        prefixes = self.shape.get_prefix_string() if include_prefixes else ''
         focus_var = VariableGenerator.get_focus_node_var()
         return ''.join([prefixes,
                         target_query,
                         " ORDER BY ?" + focus_var if include_order_by else ''])
 
-    @staticmethod
-    def _values_target_query(constraint, target_query, include_prefixes, include_order_by):
+    def _values_target_query(self, constraint, target_query, include_prefixes, include_order_by):
         """
         Generates a target query including a VALUES clause to filter based on valid instances.
 
@@ -105,7 +108,7 @@ class QueryGenerator:
         :param include_order_by: indicates whether or not the ORDER BY clause will be added
         :return: target query with VALUES clause
         """
-        prefixes = get_prefix_string() if include_prefixes else ''
+        prefixes = self.shape.get_prefix_string() if include_prefixes else ''
         ref_path = constraint[0].path
         focus_var = VariableGenerator.get_focus_node_var()
         target_node = get_target_node_statement(target_query)
@@ -117,8 +120,7 @@ class QueryGenerator:
                          " ORDER BY ?" + focus_var if include_order_by else ''])
         return Query(None, None, query)
 
-    @staticmethod
-    def _filter_not_in_target_query(constraint, target_query, include_prefixes, include_order_by):
+    def _filter_not_in_target_query(self, constraint, target_query, include_prefixes, include_order_by):
         """
         Generates a target query including a FILTER NOT IN clause to filter based on invalid instances.
 
@@ -128,7 +130,7 @@ class QueryGenerator:
         :param include_order_by: indicates whether or not the ORDER BY clause will be added
         :return: target query with FILTER NOT IN clause
         """
-        prefixes = get_prefix_string() if include_prefixes else ''
+        prefixes = self.shape.get_prefix_string() if include_prefixes else ''
         ref_path = constraint[0].path
         focus_var = VariableGenerator.get_focus_node_var()
         target_node = get_target_node_statement(target_query)
@@ -157,7 +159,8 @@ class QueryGenerator:
         :return: the generated constraint query
         """
         rp = self.compute_rule_pattern(constraints, id_)
-        builder = QueryBuilder(id_, subquery, rp.variables, is_selective, target_query, constraints, include_order_by)
+        builder = QueryBuilder(id_, subquery, rp.variables, is_selective, target_query,
+                               constraints, include_order_by, self.shape.get_prefix_string())
         for c in constraints:
             builder.build_clause(c)
         return builder.build_query(rp, include_prefixes)
@@ -205,8 +208,8 @@ class QueryGenerator:
 class QueryBuilder:
     """This class is responsible of actually building SPARQL queries for constraints."""
 
-    def __init__(self, id_, subquery, projected_variables, is_selective,
-                 target_query=None, constraints=None, include_order_by=None):
+    def __init__(self, id_, subquery, projected_variables, is_selective, target_query=None,
+                 constraints=None, include_order_by: bool = False, prefix_string: str = ''):
         """
         Creates a new instance of QueryBuilder.
 
@@ -217,6 +220,7 @@ class QueryBuilder:
         :param target_query: target query of the shape associated with the constraint
         :param constraints: a list of constraints that refer to the constraint query
         :param include_order_by: indicates whether or not the ORDER BY clause will be added
+        :param prefix_string: prefix string for the queries being built
         """
         self.id = id_
         self.subquery = subquery
@@ -227,8 +231,9 @@ class QueryBuilder:
         self.include_selectivity = is_selective
         self.target_query = target_query
         self.constraints = constraints
-        self.include_ORDERBY = include_order_by if include_order_by is not None else False
+        self.include_ORDERBY = include_order_by
         self.inter_shape_refs = {}
+        self.prefix_string = prefix_string
 
     def add_triple(self, path, obj):
         """
@@ -273,7 +278,7 @@ class QueryBuilder:
         if is_subquery:
             return self.__get_query(False)  # create subquery
 
-        prefixes = get_prefix_string() if include_prefixes else ''
+        prefixes = self.prefix_string if include_prefixes else ''
         outer_query_closing_braces = ''.join(["}\n" if self.subquery is not None else '',
                                               "}" if self.get_triple_patterns() != '' and self.subquery is not None else '',
                                               "}" if self.get_triple_patterns() != '' else ''])
@@ -385,7 +390,7 @@ class QueryBuilder:
                 if c.get_shape_ref() is not None and c.max == 0:
                     self.inter_shape_refs[v] = c.get_shape_ref()
                     self.triples.append("\n$inter_shape_type_to_add$")
-                    pass
+
                 self.add_triple(path, "?" + v)
 
         if c.get_value() is not None:
