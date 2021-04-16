@@ -55,8 +55,9 @@ class Validation:
         elapsed = round(finish - start)
         self.stats.record_total_time(elapsed)
         print("Total execution time: ", str(elapsed), " ms")
-        self.stats.update_log("\n\nTotal number of rules: " + str(self.stats.total_sol_mappings*2))
-        self.stats.update_log("\nMaximal number or rules in memory: " + str(self.stats.max_sol_mappings*2))
+        self.stats.record_total_rules(state.total_rule_number)
+        self.stats.update_log("\n\nMaximal number or rules in memory: " + str(self.stats.max_rules))
+        self.stats.update_log("\nTotal number of rules: " + str(state.total_rule_number))
         return self.validation_output(state.shapes_state)
 
     def validate(self, state, focus_shape):
@@ -178,13 +179,13 @@ class Validation:
         shape_rp = shape.get_rule_pattern()
 
         min_query_rp = shape.minQuery.get_rule_pattern()
-        self.eval_constraints_query(state, shape, shape.minQuery, filtering_shape, min_query_rp, shape_rp, "min")
+        self.interleave(state, shape, shape.minQuery, filtering_shape, min_query_rp, shape_rp, "min")
 
         for q in shape.maxQueries:
             max_query_rp = q.get_rule_pattern()
-            self.eval_constraints_query(state, shape, q, filtering_shape, max_query_rp, shape_rp, "max")
+            self.interleave(state, shape, q, filtering_shape, max_query_rp, shape_rp, "max")
 
-    def eval_constraints_query(self, state, shape, q, filtering_shape, q_rule_pattern, s_rule_pattern, q_type):
+    def interleave(self, state, shape, q, filtering_shape, q_rule_pattern, s_rule_pattern, q_type):
         """
         Evaluates corresponding min/max query of 'shape' and starts interleaving process for all answers retrieved.
 
@@ -217,8 +218,10 @@ class Validation:
 
         shape_max_refs = shape.get_max_query_valid_refs()
         inter_constr_count = {}
+        new_rules_count = 0
+        rules_directly_inferred = 0
 
-        for query_str in self.InstRetrieval.rewrite_constraint_query(shape, q, filtering_shape, q_type):
+        for query_str in self.InstRetrieval.rewrite_constraint_query(shape, q, filtering_shape, q_type, self.selectivity_enabled):
             start = time.time() * 1000.0
             for b in self.InstRetrieval.run_constraint_query(q, query_str):
                 q_head = (query_rp_head[0], b[query_rp_head[1]]["value"], query_rp_head[2])
@@ -226,30 +229,36 @@ class Validation:
 
                 body = set()
                 is_body_inferred = True
+                is_body_inferrable = True
                 negated_body = False
                 for i, atom_pattern in enumerate(query_rp_body):
                     a_state = shapes_state[q_body_ref_shapes[i]]  # body atom's shape state
                     a = (atom_pattern[0], b[atom_pattern[1]]["value"], atom_pattern[2])
                     body.add(a)
                     if a[0] in state.evaluated_predicates:  # exclude not yet evaluated atom's query
-                        if a not in a_state['inferred']:
-                            if (a[0], a[1], not a[2]) not in a_state['inferred']:
-                                is_body_inferred = False
-                                continue  # exclude non-selective answers from interleaving
-
-                            # case (1) - negate (unmatchable body atoms)
-                            elif state.rule_map.get((a[0], a[1], True)) is None:
-                                a_state['inferred'].add((a[0], a[1], False))  # infer negated atom
-                                if a_state['remaining_targets_count'] == 0:  # if neighbor has rem targets to validate
-                                    negated_body = True
-                                    break  # if at least one negated body atom, rule cannot be inferred -> halt loop
-                                else:
+                        if state.rule_map.get((a[0], a[1], True)) is None:
+                            if a not in a_state['inferred']:
+                                if (a[0], a[1], not a[2]) not in a_state['inferred']:
                                     is_body_inferred = False
-                            else:
-                                is_body_inferred = False
+                                    is_body_inferrable = False
+                                    continue  # exclude non-selective answers from interleaving
+                                else:
+                                    # case (1) - negate (unmatchable body atoms)
+                                    a_state['inferred'].add((a[0], a[1], False))  # infer negated atom
 
-                        # If interleaving min-query with an upper bound <> None -> verify upper bound violations
-                        elif q_type == "min" and shape_max_refs.get(q_body_ref_shapes[i]) is not None:
+                                    # if out-neighbor has no more targets to validate (recursive cases excluded)
+                                    if a_state['remaining_targets_count'] == 0:
+                                        negated_body = True
+                                        break  # if at least one negated body atom, rule cannot be inferred -> halt loop
+                                    else:
+                                        is_body_inferred = False
+                        else:
+                            is_body_inferred = False
+
+                        # if interleaving min-query with an upper bound <> None -> verify upper bound violations
+                        if a in a_state['inferred'] \
+                                and q_type == "min" \
+                                and shape_max_refs.get(q_body_ref_shapes[i]) is not None:
                             if inter_constr_count.get(s_head) is None:
                                 inter_constr_count[s_head] = {inter_constraint: set() for inter_constraint in shape_max_refs}
                             inter_constr_count[s_head][q_body_ref_shapes[i]].add(a)
@@ -269,14 +278,19 @@ class Validation:
 
                 # case (3) - add pending rule / infer query head
                 if not is_body_inferred:
-                    if q_head not in state.rule_map.keys():
-                        s = set()
-                        s.add(frozenset(body))
-                        state.rule_map[q_head] = s
-                    else:
-                        state.rule_map[q_head].add(frozenset(body))
+                    if is_body_inferrable:
+                        if q_head not in state.rule_map.keys():
+                            s = set()
+                            s.add(frozenset(body))
+                            state.rule_map[q_head] = s
+                            new_rules_count += 1
+                        else:
+                            if frozenset(body) not in state.rule_map[q_head]:
+                                new_rules_count += 1
+                            state.rule_map[q_head].add(frozenset(body))
                 else:
                     t_state['inferred'].add(q_head)
+                    rules_directly_inferred += 1
 
                 # Shape rule pattern #
                 body = set()
@@ -313,7 +327,10 @@ class Validation:
                         s = set()
                         s.add(frozenset(body))
                         state.rule_map[s_head] = s
+                        new_rules_count += 1
                     else:
+                        if frozenset(body) not in state.rule_map[s_head]:
+                            new_rules_count += 1
                         state.rule_map[s_head].add(frozenset(body))
                 else:
                     if s_head not in t_state['inferred']:
@@ -325,11 +342,18 @@ class Validation:
                         self.register_target(s_head, "valid", shape_name, shapes_state)
                         state.remaining_targets.discard(s_head)
                         t_state['remaining_targets_count'] -= 1
+                    rules_directly_inferred += 1
 
             self.stats.update_log("\nGrounded rules. \n")
             end = time.time()*1000.0
             self.stats.record_interleaving_time(end - start)
             state.evaluated_predicates.add(query_rp_head[0])
+
+        all_current_rules = new_rules_count + rules_directly_inferred
+        state.rule_number += new_rules_count
+        state.total_rule_number += all_current_rules
+        self.stats.update_log("\n\nNumber of rules: " + str(all_current_rules))
+        self.stats.record_current_number_of_rules(all_current_rules)
 
     def saturate_remaining(self, state, shape_name, shapes_state):
         """
@@ -344,7 +368,7 @@ class Validation:
         """
         rule_map = state.rule_map
         negated = self.negate_unmatchable_heads(state, rule_map, state.evaluated_predicates, shape_name, shapes_state, state.preds_to_shapes)
-        inferred = self.apply_rules(state.remaining_targets, rule_map, shape_name, shapes_state, state.preds_to_shapes)
+        inferred = self.apply_rules(state, state.remaining_targets, rule_map, shape_name, shapes_state, state.preds_to_shapes)
         if negated or inferred:
             self.saturate_remaining(state, shape_name, shapes_state)
 
@@ -387,7 +411,7 @@ class Validation:
         state.remaining_targets = remaining
         return new_negated_atom_found
 
-    def apply_rules(self, remaining_targets, rule_map, shape_name, shapes_state, preds_to_shapes):
+    def apply_rules(self, state, remaining_targets, rule_map, shape_name, shapes_state, preds_to_shapes):
         """
         Performs two types of inferences:
         # case (1): If the rule map contains a rule and some of the rule bodies was inferred
@@ -395,6 +419,7 @@ class Validation:
         # case (2): If the negation of any rule body was inferred
                     => the rule cannot be applied (rule head not inferred), rule dropped.
 
+        :param state: current state of the validation
         :param remaining_targets: pending targets, i.e., targets that are neither valid nor invalid yet
         :param rule_map: set of pending rules associated to either focus shape or an incoming neighbor after recursion
         :param shape_name: name of the current focus shape
@@ -426,6 +451,7 @@ class Validation:
                     shapes_state[head_shape_name]['remaining_targets_count'] -= 1
                 shapes_state[head_shape_name]['inferred'].add(head)
                 del rule_map[head]
+                state.rule_number -= len(bodies)
             elif 'F' in inferred_bodies and 'P' not in inferred_bodies:  # case (2)
                 fresh_literals = True
                 if head in remaining_targets:
@@ -434,6 +460,7 @@ class Validation:
                     shapes_state[head_shape_name]['remaining_targets_count'] -= 1
                 shapes_state[head_shape_name]['inferred'].add((head[0], head[1], not head[2]))
                 del rule_map[head]
+                state.rule_number -= len(bodies)
 
         if not fresh_literals:
             return False
@@ -533,6 +560,8 @@ class ValidationState:
         self.shapes_state = {}
         self.preds_to_shapes = {}  # maps all constraint ids to their respective shape ids
         self.rule_map = {}
+        self.rule_number = 0
+        self.total_rule_number = 0
 
         for shape_name in shapes_dict.keys():
             self.shapes_state[shape_name] = {

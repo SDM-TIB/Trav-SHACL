@@ -12,6 +12,8 @@ class ValidationStats:
 
         self.total_sol_mappings = 0
         self.max_sol_mappings = 0
+        self.total_rules = 0
+        self.max_rules = 0
 
         self.max_query_exec_time = 0
         self.total_query_exec_time = 0
@@ -33,8 +35,10 @@ class ValidationStats:
         output_file.write("all targets:\n" + str(self.targets))
         output_file.write("\nvalid targets:\n" + str(self.valid))
         output_file.write("\ninvalid targets:\n" + str(self.invalid))
-        output_file.write("\nmax number of rules in memory (2x max number of mappings for a query):\n" + str(self.max_sol_mappings*2))
-        output_file.write("\ntotal number of rules (2x total number of mappings):\n" + str(self.total_sol_mappings*2))
+        output_file.write("\nmax number of solution mappings for a query:\n" + str(self.max_sol_mappings))
+        output_file.write("\ntotal number of solution mappings:\n" + str(self.total_sol_mappings))
+        output_file.write("\nmax number of rules in memory:\n" + str(self.max_rules))
+        output_file.write("\ntotal number of rules:\n" + str(self.total_rules))
         output_file.write("\nnumber of queries:\n" + str(self.number_of_queries))
         output_file.write("\nmax exec time for a query:\n" + str(self.max_query_exec_time))
         output_file.write("\ntotal query exec time:\n" + str(self.total_query_exec_time))
@@ -91,6 +95,23 @@ class ValidationStats:
             self.max_sol_mappings = k
 
         self.total_sol_mappings += k
+
+    def record_current_number_of_rules(self, k):
+        """
+        Records the max number of rules in memory after executing a query.
+
+        :param k: current number of rules in memory
+        """
+        if k > self.max_rules:
+            self.max_rules = k
+
+    def record_total_rules(self, k):
+        """
+        Records the total number of rules of the validation.
+
+        :param k: total number of grounded rules
+        """
+        self.total_rules = k
 
     def record_saturation_time(self, ms):
         """
