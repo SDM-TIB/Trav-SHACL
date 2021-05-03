@@ -4,6 +4,9 @@ from __future__ import annotations
 __author__ = "Monica Figuera"
 
 from typing import TYPE_CHECKING
+
+from travshacl.constraints.MaxOnlyConstraint import MaxOnlyConstraint
+
 if TYPE_CHECKING:
     from travshacl.core.Shape import Shape
 
@@ -159,6 +162,10 @@ class QueryGenerator:
         :return: the generated constraint query
         """
         rp = self.compute_rule_pattern(constraints, id_)
+#        print("Rule Pattern:", rp.head, "<--", rp.body)
+#        if len(constraints) == 1:
+#            if isinstance(constraints[0], MaxOnlyConstraint):
+#                print("Rule Pattern:", rp.head, "<--", rp.body)
         builder = QueryBuilder(id_, subquery, rp.variables, is_selective, target_query,
                                constraints, include_order_by, self.shape.get_prefix_string())
         for c in constraints:
@@ -284,13 +291,30 @@ class QueryBuilder:
                                               "}" if self.get_triple_patterns() != '' else ''])
         selective_closing_braces = "}}" if self.include_selectivity and self.target_query is not None else ''
 
-        return ''.join([prefixes,
+        if len(self.constraints) == 1 and isinstance(self.constraints[0], MaxOnlyConstraint) and self.constraints[0].get_shape_ref() is None:
+            target_node = ''
+            if self.include_selectivity and self.target_query is not None:
+                target_node = get_target_node_statement(self.target_query) + ".\n"
+            return ''.join([prefixes,
+                            self.__get_projection_string(),
+                            " WHERE {\n", target_node, "{ SELECT ?",
+                            VariableGenerator.get_focus_node_var(),
+                            " COUNT(?", self.triples[0].rsplit("?", 1)[1][:-1], " AS ?cnt) WHERE {\n",
+                            'OPTIONAL { ', self.triples[0], ' }\n} GROUP BY ?',
+                            VariableGenerator.get_focus_node_var(),
+                            ' HAVING (COUNT(?', self.triples[0].rsplit("?", 1)[1][:-1], ') > ', str(self.constraints[0].max), ')',
+                            '\n}}',
+                            " ORDER BY ?" + VariableGenerator.get_focus_node_var() if self.include_ORDERBY else ''])
+
+        query = ''.join([prefixes,
                         self.__get_selective(),
                         self.__get_query(include_prefixes),
                         self.subquery if self.subquery is not None else '',
                         outer_query_closing_braces,
                         selective_closing_braces,
                         " ORDER BY ?" + VariableGenerator.get_focus_node_var() if self.include_ORDERBY else ''])
+        print("QUERY:\n", query, "\n********************\n")
+        return query
 
     def __get_query(self, include_prefixes):
         """
