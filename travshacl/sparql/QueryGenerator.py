@@ -162,10 +162,6 @@ class QueryGenerator:
         :return: the generated constraint query
         """
         rp = self.compute_rule_pattern(constraints, id_)
-#        print("Rule Pattern:", rp.head, "<--", rp.body)
-#        if len(constraints) == 1:
-#            if isinstance(constraints[0], MaxOnlyConstraint):
-#                print("Rule Pattern:", rp.head, "<--", rp.body)
         builder = QueryBuilder(id_, subquery, rp.variables, is_selective, target_query,
                                constraints, include_order_by, self.shape.get_prefix_string())
         for c in constraints:
@@ -313,7 +309,6 @@ class QueryBuilder:
                         outer_query_closing_braces,
                         selective_closing_braces,
                         " ORDER BY ?" + VariableGenerator.get_focus_node_var() if self.include_ORDERBY else ''])
-        print("QUERY:\n", query, "\n********************\n")
         return query
 
     def __get_query(self, include_prefixes):
