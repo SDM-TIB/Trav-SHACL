@@ -253,6 +253,7 @@ class InstancesRetrieval:
         chunks = len(instances) / max_list_len
         n = math.ceil(chunks)
         if chunks > 1:  # Get split list
+            instances = tuple(instances)
             inst_count = math.ceil(len(instances) / n)
             split_lists = {instances[i:i + inst_count] for i in range(0, inst_count, inst_count)}
             return {separator.join(subList) for subList in split_lists}
