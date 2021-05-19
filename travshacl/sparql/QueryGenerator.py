@@ -194,7 +194,6 @@ class QueryGenerator:
         :param positive_constraints: positive constraints
         :return: sub-query including the constraints
         """
-
         local_pos_constraints = [c for c in positive_constraints if c.get_shape_ref() is None]
 
         if len(local_pos_constraints) == 0:
@@ -353,8 +352,7 @@ class QueryBuilder:
 
         :return: the SELECT clause of the query to be built
         """
-        return "SELECT DISTINCT " + \
-               ", ".join(["?" + v for v in self.projected_variables])
+        return "SELECT DISTINCT " + " ".join(["?" + v for v in self.projected_variables])
 
     def get_triple_patterns(self):
         """
@@ -378,7 +376,7 @@ class QueryBuilder:
         if len(self.filters) == 0:
             return ""
 
-        return "\nFILTER(\n" + (self.filters[0] if len(self.filters) == 1 else " AND\n".join(self.filters)) + ")"
+        return "\nFILTER(\n" + (self.filters[0] if len(self.filters) == 1 else " &&\n".join(self.filters)) + ")"
 
     def add_cardinality_filter(self, variables):
         """
