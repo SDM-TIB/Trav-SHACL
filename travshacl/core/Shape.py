@@ -146,12 +146,22 @@ class Shape:
         i = itertools.count()
         self.maxQueries = [self.QueryGenerator.generate_query(
                                         max_ids[next(i)],
+                                        [c for c in max_constraints if c.get_shape_ref() is None],
+                                        self.useSelectiveQueries,
+                                        self.targetQueryNoPref,
+                                        self.includePrefixes,
+                                        self.ORDERBYinQueries,
+                                        subquery
+        )]
+
+        self.maxQueries.extend([self.QueryGenerator.generate_query(
+                                        max_ids[next(i)],
                                         [c],
                                         self.useSelectiveQueries,
                                         self.targetQueryNoPref,
                                         self.includePrefixes,
                                         self.ORDERBYinQueries,
-                                        subquery) for c in max_constraints]
+                                        subquery) for c in max_constraints if c.get_shape_ref() is not None])
 
         self.predicates = self.__compute_predicate_set(min_id, max_ids)
         self.__compute_max_queries_to_skip()

@@ -6,6 +6,7 @@ __author__ = "Monica Figuera"
 from typing import TYPE_CHECKING
 
 from travshacl.constraints.MaxOnlyConstraint import MaxOnlyConstraint
+from travshacl.constraints.MinOnlyConstraint import MinOnlyConstraint
 
 if TYPE_CHECKING:
     from travshacl.core.Shape import Shape
@@ -286,21 +287,6 @@ class QueryBuilder:
                                               "}" if self.get_triple_patterns() != '' else ''])
         selective_closing_braces = "}}" if self.include_selectivity and self.target_query is not None else ''
 
-        if len(self.constraints) == 1 and isinstance(self.constraints[0], MaxOnlyConstraint) and self.constraints[0].get_shape_ref() is None:
-            target_node = ''
-            if self.include_selectivity and self.target_query is not None:
-                target_node = get_target_node_statement(self.target_query) + ".\n"
-            return ''.join([prefixes,
-                            self.__get_projection_string(),
-                            " WHERE {\n", target_node, "{ SELECT ?",
-                            VariableGenerator.get_focus_node_var(),
-                            " COUNT(?", self.triples[0].rsplit("?", 1)[1][:-1], " AS ?cnt) WHERE {\n",
-                            'OPTIONAL { ', self.triples[0], ' }\n} GROUP BY ?',
-                            VariableGenerator.get_focus_node_var(),
-                            ' HAVING (COUNT(?', self.triples[0].rsplit("?", 1)[1][:-1], ') > ', str(self.constraints[0].max), ')',
-                            '\n}}',
-                            " ORDER BY ?" + VariableGenerator.get_focus_node_var() if self.include_ORDERBY else ''])
-
         query = ''.join([prefixes,
                         self.__get_selective(),
                         self.__get_query(include_prefixes),
@@ -360,7 +346,11 @@ class QueryBuilder:
 
         :return: all triple patterns of the query
         """
-        triple_string = "\n".join(self.triples)
+        if self.constraints is not None and len(self.constraints) > 1 and isinstance(self.constraints[0], MaxOnlyConstraint):
+            triple_string = "\nUNION\n".join(self.triples)
+            print("triple string:\n" + triple_string + "\n*********")
+        else:
+            triple_string = "\n".join(self.triples)
 
         if len(self.filters) == 0:
             return triple_string
@@ -408,7 +398,8 @@ class QueryBuilder:
                     self.inter_shape_refs[v] = c.get_shape_ref()
                     self.triples.append("\n$inter_shape_type_to_add$")
 
-                self.add_triple(path, "?" + v)
+                if c.get_shape_ref() is not None or len(variables) == 1:
+                    self.add_triple(path, "?" + v)
 
         if c.get_value() is not None:
             self.add_constant_filter(
@@ -422,7 +413,15 @@ class QueryBuilder:
                 self.add_datatype_filter(v, c.get_datatype(), c.get_is_pos())
 
         if len(variables) > 1:
-            self.add_cardinality_filter(variables)
+            if c.get_shape_ref() is not None:
+                self.add_cardinality_filter(variables)
+            else:
+                focus_var = VariableGenerator.get_focus_node_var()
+                var = variables[0]
+                triple = "{ SELECT ?" + focus_var + " COUNT(?" + var + " AS ?cnt) WHERE { ?" + \
+                         focus_var + " " + c.path + " ?" + var + " . } GROUP BY ?" + focus_var + \
+                         " HAVING (COUNT(?" + var + ") > " + str(len(variables) - 1) + ") }"
+                self.triples.append(triple)
 
     def build_query(self, rule_pattern, include_prefixes):
         """
