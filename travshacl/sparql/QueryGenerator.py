@@ -348,7 +348,6 @@ class QueryBuilder:
         """
         if self.constraints is not None and len(self.constraints) > 1 and isinstance(self.constraints[0], MaxOnlyConstraint):
             triple_string = "\nUNION\n".join(self.triples)
-            print("triple string:\n" + triple_string + "\n*********")
         else:
             triple_string = "\n".join(self.triples)
 
