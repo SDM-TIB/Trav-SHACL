@@ -142,30 +142,34 @@ class Shape:
         for i, max_c in enumerate(max_constraints):
             self.maxConstrId[max_c] = self.constraintsId + "_max_" + str(i+1)
 
+        self.maxQueries = []
         if len(max_constraints) > 0:
             i = itertools.count()
-            # Combine all local max constraints into one query
-            self.maxQueries = [self.QueryGenerator.generate_query(
-                                            max_ids[next(i)],
-                                            [c for c in max_constraints if c.get_shape_ref() is None],
-                                            self.useSelectiveQueries,
-                                            self.targetQueryNoPref,
-                                            self.includePrefixes,
-                                            self.ORDERBYinQueries,
-                                            subquery
-            )]
 
-            # One query for each max constraint referencing another shape
-            self.maxQueries.extend([self.QueryGenerator.generate_query(
-                                            max_ids[next(i)],
-                                            [c],
-                                            self.useSelectiveQueries,
-                                            self.targetQueryNoPref,
-                                            self.includePrefixes,
-                                            self.ORDERBYinQueries,
-                                            subquery) for c in max_constraints if c.get_shape_ref() is not None])
-        else:
-            self.maxQueries = []
+            local_max_constraints = [c for c in max_constraints if c.get_shape_ref() is None]
+            if len(local_max_constraints) > 0:
+                # Combine all local max constraints into one query
+                self.maxQueries.append(self.QueryGenerator.generate_query(
+                                                max_ids[next(i)],
+                                                [c for c in local_max_constraints],
+                                                self.useSelectiveQueries,
+                                                self.targetQueryNoPref,
+                                                self.includePrefixes,
+                                                self.ORDERBYinQueries,
+                                                subquery
+                ))
+
+            global_max_constraints = [c for c in max_constraints if c.get_shape_ref() is not None]
+            if len(global_max_constraints) > 0:
+                # One query for each max constraint referencing another shape
+                self.maxQueries.extend([self.QueryGenerator.generate_query(
+                                                max_ids[next(i)],
+                                                [c],
+                                                self.useSelectiveQueries,
+                                                self.targetQueryNoPref,
+                                                self.includePrefixes,
+                                                self.ORDERBYinQueries,
+                                                subquery) for c in global_max_constraints])
 
         self.predicates = self.__compute_predicate_set(min_id, max_ids)
         self.__compute_max_queries_to_skip()
