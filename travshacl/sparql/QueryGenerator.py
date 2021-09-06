@@ -290,16 +290,26 @@ class QueryBuilder:
             target_node = ''
             if self.include_selectivity and self.target_query is not None:
                 target_node = get_target_node_statement(self.target_query) + ".\n"
-            return ''.join([prefixes,
-                            self.__get_projection_string(),
-                            " WHERE {\n", target_node, "{ SELECT ?",
-                            VariableGenerator.get_focus_node_var(),
-                            " COUNT(?", self.triples[0].rsplit("?", 1)[1][:-1], " AS ?cnt) WHERE {\n",
-                            'OPTIONAL { ', self.triples[0], ' }\n} GROUP BY ?',
-                            VariableGenerator.get_focus_node_var(),
-                            ' HAVING (COUNT(?', self.triples[0].rsplit("?", 1)[1][:-1], ') > ', str(self.constraints[0].max), ')',
-                            '\n}}',
-                            " ORDER BY ?" + VariableGenerator.get_focus_node_var() if self.include_ORDERBY else ''])
+
+            if self.constraints[0].get_value() is not None:
+                pred = self.constraints[0].path
+                obj = self.constraints[0].get_value()
+                return ''.join([prefixes,
+                                self.__get_projection_string(),
+                                " WHERE {\n", target_node,
+                                "?", VariableGenerator.get_focus_node_var(), " ", pred, " ", obj, ".\n}",
+                                " ORDER BY ?" + VariableGenerator.get_focus_node_var() if self.include_ORDERBY else ''])
+            else:
+                return ''.join([prefixes,
+                                self.__get_projection_string(),
+                                " WHERE {\n", target_node, "{ SELECT ?",
+                                VariableGenerator.get_focus_node_var(),
+                                " COUNT(?", self.triples[0].rsplit("?", 1)[1][:-1], ") AS ?cnt WHERE {\n",
+                                'OPTIONAL { ', self.triples[0], ' }\n} GROUP BY ?',
+                                VariableGenerator.get_focus_node_var(),
+                                ' HAVING (COUNT(?', self.triples[0].rsplit("?", 1)[1][:-1], ') > ', str(self.constraints[0].max), ')',
+                                '\n}}',
+                                " ORDER BY ?" + VariableGenerator.get_focus_node_var() if self.include_ORDERBY else ''])
 
         query = ''.join([prefixes,
                         self.__get_selective(),
