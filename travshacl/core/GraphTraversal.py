@@ -33,7 +33,8 @@ class GraphTraversal(Enum):
                 if neighbour not in visited:
                     self.__dfs(visited, dependencies, reversed_dependencies, neighbour)
             for neighbour in reversed_dependencies[node]:
-                self.__dfs(visited, dependencies, reversed_dependencies, neighbour)
+                if neighbour not in visited:
+                    self.__dfs(visited, dependencies, reversed_dependencies, neighbour)
 
     def __bfs(self, visited, dependencies, reversed_dependencies, node):
         """Implementation of breadth-first search.
