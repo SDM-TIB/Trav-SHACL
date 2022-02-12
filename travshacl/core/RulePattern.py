@@ -10,6 +10,9 @@ class RulePattern:
         self.__literals = body
         self.__variables = set([head[1]] + [a[1] for a in body if a is not None])
 
+    def __repr__(self):
+        return "[" + str(self.head) + "] <-- " + str(self.body)
+
     @property
     def head(self):
         return self.__head
