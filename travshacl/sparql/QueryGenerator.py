@@ -304,7 +304,7 @@ class QueryBuilder:
                                 self.__get_projection_string(),
                                 " WHERE {\n", target_node, "{ SELECT ?",
                                 VariableGenerator.get_focus_node_var(),
-                                " COUNT(?", self.triples[0].rsplit("?", 1)[1][:-1], ") AS ?cnt WHERE {\n",
+                                " (COUNT(?", self.triples[0].rsplit("?", 1)[1][:-1], ") AS ?cnt) WHERE {\n",
                                 'OPTIONAL { ', self.triples[0], ' }\n} GROUP BY ?',
                                 VariableGenerator.get_focus_node_var(),
                                 ' HAVING (COUNT(?', self.triples[0].rsplit("?", 1)[1][:-1], ') > ', str(self.constraints[0].max), ')',
