@@ -81,7 +81,8 @@ class Validation:
             pending_targets = self.retrieve_next_targets(state, next_focus_shape, state.shapes_state)
             state.remaining_targets.update(pending_targets)
 
-        self.validate(state, next_focus_shape)
+        if next_focus_shape is not None:
+            self.validate(state, next_focus_shape)
 
     def retrieve_next_targets(self, state, next_focus_shape, shapes_state):
         """
