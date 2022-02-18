@@ -67,7 +67,7 @@ class Validation:
         :param state: current validation state
         :param focus_shape: focus shape to be evaluated
         """
-        if len(state.visited_shapes) == len(self.shapes_dict):
+        if len(state.visited_shapes) == len(self.shapes_dict) or focus_shape is None:
             self.valid_targets_after_termination.update(state.remaining_targets)
             return
 
@@ -81,8 +81,7 @@ class Validation:
             pending_targets = self.retrieve_next_targets(state, next_focus_shape, state.shapes_state)
             state.remaining_targets.update(pending_targets)
 
-        if next_focus_shape is not None:
-            self.validate(state, next_focus_shape)
+        self.validate(state, next_focus_shape)
 
     def retrieve_next_targets(self, state, next_focus_shape, shapes_state):
         """
