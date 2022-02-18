@@ -1,0 +1,41 @@
+{
+    "task": "a",
+    "traversalStrategie": "DFS",
+    "schemaDir": "./tests/cases/tc1/shapes/test6",
+    "heuristic": "TARGET IN BIG",
+    "targetShape": "ShapeEbig",
+    "result": {
+        "validTargets": [
+            [
+                "http://example.org/testGraph1#nodeE_0",
+                "ShapeEbig"
+            ]
+       ],
+        "invalidTargets": [
+            [
+                "http://example.org/testGraph1#nodeE_3",
+                "ShapeEbig"
+            ],
+            [
+                "http://example.org/testGraph1#nodeE_1",
+                "ShapeEbig"
+            ],
+            [
+                "http://example.org/testGraph1#nodeE_2",
+                "ShapeEbig"
+            ],
+            [
+                "http://example.org/testGraph1#nodeE_4",
+                "ShapeEbig"
+            ],
+            [
+                "http://example.org/testGraph1#nodeE_5",
+                "ShapeEbig"
+            ],
+            [
+                "http://example.org/testGraph1#nodeE_6",
+                "ShapeEbig"
+            ]
+        ]
+    }
+}

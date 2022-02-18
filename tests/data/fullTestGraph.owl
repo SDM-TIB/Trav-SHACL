@@ -1,0 +1,971 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+  xmlns:test4="http://example.org/testGraph4#"
+  xmlns:test5="http://example.org/testGraph5#"
+  xmlns:test1="http://example.org/testGraph1#"
+  xmlns:test2="http://example.org/testGraph2#"
+  xmlns:test3b="http://example.org/testGraph3b#"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_17">
+    <test5:b>nonshape_value</test5:b>
+    <test5:c>nonshape_value_invalid</test5:c>
+    <test5:a>nonshape_value</test5:a>
+    <test5:e>nonshape_value3</test5:e>
+    <test5:e>nonshape_value</test5:e>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:d>nonshape_value_invalid</test5:d>
+    <test5:c>nonshape_value2</test5:c>
+    <test5:d>nonshape_value2</test5:d>
+    <test5:c>nonshape_value3</test5:c>
+    <test5:c>nonshape_value</test5:c>
+    <test5:e>nonshape_value5</test5:e>
+    <test5:d>nonshape_value4</test5:d>
+    <test5:d>nonshape_value3</test5:d>
+    <test5:d>nonshape_value</test5:d>
+    <test5:b>nonshape_value_invalid</test5:b>
+    <test5:b>nonshape_value2</test5:b>
+    <test5:e>nonshape_value2</test5:e>
+  </test5:classA>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_18">
+    <test5:d>nonshape_value2</test5:d>
+    <test5:b>nonshape_value_invalid</test5:b>
+    <test5:c>nonshape_value_invalid</test5:c>
+    <test5:d>nonshape_value3</test5:d>
+    <test5:d>nonshape_value</test5:d>
+    <test5:b>nonshape_value2</test5:b>
+    <test5:d>nonshape_value4</test5:d>
+    <test5:e>nonshape_value_invalid</test5:e>
+    <test5:c>nonshape_value2</test5:c>
+    <test5:b>nonshape_value</test5:b>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:c>nonshape_value3</test5:c>
+    <test5:a>nonshape_value</test5:a>
+    <test5:e>nonshape_value</test5:e>
+    <test5:c>nonshape_value</test5:c>
+    <test5:e>nonshape_value3</test5:e>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:e>nonshape_value5</test5:e>
+  </test5:classA>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_29">
+    <test5:e>nonshape_value5</test5:e>
+    <test5:b>nonshape_value2</test5:b>
+    <test5:d>nonshape_value2</test5:d>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:d>nonshape_value</test5:d>
+    <test5:d>nonshape_value4</test5:d>
+    <test5:e>nonshape_value</test5:e>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:d>nonshape_value3</test5:d>
+    <test5:e>nonshape_value3</test5:e>
+    <test5:c>nonshape_value3</test5:c>
+    <test5:d>nonshape_value_invalid</test5:d>
+  </test5:classA>
+  <test2:classA rdf:about="http://example.org/testGraph2#nodeA_10">
+    <test2:refersToD>
+      <test2:classD rdf:about="http://example.org/testGraph2#nodeD_0">
+        <test2:hasLiteral>valid_value</test2:hasLiteral>
+      </test2:classD>
+    </test2:refersToD>
+    <test2:refersToB>
+      <test2:classB rdf:about="http://example.org/testGraph2#nodeB_1"/>
+    </test2:refersToB>
+  </test2:classA>
+  <test2:classA rdf:about="http://example.org/testGraph2#nodeA_0">
+    <test2:refersToD rdf:resource="http://example.org/testGraph2#nodeD_0"/>
+    <test2:refersToB>
+      <test2:classB rdf:about="http://example.org/testGraph2#nodeB_0">
+        <test2:refersTo rdf:resource="http://example.org/testGraph2#nodeC_0"/>
+      </test2:classB>
+    </test2:refersToB>
+    <test2:hasLiteral>valid_value</test2:hasLiteral>
+  </test2:classA>
+  <test4:classB rdf:about="http://example.org/testGraph4#nodeB_2">
+    <test4:refersTo>
+      <test4:classA rdf:about="http://example.org/testGraph4#nodeA_11">
+        <test4:nonShapeLiteral>nonshape_value</test4:nonShapeLiteral>
+      </test4:classA>
+    </test4:refersTo>
+    <test4:refersTo>
+      <test4:classA rdf:about="http://example.org/testGraph4#nodeA_10">
+        <test4:nonShapeLiteral>nonshape_value</test4:nonShapeLiteral>
+      </test4:classA>
+    </test4:refersTo>
+    <test4:refersTo>
+      <test4:classA rdf:about="http://example.org/testGraph4#nodeA_14"/>
+    </test4:refersTo>
+    <test4:refersTo>
+      <test4:classA rdf:about="http://example.org/testGraph4#nodeA_13"/>
+    </test4:refersTo>
+    <test4:refersTo>
+      <test4:classA rdf:about="http://example.org/testGraph4#nodeA_12"/>
+    </test4:refersTo>
+  </test4:classB>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_20">
+    <test5:d>nonshape_value3</test5:d>
+    <test5:b>nonshape_value2</test5:b>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:a>nonshape_value</test5:a>
+    <test5:b>nonshape_value</test5:b>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:e>nonshape_value3</test5:e>
+    <test5:e>nonshape_value</test5:e>
+    <test5:c>nonshape_value2</test5:c>
+    <test5:d>nonshape_value4</test5:d>
+    <test5:c>nonshape_value</test5:c>
+    <test5:c>nonshape_value3</test5:c>
+    <test5:e>nonshape_value5</test5:e>
+    <test5:d>nonshape_value_invalid</test5:d>
+    <test5:d>nonshape_value2</test5:d>
+    <test5:b>nonshape_value_invalid</test5:b>
+    <test5:d>nonshape_value</test5:d>
+    <test5:e>nonshape_value_invalid</test5:e>
+  </test5:classA>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_8">
+    <test5:a>nonshape_value_invalid</test5:a>
+    <test5:c>nonshape_value_invalid</test5:c>
+    <test5:b>nonshape_value2</test5:b>
+    <test5:e>nonshape_value_invalid</test5:e>
+    <test5:c>nonshape_value2</test5:c>
+    <test5:b>nonshape_value</test5:b>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:c>nonshape_value3</test5:c>
+    <test5:a>nonshape_value</test5:a>
+    <test5:e>nonshape_value</test5:e>
+    <test5:e>nonshape_value3</test5:e>
+    <test5:c>nonshape_value</test5:c>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:d>nonshape_value_invalid</test5:d>
+    <test5:d>nonshape_value2</test5:d>
+    <test5:e>nonshape_value5</test5:e>
+    <test5:d>nonshape_value4</test5:d>
+    <test5:d>nonshape_value3</test5:d>
+    <test5:d>nonshape_value</test5:d>
+  </test5:classA>
+  <test2:classA rdf:about="http://example.org/testGraph2#nodeA_16">
+    <test2:refersToD rdf:resource="http://example.org/testGraph2#nodeD_0"/>
+  </test2:classA>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_1">
+    <test5:c>nonshape_value2</test5:c>
+    <test5:c>nonshape_value</test5:c>
+    <test5:c>nonshape_value3</test5:c>
+    <test5:e>nonshape_value5</test5:e>
+    <test5:d>nonshape_value_invalid</test5:d>
+    <test5:d>nonshape_value2</test5:d>
+    <test5:b>nonshape_value_invalid</test5:b>
+    <test5:d>nonshape_value</test5:d>
+    <test5:a>nonshape_value_invalid</test5:a>
+    <test5:d>nonshape_value4</test5:d>
+    <test5:d>nonshape_value3</test5:d>
+    <test5:b>nonshape_value2</test5:b>
+    <test5:b>nonshape_value</test5:b>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:a>nonshape_value</test5:a>
+    <test5:e>nonshape_value</test5:e>
+    <test5:c>nonshape_value_invalid</test5:c>
+    <test5:e>nonshape_value3</test5:e>
+    <test5:e>nonshape_value4</test5:e>
+  </test5:classA>
+  <test4:classB rdf:about="http://example.org/testGraph4#nodeB_0">
+    <test4:refersTo>
+      <test4:classA rdf:about="http://example.org/testGraph4#nodeA_2">
+        <test4:nonShapeLiteral>nonshape_value</test4:nonShapeLiteral>
+      </test4:classA>
+    </test4:refersTo>
+    <test4:refersTo>
+      <test4:classA rdf:about="http://example.org/testGraph4#nodeA_7"/>
+    </test4:refersTo>
+    <test4:refersTo>
+      <test4:classA rdf:about="http://example.org/testGraph4#nodeA_8"/>
+    </test4:refersTo>
+    <test4:refersTo>
+      <test4:classA rdf:about="http://example.org/testGraph4#nodeA_3">
+        <test4:nonShapeLiteral>nonshape_value</test4:nonShapeLiteral>
+      </test4:classA>
+    </test4:refersTo>
+    <test4:refersTo>
+      <test4:classA rdf:about="http://example.org/testGraph4#nodeA_6"/>
+    </test4:refersTo>
+    <test4:refersTo>
+      <test4:classC rdf:about="http://example.org/testGraph4#nodeC_0"/>
+    </test4:refersTo>
+    <test4:refersTo>
+      <test4:classA rdf:about="http://example.org/testGraph4#nodeA_0">
+        <test4:nonShapeLiteral>nonshape_value</test4:nonShapeLiteral>
+      </test4:classA>
+    </test4:refersTo>
+    <test4:refersTo>
+      <test4:classA rdf:about="http://example.org/testGraph4#nodeA_4">
+        <test4:nonShapeLiteral>nonshape_value</test4:nonShapeLiteral>
+      </test4:classA>
+    </test4:refersTo>
+    <test4:refersTo>
+      <test4:classA rdf:about="http://example.org/testGraph4#nodeA_1">
+        <test4:nonShapeLiteral>nonshape_value</test4:nonShapeLiteral>
+      </test4:classA>
+    </test4:refersTo>
+    <test4:refersTo>
+      <test4:classA rdf:about="http://example.org/testGraph4#nodeA_9"/>
+    </test4:refersTo>
+    <test4:refersTo>
+      <test4:classA rdf:about="http://example.org/testGraph4#nodeA_5"/>
+    </test4:refersTo>
+  </test4:classB>
+  <test4:classB rdf:about="http://example.org/testGraph4#nodeB_1">
+    <test4:refersTo rdf:resource="http://example.org/testGraph4#nodeA_3"/>
+    <test4:refersTo rdf:resource="http://example.org/testGraph4#nodeC_0"/>
+    <test4:refersTo rdf:resource="http://example.org/testGraph4#nodeA_6"/>
+    <test4:refersTo rdf:resource="http://example.org/testGraph4#nodeA_4"/>
+    <test4:refersTo rdf:resource="http://example.org/testGraph4#nodeA_10"/>
+    <test4:refersTo rdf:resource="http://example.org/testGraph4#nodeA_0"/>
+    <test4:refersTo rdf:resource="http://example.org/testGraph4#nodeA_7"/>
+    <test4:refersTo rdf:resource="http://example.org/testGraph4#nodeA_8"/>
+    <test4:refersTo rdf:resource="http://example.org/testGraph4#nodeA_2"/>
+    <test4:refersTo rdf:resource="http://example.org/testGraph4#nodeA_13"/>
+    <test4:refersTo rdf:resource="http://example.org/testGraph4#nodeA_1"/>
+    <test4:refersTo rdf:resource="http://example.org/testGraph4#nodeA_14"/>
+    <test4:refersTo rdf:resource="http://example.org/testGraph4#nodeA_9"/>
+    <test4:refersTo rdf:resource="http://example.org/testGraph4#nodeA_12"/>
+    <test4:refersTo rdf:resource="http://example.org/testGraph4#nodeA_11"/>
+    <test4:refersTo rdf:resource="http://example.org/testGraph4#nodeA_5"/>
+  </test4:classB>
+  <test2:classA rdf:about="http://example.org/testGraph2#nodeA_7">
+    <test2:refersToD rdf:resource="http://example.org/testGraph2#nodeD_0"/>
+    <test2:refersToB rdf:resource="http://example.org/testGraph2#nodeB_1"/>
+    <test2:hasLiteral>valid_value</test2:hasLiteral>
+  </test2:classA>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_11">
+    <test5:d>nonshape_value4</test5:d>
+    <test5:d>nonshape_value3</test5:d>
+    <test5:d>nonshape_value</test5:d>
+    <test5:a>nonshape_value_invalid</test5:a>
+    <test5:b>nonshape_value2</test5:b>
+    <test5:b>nonshape_value</test5:b>
+    <test5:c>nonshape_value_invalid</test5:c>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:a>nonshape_value</test5:a>
+    <test5:e>nonshape_value3</test5:e>
+    <test5:e>nonshape_value</test5:e>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:c>nonshape_value2</test5:c>
+    <test5:d>nonshape_value2</test5:d>
+    <test5:c>nonshape_value3</test5:c>
+    <test5:c>nonshape_value</test5:c>
+    <test5:e>nonshape_value5</test5:e>
+  </test5:classA>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_7">
+    <test5:c>nonshape_value</test5:c>
+    <test5:e>nonshape_value5</test5:e>
+    <test5:a>nonshape_value_invalid</test5:a>
+    <test5:d>nonshape_value4</test5:d>
+    <test5:d>nonshape_value3</test5:d>
+    <test5:d>nonshape_value</test5:d>
+    <test5:b>nonshape_value_invalid</test5:b>
+    <test5:a>nonshape_value</test5:a>
+    <test5:b>nonshape_value2</test5:b>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:b>nonshape_value</test5:b>
+    <test5:e>nonshape_value3</test5:e>
+    <test5:e>nonshape_value</test5:e>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:c>nonshape_value2</test5:c>
+    <test5:d>nonshape_value2</test5:d>
+    <test5:c>nonshape_value3</test5:c>
+  </test5:classA>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_19">
+    <test5:c>nonshape_value3</test5:c>
+    <test5:e>nonshape_value5</test5:e>
+    <test5:d>nonshape_value2</test5:d>
+    <test5:b>nonshape_value_invalid</test5:b>
+    <test5:d>nonshape_value4</test5:d>
+    <test5:d>nonshape_value3</test5:d>
+    <test5:d>nonshape_value</test5:d>
+    <test5:b>nonshape_value2</test5:b>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:a>nonshape_value</test5:a>
+    <test5:b>nonshape_value</test5:b>
+    <test5:c>nonshape_value_invalid</test5:c>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:e>nonshape_value3</test5:e>
+    <test5:e>nonshape_value</test5:e>
+    <test5:c>nonshape_value2</test5:c>
+    <test5:c>nonshape_value</test5:c>
+  </test5:classA>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_14">
+    <test5:a>nonshape_value</test5:a>
+    <test5:e>nonshape_value_invalid</test5:e>
+    <test5:b>nonshape_value2</test5:b>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:b>nonshape_value</test5:b>
+    <test5:e>nonshape_value3</test5:e>
+    <test5:e>nonshape_value</test5:e>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:c>nonshape_value2</test5:c>
+    <test5:d>nonshape_value2</test5:d>
+    <test5:c>nonshape_value3</test5:c>
+    <test5:c>nonshape_value</test5:c>
+    <test5:e>nonshape_value5</test5:e>
+    <test5:a>nonshape_value_invalid</test5:a>
+    <test5:d>nonshape_value4</test5:d>
+    <test5:d>nonshape_value3</test5:d>
+    <test5:d>nonshape_value</test5:d>
+  </test5:classA>
+  <test1:classA rdf:about="http://example.org/testGraph1#nodeA_13">
+    <test1:belongsTo>
+      <test1:classE rdf:about="http://example.org/testGraph1#nodeE_5">
+        <test1:has>nonshape_value1</test1:has>
+      </test1:classE>
+    </test1:belongsTo>
+    <test1:has>nonshape_value2</test1:has>
+    <test1:age>18</test1:age>
+    <test1:has>nonshape_value</test1:has>
+  </test1:classA>
+  <test2:classA rdf:about="http://example.org/testGraph2#nodeA_13">
+    <test2:refersToB rdf:resource="http://example.org/testGraph2#nodeB_1"/>
+    <test2:refersToD rdf:resource="http://example.org/testGraph2#nodeD_0"/>
+  </test2:classA>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_5">
+    <test5:d>nonshape_value2</test5:d>
+    <test5:e>nonshape_value5</test5:e>
+    <test5:d>nonshape_value</test5:d>
+    <test5:d>nonshape_value4</test5:d>
+    <test5:d>nonshape_value3</test5:d>
+    <test5:b>nonshape_value_invalid</test5:b>
+    <test5:a>nonshape_value_invalid</test5:a>
+    <test5:b>nonshape_value2</test5:b>
+    <test5:c>nonshape_value2</test5:c>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:a>nonshape_value</test5:a>
+    <test5:c>nonshape_value</test5:c>
+    <test5:b>nonshape_value</test5:b>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:c>nonshape_value3</test5:c>
+    <test5:e>nonshape_value3</test5:e>
+    <test5:e>nonshape_value</test5:e>
+    <test5:d>nonshape_value_invalid</test5:d>
+  </test5:classA>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_15">
+    <test5:d>nonshape_value2</test5:d>
+    <test5:c>nonshape_value3</test5:c>
+    <test5:c>nonshape_value</test5:c>
+    <test5:e>nonshape_value5</test5:e>
+    <test5:d>nonshape_value</test5:d>
+    <test5:d>nonshape_value4</test5:d>
+    <test5:d>nonshape_value3</test5:d>
+    <test5:a>nonshape_value_invalid</test5:a>
+    <test5:b>nonshape_value2</test5:b>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:b>nonshape_value</test5:b>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:a>nonshape_value</test5:a>
+    <test5:e>nonshape_value3</test5:e>
+    <test5:e>nonshape_value</test5:e>
+    <test5:c>nonshape_value2</test5:c>
+  </test5:classA>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_28">
+    <test5:c>nonshape_value3</test5:c>
+    <test5:e>nonshape_value_invalid</test5:e>
+    <test5:e>nonshape_value5</test5:e>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:d>nonshape_value_invalid</test5:d>
+    <test5:e>nonshape_value</test5:e>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:c>nonshape_value2</test5:c>
+    <test5:b>nonshape_value2</test5:b>
+    <test5:e>nonshape_value3</test5:e>
+    <test5:d>nonshape_value2</test5:d>
+    <test5:d>nonshape_value3</test5:d>
+    <test5:d>nonshape_value</test5:d>
+    <test5:d>nonshape_value4</test5:d>
+  </test5:classA>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_16">
+    <test5:e>nonshape_value3</test5:e>
+    <test5:e>nonshape_value</test5:e>
+    <test5:c>nonshape_value2</test5:c>
+    <test5:c>nonshape_value</test5:c>
+    <test5:c>nonshape_value3</test5:c>
+    <test5:e>nonshape_value5</test5:e>
+    <test5:d>nonshape_value_invalid</test5:d>
+    <test5:d>nonshape_value2</test5:d>
+    <test5:b>nonshape_value_invalid</test5:b>
+    <test5:d>nonshape_value4</test5:d>
+    <test5:e>nonshape_value_invalid</test5:e>
+    <test5:d>nonshape_value3</test5:d>
+    <test5:b>nonshape_value2</test5:b>
+    <test5:d>nonshape_value</test5:d>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:a>nonshape_value</test5:a>
+    <test5:c>nonshape_value_invalid</test5:c>
+    <test5:b>nonshape_value</test5:b>
+    <test5:e>nonshape_value4</test5:e>
+  </test5:classA>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_13">
+    <test5:b>nonshape_value2</test5:b>
+    <test5:b>nonshape_value</test5:b>
+    <test5:c>nonshape_value2</test5:c>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:a>nonshape_value</test5:a>
+    <test5:c>nonshape_value</test5:c>
+    <test5:c>nonshape_value3</test5:c>
+    <test5:e>nonshape_value</test5:e>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:e>nonshape_value3</test5:e>
+    <test5:e>nonshape_value5</test5:e>
+    <test5:d>nonshape_value_invalid</test5:d>
+    <test5:d>nonshape_value2</test5:d>
+    <test5:d>nonshape_value</test5:d>
+    <test5:d>nonshape_value4</test5:d>
+    <test5:a>nonshape_value_invalid</test5:a>
+    <test5:d>nonshape_value3</test5:d>
+  </test5:classA>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_26">
+    <test5:d>nonshape_value</test5:d>
+    <test5:d>nonshape_value4</test5:d>
+    <test5:e>nonshape_value_invalid</test5:e>
+    <test5:d>nonshape_value3</test5:d>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:e>nonshape_value</test5:e>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:b>nonshape_value2</test5:b>
+    <test5:e>nonshape_value3</test5:e>
+    <test5:b>nonshape_value</test5:b>
+    <test5:c>nonshape_value_invalid</test5:c>
+    <test5:e>nonshape_value5</test5:e>
+    <test5:c>nonshape_value2</test5:c>
+    <test5:c>nonshape_value</test5:c>
+    <test5:d>nonshape_value2</test5:d>
+    <test5:c>nonshape_value3</test5:c>
+  </test5:classA>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_12">
+    <test5:b>nonshape_value</test5:b>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:a>nonshape_value</test5:a>
+    <test5:e>nonshape_value</test5:e>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:e>nonshape_value3</test5:e>
+    <test5:c>nonshape_value2</test5:c>
+    <test5:c>nonshape_value</test5:c>
+    <test5:c>nonshape_value3</test5:c>
+    <test5:e>nonshape_value5</test5:e>
+    <test5:d>nonshape_value_invalid</test5:d>
+    <test5:d>nonshape_value2</test5:d>
+    <test5:d>nonshape_value</test5:d>
+    <test5:d>nonshape_value4</test5:d>
+    <test5:a>nonshape_value_invalid</test5:a>
+    <test5:e>nonshape_value_invalid</test5:e>
+    <test5:d>nonshape_value3</test5:d>
+    <test5:b>nonshape_value2</test5:b>
+  </test5:classA>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_24">
+    <test5:d>nonshape_value</test5:d>
+    <test5:b>nonshape_value2</test5:b>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:a>nonshape_value</test5:a>
+    <test5:b>nonshape_value</test5:b>
+    <test5:c>nonshape_value_invalid</test5:c>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:e>nonshape_value3</test5:e>
+    <test5:e>nonshape_value</test5:e>
+    <test5:c>nonshape_value2</test5:c>
+    <test5:c>nonshape_value</test5:c>
+    <test5:c>nonshape_value3</test5:c>
+    <test5:e>nonshape_value5</test5:e>
+    <test5:d>nonshape_value_invalid</test5:d>
+    <test5:d>nonshape_value2</test5:d>
+    <test5:d>nonshape_value4</test5:d>
+    <test5:e>nonshape_value_invalid</test5:e>
+    <test5:d>nonshape_value3</test5:d>
+  </test5:classA>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_10">
+    <test5:d>nonshape_value2</test5:d>
+    <test5:a>nonshape_value_invalid</test5:a>
+    <test5:d>nonshape_value</test5:d>
+    <test5:d>nonshape_value4</test5:d>
+    <test5:d>nonshape_value3</test5:d>
+    <test5:c>nonshape_value_invalid</test5:c>
+    <test5:a>nonshape_value</test5:a>
+    <test5:e>nonshape_value_invalid</test5:e>
+    <test5:c>nonshape_value2</test5:c>
+    <test5:b>nonshape_value2</test5:b>
+    <test5:b>nonshape_value</test5:b>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:c>nonshape_value3</test5:c>
+    <test5:c>nonshape_value</test5:c>
+    <test5:e>nonshape_value</test5:e>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:e>nonshape_value3</test5:e>
+    <test5:e>nonshape_value5</test5:e>
+  </test5:classA>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_31">
+    <test5:e>nonshape_value3</test5:e>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:e>nonshape_value5</test5:e>
+    <test5:c>nonshape_value3</test5:c>
+    <test5:d>nonshape_value</test5:d>
+    <test5:d>nonshape_value4</test5:d>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:e>nonshape_value</test5:e>
+    <test5:d>nonshape_value3</test5:d>
+  </test5:classA>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_4">
+    <test5:d>nonshape_value_invalid</test5:d>
+    <test5:d>nonshape_value2</test5:d>
+    <test5:a>nonshape_value</test5:a>
+    <test5:d>nonshape_value</test5:d>
+    <test5:d>nonshape_value4</test5:d>
+    <test5:e>nonshape_value_invalid</test5:e>
+    <test5:d>nonshape_value3</test5:d>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:b>nonshape_value_invalid</test5:b>
+    <test5:e>nonshape_value</test5:e>
+    <test5:a>nonshape_value_invalid</test5:a>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:b>nonshape_value2</test5:b>
+    <test5:e>nonshape_value3</test5:e>
+    <test5:b>nonshape_value</test5:b>
+    <test5:c>nonshape_value2</test5:c>
+    <test5:c>nonshape_value3</test5:c>
+    <test5:c>nonshape_value</test5:c>
+    <test5:e>nonshape_value5</test5:e>
+  </test5:classA>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_25">
+    <test5:d>nonshape_value2</test5:d>
+    <test5:e>nonshape_value5</test5:e>
+    <test5:d>nonshape_value</test5:d>
+    <test5:d>nonshape_value4</test5:d>
+    <test5:d>nonshape_value3</test5:d>
+    <test5:c>nonshape_value_invalid</test5:c>
+    <test5:b>nonshape_value2</test5:b>
+    <test5:b>nonshape_value</test5:b>
+    <test5:c>nonshape_value2</test5:c>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:c>nonshape_value</test5:c>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:c>nonshape_value3</test5:c>
+    <test5:e>nonshape_value3</test5:e>
+    <test5:e>nonshape_value</test5:e>
+    <test5:d>nonshape_value_invalid</test5:d>
+  </test5:classA>
+  <test2:classA rdf:about="http://example.org/testGraph2#nodeA_2">
+    <test2:refersToB rdf:resource="http://example.org/testGraph2#nodeB_0"/>
+    <test2:hasLiteral>valid_value</test2:hasLiteral>
+    <test2:refersToD rdf:resource="http://example.org/testGraph2#nodeD_0"/>
+  </test2:classA>
+  <test2:classA rdf:about="http://example.org/testGraph2#nodeA_3">
+    <test2:refersToD rdf:resource="http://example.org/testGraph2#nodeD_0"/>
+    <test2:refersToB rdf:resource="http://example.org/testGraph2#nodeB_0"/>
+    <test2:hasLiteral>valid_value</test2:hasLiteral>
+  </test2:classA>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_27">
+    <test5:b>nonshape_value2</test5:b>
+    <test5:b>nonshape_value</test5:b>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:e>nonshape_value</test5:e>
+    <test5:c>nonshape_value_invalid</test5:c>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:e>nonshape_value3</test5:e>
+    <test5:c>nonshape_value2</test5:c>
+    <test5:c>nonshape_value</test5:c>
+    <test5:d>nonshape_value2</test5:d>
+    <test5:c>nonshape_value3</test5:c>
+    <test5:e>nonshape_value5</test5:e>
+    <test5:d>nonshape_value</test5:d>
+    <test5:d>nonshape_value4</test5:d>
+    <test5:d>nonshape_value3</test5:d>
+  </test5:classA>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_6">
+    <test5:c>nonshape_value3</test5:c>
+    <test5:c>nonshape_value</test5:c>
+    <test5:e>nonshape_value5</test5:e>
+    <test5:a>nonshape_value_invalid</test5:a>
+    <test5:b>nonshape_value_invalid</test5:b>
+    <test5:e>nonshape_value_invalid</test5:e>
+    <test5:b>nonshape_value2</test5:b>
+    <test5:d>nonshape_value2</test5:d>
+    <test5:b>nonshape_value</test5:b>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:d>nonshape_value</test5:d>
+    <test5:e>nonshape_value</test5:e>
+    <test5:a>nonshape_value</test5:a>
+    <test5:d>nonshape_value4</test5:d>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:d>nonshape_value3</test5:d>
+    <test5:c>nonshape_value2</test5:c>
+    <test5:e>nonshape_value3</test5:e>
+  </test5:classA>
+  <test4:classA rdf:about="http://example.org/testGraph4#nodeA_18"/>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_9">
+    <test5:e>nonshape_value3</test5:e>
+    <test5:e>nonshape_value</test5:e>
+    <test5:d>nonshape_value_invalid</test5:d>
+    <test5:c>nonshape_value2</test5:c>
+    <test5:c>nonshape_value</test5:c>
+    <test5:d>nonshape_value2</test5:d>
+    <test5:c>nonshape_value3</test5:c>
+    <test5:e>nonshape_value5</test5:e>
+    <test5:d>nonshape_value</test5:d>
+    <test5:d>nonshape_value4</test5:d>
+    <test5:d>nonshape_value3</test5:d>
+    <test5:a>nonshape_value_invalid</test5:a>
+    <test5:b>nonshape_value2</test5:b>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:a>nonshape_value</test5:a>
+    <test5:b>nonshape_value</test5:b>
+    <test5:c>nonshape_value_invalid</test5:c>
+  </test5:classA>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_22">
+    <test5:e>nonshape_value</test5:e>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:c>nonshape_value2</test5:c>
+    <test5:c>nonshape_value3</test5:c>
+    <test5:c>nonshape_value</test5:c>
+    <test5:e>nonshape_value5</test5:e>
+    <test5:d>nonshape_value2</test5:d>
+    <test5:b>nonshape_value_invalid</test5:b>
+    <test5:d>nonshape_value3</test5:d>
+    <test5:a>nonshape_value</test5:a>
+    <test5:d>nonshape_value</test5:d>
+    <test5:d>nonshape_value4</test5:d>
+    <test5:e>nonshape_value_invalid</test5:e>
+    <test5:b>nonshape_value2</test5:b>
+    <test5:b>nonshape_value</test5:b>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:e>nonshape_value3</test5:e>
+  </test5:classA>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_23">
+    <test5:b>nonshape_value_invalid</test5:b>
+    <test5:a>nonshape_value</test5:a>
+    <test5:c>nonshape_value2</test5:c>
+    <test5:b>nonshape_value2</test5:b>
+    <test5:b>nonshape_value</test5:b>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:c>nonshape_value3</test5:c>
+    <test5:c>nonshape_value</test5:c>
+    <test5:e>nonshape_value</test5:e>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:e>nonshape_value3</test5:e>
+    <test5:e>nonshape_value5</test5:e>
+    <test5:d>nonshape_value2</test5:d>
+    <test5:d>nonshape_value3</test5:d>
+    <test5:d>nonshape_value</test5:d>
+    <test5:d>nonshape_value4</test5:d>
+  </test5:classA>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_3">
+    <test5:c>nonshape_value2</test5:c>
+    <test5:c>nonshape_value</test5:c>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:c>nonshape_value3</test5:c>
+    <test5:e>nonshape_value5</test5:e>
+    <test5:d>nonshape_value2</test5:d>
+    <test5:b>nonshape_value_invalid</test5:b>
+    <test5:d>nonshape_value</test5:d>
+    <test5:a>nonshape_value_invalid</test5:a>
+    <test5:d>nonshape_value4</test5:d>
+    <test5:d>nonshape_value3</test5:d>
+    <test5:b>nonshape_value2</test5:b>
+    <test5:b>nonshape_value</test5:b>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:a>nonshape_value</test5:a>
+    <test5:e>nonshape_value</test5:e>
+    <test5:c>nonshape_value_invalid</test5:c>
+    <test5:e>nonshape_value3</test5:e>
+  </test5:classA>
+  <test2:classA rdf:about="http://example.org/testGraph2#nodeA_9">
+    <test2:refersToB rdf:resource="http://example.org/testGraph2#nodeB_1"/>
+    <test2:refersToD rdf:resource="http://example.org/testGraph2#nodeD_0"/>
+    <test2:hasLiteral>valid_value</test2:hasLiteral>
+  </test2:classA>
+  <test2:classA rdf:about="http://example.org/testGraph2#nodeA_1">
+    <test2:refersToD rdf:resource="http://example.org/testGraph2#nodeD_0"/>
+    <test2:hasLiteral>valid_value</test2:hasLiteral>
+    <test2:refersToB rdf:resource="http://example.org/testGraph2#nodeB_0"/>
+  </test2:classA>
+  <test1:classA rdf:about="http://example.org/testGraph1#nodeA_8">
+    <test1:age>nicht18</test1:age>
+    <test1:has>nonshape_value</test1:has>
+    <test1:belongsTo>
+      <test1:classE rdf:about="http://example.org/testGraph1#nodeE_0">
+        <test1:has>nonshape_value2</test1:has>
+        <test1:has>nonshape_value1</test1:has>
+      </test1:classE>
+    </test1:belongsTo>
+  </test1:classA>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_21">
+    <test5:d>nonshape_value_invalid</test5:d>
+    <test5:d>nonshape_value2</test5:d>
+    <test5:b>nonshape_value_invalid</test5:b>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:a>nonshape_value</test5:a>
+    <test5:d>nonshape_value</test5:d>
+    <test5:d>nonshape_value4</test5:d>
+    <test5:e>nonshape_value</test5:e>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:d>nonshape_value3</test5:d>
+    <test5:b>nonshape_value2</test5:b>
+    <test5:e>nonshape_value3</test5:e>
+    <test5:b>nonshape_value</test5:b>
+    <test5:e>nonshape_value5</test5:e>
+    <test5:c>nonshape_value2</test5:c>
+    <test5:c>nonshape_value</test5:c>
+    <test5:c>nonshape_value3</test5:c>
+  </test5:classA>
+  <test2:classA rdf:about="http://example.org/testGraph2#nodeA_15">
+    <test2:refersToD rdf:resource="http://example.org/testGraph2#nodeD_0"/>
+  </test2:classA>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_2">
+    <test5:c>nonshape_value2</test5:c>
+    <test5:c>nonshape_value</test5:c>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:d>nonshape_value2</test5:d>
+    <test5:c>nonshape_value3</test5:c>
+    <test5:e>nonshape_value5</test5:e>
+    <test5:d>nonshape_value</test5:d>
+    <test5:d>nonshape_value4</test5:d>
+    <test5:a>nonshape_value_invalid</test5:a>
+    <test5:d>nonshape_value3</test5:d>
+    <test5:b>nonshape_value_invalid</test5:b>
+    <test5:a>nonshape_value</test5:a>
+    <test5:e>nonshape_value_invalid</test5:e>
+    <test5:b>nonshape_value2</test5:b>
+    <test5:b>nonshape_value</test5:b>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:e>nonshape_value</test5:e>
+    <test5:c>nonshape_value_invalid</test5:c>
+    <test5:e>nonshape_value3</test5:e>
+  </test5:classA>
+  <test2:classA rdf:about="http://example.org/testGraph2#nodeA_11">
+    <test2:refersToD rdf:resource="http://example.org/testGraph2#nodeD_0"/>
+    <test2:refersToB rdf:resource="http://example.org/testGraph2#nodeB_1"/>
+  </test2:classA>
+  <test4:classA rdf:about="http://example.org/testGraph4#nodeA_15"/>
+  <test1:classA rdf:about="http://example.org/testGraph1#nodeA_7">
+    <test1:age>nicht18</test1:age>
+    <test1:belongsTo rdf:resource="http://example.org/testGraph1#nodeE_0"/>
+    <test1:has>nonshape_value</test1:has>
+  </test1:classA>
+  <test2:classA rdf:about="http://example.org/testGraph2#nodeA_5">
+    <test2:refersToD rdf:resource="http://example.org/testGraph2#nodeD_0"/>
+    <test2:refersToB rdf:resource="http://example.org/testGraph2#nodeB_1"/>
+    <test2:hasLiteral>valid_value</test2:hasLiteral>
+  </test2:classA>
+  <test2:classA rdf:about="http://example.org/testGraph2#nodeA_4">
+    <test2:refersToB rdf:resource="http://example.org/testGraph2#nodeB_0"/>
+    <test2:hasLiteral>valid_value</test2:hasLiteral>
+    <test2:refersToD rdf:resource="http://example.org/testGraph2#nodeD_0"/>
+  </test2:classA>
+  <test1:classA rdf:about="http://example.org/testGraph1#nodeA_2">
+    <test1:age>18</test1:age>
+    <test1:has>nonshape_value</test1:has>
+    <test1:belongsTo rdf:resource="http://example.org/testGraph1#nodeE_0"/>
+  </test1:classA>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_30">
+    <test5:e>nonshape_value2</test5:e>
+    <test5:e>nonshape_value</test5:e>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:e>nonshape_value3</test5:e>
+    <test5:c>nonshape_value3</test5:c>
+    <test5:e>nonshape_value_invalid</test5:e>
+    <test5:e>nonshape_value5</test5:e>
+  </test5:classA>
+  <test1:classA rdf:about="http://example.org/testGraph1#nodeA_15">
+    <test1:has>nonshape_value2</test1:has>
+    <test1:belongsTo>
+      <test1:classE rdf:about="http://example.org/testGraph1#nodeE_6">
+        <test1:has>nonshape_value2</test1:has>
+        <test1:has>nonshape_value1</test1:has>
+      </test1:classE>
+    </test1:belongsTo>
+    <test1:age>18</test1:age>
+    <test1:has>nonshape_value</test1:has>
+  </test1:classA>
+  <test1:classA rdf:about="http://example.org/testGraph1#nodeA_18">
+    <test1:has>nonshape_value2</test1:has>
+    <test1:belongsTo rdf:resource="http://example.org/testGraph1#nodeE_6"/>
+    <test1:has>nonshape_value</test1:has>
+    <test1:age>nicht18</test1:age>
+  </test1:classA>
+  <test2:classA rdf:about="http://example.org/testGraph2#nodeA_14">
+    <test2:refersToD rdf:resource="http://example.org/testGraph2#nodeD_0"/>
+    <test2:refersToB rdf:resource="http://example.org/testGraph2#nodeB_1"/>
+  </test2:classA>
+  <test1:classA rdf:about="http://example.org/testGraph1#nodeA_4">
+    <test1:belongsTo>
+      <test1:classE rdf:about="http://example.org/testGraph1#nodeE_2">
+        <test1:has>nonshape_value1</test1:has>
+        <test1:has>nonshape_value2</test1:has>
+      </test1:classE>
+    </test1:belongsTo>
+    <test1:has>nonshape_value</test1:has>
+    <test1:age>18</test1:age>
+  </test1:classA>
+  <test1:classA rdf:about="http://example.org/testGraph1#nodeA_0">
+    <test1:age>18</test1:age>
+    <test1:has>nonshape_value</test1:has>
+    <test1:belongsTo rdf:resource="http://example.org/testGraph1#nodeE_0"/>
+  </test1:classA>
+  <test3b:classD rdf:about="http://example.org/testGraph3b#nodeD_2">
+    <test3b:alpha>
+      <test3b:classA rdf:about="http://example.org/testGraph3b#nodeA_2">
+        <test3b:beta>literal</test3b:beta>
+        <test3b:alpha rdf:resource="http://example.org/testGraph3b#nodeC_2"/>
+      </test3b:classA>
+    </test3b:alpha>
+    <test3b:beta>literal</test3b:beta>
+  </test3b:classD>
+  <test5:classA rdf:about="http://example.org/testGraph5#nodeA_0">
+    <test5:b>nonshape_value_invalid</test5:b>
+    <test5:a>nonshape_value_invalid</test5:a>
+    <test5:e>nonshape_value_invalid</test5:e>
+    <test5:b>nonshape_value2</test5:b>
+    <test5:b>nonshape_value</test5:b>
+    <test5:e>nonshape_value2</test5:e>
+    <test5:a>nonshape_value</test5:a>
+    <test5:e>nonshape_value</test5:e>
+    <test5:e>nonshape_value4</test5:e>
+    <test5:c>nonshape_value_invalid</test5:c>
+    <test5:d>nonshape_value_invalid</test5:d>
+    <test5:e>nonshape_value3</test5:e>
+    <test5:c>nonshape_value2</test5:c>
+    <test5:d>nonshape_value2</test5:d>
+    <test5:c>nonshape_value3</test5:c>
+    <test5:c>nonshape_value</test5:c>
+    <test5:e>nonshape_value5</test5:e>
+    <test5:d>nonshape_value3</test5:d>
+    <test5:d>nonshape_value</test5:d>
+    <test5:d>nonshape_value4</test5:d>
+  </test5:classA>
+  <test2:classA rdf:about="http://example.org/testGraph2#nodeA_12">
+    <test2:refersToD rdf:resource="http://example.org/testGraph2#nodeD_0"/>
+    <test2:refersToB rdf:resource="http://example.org/testGraph2#nodeB_1"/>
+  </test2:classA>
+  <test1:classA rdf:about="http://example.org/testGraph1#nodeA_17">
+    <test1:age>nicht18</test1:age>
+    <test1:has>nonshape_value2</test1:has>
+    <test1:has>nonshape_value</test1:has>
+    <test1:belongsTo rdf:resource="http://example.org/testGraph1#nodeE_5"/>
+  </test1:classA>
+  <test1:classA rdf:about="http://example.org/testGraph1#nodeA_14">
+    <test1:has>nonshape_value</test1:has>
+    <test1:belongsTo rdf:resource="http://example.org/testGraph1#nodeE_5"/>
+    <test1:has>nonshape_value2</test1:has>
+    <test1:age>18</test1:age>
+  </test1:classA>
+  <test1:classA rdf:about="http://example.org/testGraph1#nodeA_10">
+    <test1:belongsTo>
+      <test1:classE rdf:about="http://example.org/testGraph1#nodeE_3">
+        <test1:has>nonshape_value1</test1:has>
+      </test1:classE>
+    </test1:belongsTo>
+    <test1:has>nonshape_value</test1:has>
+    <test1:age>nicht18</test1:age>
+  </test1:classA>
+  <test1:classA rdf:about="http://example.org/testGraph1#nodeA_12">
+    <test1:has>nonshape_value</test1:has>
+    <test1:has>nonshape_value2</test1:has>
+    <test1:age>18</test1:age>
+    <test1:belongsTo rdf:resource="http://example.org/testGraph1#nodeE_2"/>
+  </test1:classA>
+  <test1:classA rdf:about="http://example.org/testGraph1#nodeA_5">
+    <test1:age>18</test1:age>
+    <test1:belongsTo rdf:resource="http://example.org/testGraph1#nodeE_2"/>
+    <test1:has>nonshape_value</test1:has>
+  </test1:classA>
+  <test1:classA rdf:about="http://example.org/testGraph1#nodeA_20">
+    <test1:belongsTo>
+      <test1:classE rdf:about="http://example.org/testGraph1#nodeE_4">
+        <test1:has>nonshape_value1</test1:has>
+        <test1:has>nonshape_value2</test1:has>
+      </test1:classE>
+    </test1:belongsTo>
+    <test1:age>nicht18</test1:age>
+  </test1:classA>
+  <test1:classA rdf:about="http://example.org/testGraph1#nodeA_11">
+    <test1:has>nonshape_value2</test1:has>
+    <test1:age>18</test1:age>
+    <test1:belongsTo rdf:resource="http://example.org/testGraph1#nodeE_2"/>
+    <test1:has>nonshape_value</test1:has>
+  </test1:classA>
+  <test1:classA rdf:about="http://example.org/testGraph1#nodeA_9">
+    <test1:age>nicht18</test1:age>
+    <test1:belongsTo rdf:resource="http://example.org/testGraph1#nodeE_3"/>
+    <test1:has>nonshape_value</test1:has>
+  </test1:classA>
+  <test1:classA rdf:about="http://example.org/testGraph1#nodeA_3">
+    <test1:has>nonshape_value</test1:has>
+    <test1:belongsTo rdf:resource="http://example.org/testGraph1#nodeE_0"/>
+    <test1:age>18</test1:age>
+  </test1:classA>
+  <test1:classA rdf:about="http://example.org/testGraph1#nodeA_16">
+    <test1:age>nicht18</test1:age>
+    <test1:has>nonshape_value</test1:has>
+    <test1:belongsTo rdf:resource="http://example.org/testGraph1#nodeE_5"/>
+    <test1:has>nonshape_value2</test1:has>
+  </test1:classA>
+  <test2:classA rdf:about="http://example.org/testGraph2#nodeA_6">
+    <test2:hasLiteral>valid_value</test2:hasLiteral>
+    <test2:refersToB rdf:resource="http://example.org/testGraph2#nodeB_1"/>
+    <test2:refersToD rdf:resource="http://example.org/testGraph2#nodeD_0"/>
+  </test2:classA>
+  <test1:classA rdf:about="http://example.org/testGraph1#nodeA_1">
+    <test1:has>nonshape_value</test1:has>
+    <test1:belongsTo rdf:resource="http://example.org/testGraph1#nodeE_0"/>
+    <test1:age>18</test1:age>
+  </test1:classA>
+  <test1:classA rdf:about="http://example.org/testGraph1#nodeA_19">
+    <test1:age>nicht18</test1:age>
+    <test1:belongsTo rdf:resource="http://example.org/testGraph1#nodeE_4"/>
+  </test1:classA>
+  <test1:classA rdf:about="http://example.org/testGraph1#nodeA_6">
+    <test1:belongsTo>
+      <test1:classE rdf:about="http://example.org/testGraph1#nodeE_1"/>
+    </test1:belongsTo>
+    <test1:age>18</test1:age>
+    <test1:has>nonshape_value</test1:has>
+  </test1:classA>
+  <test2:classA rdf:about="http://example.org/testGraph2#nodeA_8">
+    <test2:hasLiteral>valid_value</test2:hasLiteral>
+    <test2:refersToB rdf:resource="http://example.org/testGraph2#nodeB_1"/>
+    <test2:refersToD rdf:resource="http://example.org/testGraph2#nodeD_0"/>
+  </test2:classA>
+  <test2:classA rdf:about="http://example.org/testGraph2#nodeA_17">
+    <test2:refersToD rdf:resource="http://example.org/testGraph2#nodeD_0"/>
+  </test2:classA>
+  <test2:classA rdf:about="http://example.org/testGraph2#nodeA_18">
+    <test2:refersToD rdf:resource="http://example.org/testGraph2#nodeD_0"/>
+  </test2:classA>
+  <test4:classA rdf:about="http://example.org/testGraph4#nodeA_16"/>
+  <test4:classA rdf:about="http://example.org/testGraph4#nodeA_17"/>
+  <test2:classA rdf:about="http://example.org/testGraph2#nodeA_19">
+    <test2:refersToD rdf:resource="http://example.org/testGraph2#nodeD_0"/>
+  </test2:classA>
+  <test4:classA rdf:about="http://example.org/testGraph4#nodeA_19"/>
+  <test2:classC rdf:about="http://example.org/testGraph2#nodeC_0">
+    <test2:refersTo rdf:resource="http://example.org/testGraph2#nodeD_0"/>
+  </test2:classC>
+  <test3b:classA rdf:about="http://example.org/testGraph3b#nodeA_0">
+    <test3b:beta>literal</test3b:beta>
+    <test3b:alpha>
+      <test3b:classC rdf:about="http://example.org/testGraph3b#nodeC_1">
+        <test3b:alpha rdf:resource="http://example.org/testGraph3b#nodeD_1"/>
+      </test3b:classC>
+    </test3b:alpha>
+    <test3b:alpha>
+      <test3b:classC rdf:about="http://example.org/testGraph3b#nodeC_0">
+        <test3b:alpha rdf:resource="http://example.org/testGraph3b#nodeD_0"/>
+      </test3b:classC>
+    </test3b:alpha>
+  </test3b:classA>
+  <test3b:classD rdf:about="http://example.org/testGraph3b#nodeD_1">
+    <test3b:alpha>
+      <test3b:classA rdf:about="http://example.org/testGraph3b#nodeA_1">
+        <test3b:alpha rdf:resource="http://example.org/testGraph3b#nodeC_1"/>
+      </test3b:classA>
+    </test3b:alpha>
+    <test3b:beta>literal</test3b:beta>
+  </test3b:classD>
+  <test3b:classD rdf:about="http://example.org/testGraph3b#nodeD_0">
+    <test3b:alpha rdf:resource="http://example.org/testGraph3b#nodeA_0"/>
+  </test3b:classD>
+  <test3b:classC rdf:about="http://example.org/testGraph3b#nodeC_2"/>
+</rdf:RDF>

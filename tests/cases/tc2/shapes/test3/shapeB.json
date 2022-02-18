@@ -1,0 +1,17 @@
+{
+	"name": "ShapeB",
+	"targetDef": {
+		"query":"SELECT ?x WHERE {VALUES ?x { test2:nodeB_1 test2:nodeB_0 } }",
+		"class": "test2:classB"
+	},
+	"prefix":{
+		"test2":"<http://example.org/testGraph2#>"
+	},
+	"constraintDef":{
+		"conjunctions":[
+			[
+                { "path": "test2:refersTo", "min": 1, "shape": "ShapeC"}
+			]
+		]
+	}
+}

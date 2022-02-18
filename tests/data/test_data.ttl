@@ -1,0 +1,75 @@
+@prefix ub:   <http://swat.cse.lehigh.edu/onto/univ-bench.owl#> .
+@prefix :     <http://example.com/> .
+
+:Uni0 a ub:University;
+  ub:name "University0" .
+
+:Uni1 a ub:University;
+  ub:name "University1" .
+
+:Uni2 a ub:University .
+:Uni3 a ub:University .
+:Uni4 a ub:University .
+:Uni5 a ub:University .
+
+:Dept0  a ub:Department;
+  ub:name "Department0";
+  ub:subOrganizationOf  :Uni0 .
+
+:Dept1  a ub:Department;
+  ub:name "Department1";
+  ub:subOrganizationOf  :Uni0 .
+
+:Prof0  a ub:FullProfessor;
+  ub:name "Professor0";
+  ub:worksFor :Dept0;
+  ub:email  "prof0@dept0.uni0.edu";
+  ub:doctoralDegreeFrom :Uni1 .
+  
+:Prof1  a ub:FullProfessor;
+  ub:name "Professor1";
+  ub:worksFor :Dept0;
+  ub:email  "prof1@dept0.uni0.edu";
+  ub:doctoralDegreeFrom :Uni0 .
+  
+:Prof2  a ub:FullProfessor;
+  ub:name "Professor2";
+  ub:worksFor :Dept0;
+  ub:email  "prof2@dept0.uni0.edu";
+  ub:doctoralDegreeFrom :Uni1 .
+  
+:Prof3  a ub:FullProfessor;
+  ub:name "Professor3";
+  ub:worksFor :Dept0;
+  ub:email  "prof3@dept0.uni0.edu";
+  ub:doctoralDegreeFrom :Uni2 .
+  
+:Prof4  a ub:FullProfessor;
+  ub:name "Professor4";
+  ub:worksFor :Dept0;
+  ub:email  "prof4@dept0.uni0.edu";
+  ub:doctoralDegreeFrom :Uni0 .
+  
+:Prof5  a ub:FullProfessor;
+  ub:name "Professor5";
+  ub:worksFor :Dept0;
+  ub:email  "prof5@dept0.uni0.edu";
+  ub:doctoralDegreeFrom :Uni4 .
+  
+:Prof6  a ub:FullProfessor;
+  ub:name "Professor6";
+  ub:worksFor :Dept1;
+  ub:email  "prof6@dept1.uni0.edu";
+  ub:doctoralDegreeFrom :Uni0 .
+  
+:Prof7  a ub:FullProfessor;
+  ub:name "Professor7";
+  ub:worksFor :Dept1;
+  ub:email  "prof7@dept1.uni0.edu";
+  ub:doctoralDegreeFrom :Uni3 .
+  
+:Prof8 a ub:FullProfessor;
+  ub:name "Professor8";
+  ub:worksFor :Dept1;
+  ub:email  "prof8@dept1.uni0.edu";
+  ub:doctoralDegreeFrom :Uni1 .

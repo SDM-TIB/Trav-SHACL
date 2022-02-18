@@ -1,0 +1,25 @@
+{
+    "task": "a",
+    "traversalStrategie": "DFS",
+    "schemaDir": "./tests/cases/tc3/shapes/test5",
+    "heuristic": "TARGET IN BIG",
+    "targetShape": "ShapeD",
+    "result": {
+        "validTargets": [
+            [
+                "http://example.org/testGraph3b#nodeD_0",
+                "ShapeD"
+            ]
+       ],
+        "invalidTargets": [
+            [
+                "http://example.org/testGraph3b#nodeD_1",
+                "ShapeD"
+            ],
+            [
+                "http://example.org/testGraph3b#nodeD_2",
+                "ShapeD"
+            ]
+        ]
+    }
+}

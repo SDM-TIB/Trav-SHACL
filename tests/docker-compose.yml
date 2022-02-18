@@ -1,0 +1,18 @@
+version: '2'
+
+services:
+  test_data:
+    container_name: travshacl_example_data
+    image: kemele/virtuoso:7-stable
+    volumes:
+      - ./data:/data/toLoad
+    mem_limit: 4g
+    ports:
+      - '14000:8890'
+    networks:
+      - shacl_engine_tests
+
+networks:
+  shacl_engine_tests:
+    driver: bridge
+    external: true

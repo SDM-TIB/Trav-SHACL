@@ -1,0 +1,19 @@
+{
+	"name": "ShapeA",
+	"targetDef": {
+		"query":"SELECT ?x WHERE {?x a test1:classA}",
+		"class": "test1:classA"
+	},
+	"prefix":{
+		"test1":"<http://example.org/testGraph1#>"
+	},
+	"constraintDef":{
+		"conjunctions":[
+			[
+				{ "path": "test1:has", "min": 1},
+				{ "path": "test1:has", "max": 1},
+				{ "path": "test1:belongsTo", "min": 1, "shape": "ShapeEbig"}
+			]
+		]
+	}
+}

@@ -1,0 +1,16 @@
+{
+	"name": "ShapeA",
+	"targetDef": {
+		"query":"SELECT ?x WHERE {?x a test2:classA}",
+		"class": "test2:classA"
+	},
+	"prefix":{
+		"test2":"<http://example.org/testGraph2#>"
+	},
+	"constraintDef":{
+		"conjunctions":[
+			[
+			]
+		]
+	}
+}

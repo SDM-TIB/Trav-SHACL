@@ -1,0 +1,97 @@
+{
+    "task": "a",
+    "traversalStrategie": "DFS",
+    "schemaDir": "./tests/cases/tc1/shapes/test2",
+    "heuristic": "TARGET IN BIG",
+    "targetShape": "ShapeA",
+    "result": {
+        "validTargets": [
+            [
+                "http://example.org/testGraph1#nodeA_0",
+                "ShapeA"
+            ],
+            [
+                "http://example.org/testGraph1#nodeA_1",
+                "ShapeA"
+            ],
+            [
+                "http://example.org/testGraph1#nodeA_2",
+                "ShapeA"
+            ],
+            [
+                "http://example.org/testGraph1#nodeA_3",
+                "ShapeA"
+            ],
+            [
+                "http://example.org/testGraph1#nodeA_7",
+                "ShapeA"
+            ],
+            [
+                "http://example.org/testGraph1#nodeA_8",
+                "ShapeA"
+            ],
+            [
+                "http://example.org/testGraph1#nodeA_4",
+                "ShapeA"
+            ],
+            [
+                "http://example.org/testGraph1#nodeA_5",
+                "ShapeA"
+            ]
+       ],
+        "invalidTargets": [
+            [
+                "http://example.org/testGraph1#nodeA_6",
+                "ShapeA"
+            ],
+            [
+                "http://example.org/testGraph1#nodeA_9",
+                "ShapeA"
+            ],
+            [
+                "http://example.org/testGraph1#nodeA_10",
+                "ShapeA"
+            ],
+            [
+                "http://example.org/testGraph1#nodeA_11",
+                "ShapeA"
+            ],
+            [
+                "http://example.org/testGraph1#nodeA_12",
+                "ShapeA"
+            ],
+            [
+                "http://example.org/testGraph1#nodeA_13",
+                "ShapeA"
+            ],
+            [
+                "http://example.org/testGraph1#nodeA_14",
+                "ShapeA"
+            ],
+            [
+                "http://example.org/testGraph1#nodeA_15",
+                "ShapeA"
+            ],
+            [
+                "http://example.org/testGraph1#nodeA_16",
+                "ShapeA"
+            ],
+            [
+                "http://example.org/testGraph1#nodeA_17",
+                "ShapeA"
+            ],
+            [
+                "http://example.org/testGraph1#nodeA_18",
+                "ShapeA"
+            ],
+            [
+                "http://example.org/testGraph1#nodeA_19",
+                "ShapeA"
+            ],
+            [
+                "http://example.org/testGraph1#nodeA_20",
+                "ShapeA"
+            ]
+        ]
+    }
+}
