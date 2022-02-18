@@ -40,7 +40,7 @@ class ShapeSchema:
         self.saveTargetsToFile = save_outputs
         self.set_parent_shapes()
 
-    def get_starting_point(self):
+    def get_starting_point(self, shapes_to_choose_from):
         """
         Use heuristics to determine the first shape for evaluation of the constraints.
         There might be several shapes that are equally suited, in this case all of them are returned.
@@ -51,33 +51,33 @@ class ShapeSchema:
 
         # heuristic 1: target definition available
         if self.heuristics['target']:
-            for s in self.shapes:
+            for s in shapes_to_choose_from:
                 if s.targetDef is not None:
                     possible_starting_points.append(s)
 
         # heuristic 2: in- and outdegree
         if self.heuristics['degree'] == 'in':
             # prioritize indegree
-            possible_starting_points = possible_starting_points if possible_starting_points else self.shapes
+            possible_starting_points = possible_starting_points if possible_starting_points else shapes_to_choose_from
             possible_starting_points = self.__indegree(possible_starting_points)
         elif self.heuristics['degree'] == 'out':
             # priotizize outdegree
-            possible_starting_points = possible_starting_points if possible_starting_points else self.shapes
+            possible_starting_points = possible_starting_points if possible_starting_points else shapes_to_choose_from
             possible_starting_points = self.__outdegree(possible_starting_points)
         elif self.heuristics['degree'] == 'inout':
             # prioritize indegree and further filter by outdegree
-            possible_starting_points = possible_starting_points if possible_starting_points else self.shapes
+            possible_starting_points = possible_starting_points if possible_starting_points else shapes_to_choose_from
             possible_starting_points = self.__indegree(possible_starting_points)
             possible_starting_points = self.__outdegree(possible_starting_points)
         elif self.heuristics['degree'] == 'outin':
             # prioritize outdegree and further filter by indegree
-            possible_starting_points = possible_starting_points if possible_starting_points else self.shapes
+            possible_starting_points = possible_starting_points if possible_starting_points else shapes_to_choose_from
             possible_starting_points = self.__outdegree(possible_starting_points)
             possible_starting_points = self.__indegree(possible_starting_points)
 
         # heuristic 3: number of properties
         if self.heuristics['properties'] == 'small':
-            possible_starting_points = possible_starting_points if possible_starting_points else self.shapes
+            possible_starting_points = possible_starting_points if possible_starting_points else shapes_to_choose_from
             if len(possible_starting_points) > 1:
                 min_con = min([s.get_number_constraints() for s in possible_starting_points])
                 tmp = []
@@ -86,6 +86,7 @@ class ShapeSchema:
                         tmp.append(s)
                 possible_starting_points = tmp
         elif self.heuristics['properties'] == 'big':
+            possible_starting_points = possible_starting_points if possible_starting_points else shapes_to_choose_from
             if len(possible_starting_points) > 1:
                 max_con = max([s.get_number_constraints() for s in possible_starting_points])
                 tmp = []
@@ -95,7 +96,7 @@ class ShapeSchema:
                 possible_starting_points = tmp
 
         if not possible_starting_points:
-            possible_starting_points = all
+            possible_starting_points = shapes_to_choose_from
         return [s.get_id() for s in possible_starting_points]
 
     @staticmethod
@@ -131,8 +132,12 @@ class ShapeSchema:
 
     def validate(self):
         """Executes the validation of the shape network."""
-        start = self.get_starting_point()
-        node_order = self.graphTraversal.traverse_graph(self.dependencies, self.reverse_dependencies, start[0])  # TODO: deal with more than one possible starting point
+        node_order = []
+        
+        while len(node_order) != len(self.shapes):
+            start = self.get_starting_point([shape for shape in self.shapes if shape.id not in node_order])
+            new_node_order = self.graphTraversal.traverse_graph(self.dependencies, self.reverse_dependencies, start[0])  # TODO: deal with more than one possible starting point
+            node_order = node_order + [node for node in new_node_order if node not in node_order]
 
         for s in self.shapes:
             s.compute_constraint_queries()
