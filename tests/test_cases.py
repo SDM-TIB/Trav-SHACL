@@ -24,19 +24,32 @@ def get_all_test_cases():
     return glob(TEST_CASES_DIR + '**/definitions/*.json', recursive=True)
 
 @pytest.mark.parametrize("file", get_all_test_cases())
-def test_case(file):
+@pytest.mark.parametrize("prio_number", ['BIG','SMALL'])
+@pytest.mark.parametrize("prio_degree", ['IN','OUT'])
+@pytest.mark.parametrize("prio_target", ['TARGET',''])
+@pytest.mark.parametrize("graphTraversal", ['DFS','BFS'])
+@pytest.mark.parametrize("selective", [True, False])
+def test_case(file,selective, graphTraversal, prio_target, prio_degree, prio_number):
     with open(file, 'r') as f:
         test_case = json.load(f)
 
     target_shape = test_case['targetShape']
+    use_selective_queries = selective if selective != None else test_case.get('selective', DEFAULT_PARAMS['selective'])
+    graphTraversal = graphTraversal if graphTraversal != None else test_case.get('traversalStrategie', DEFAULT_PARAMS['traversalStrategie'])
+    graph_traversal = GraphTraversal.BFS if graphTraversal == 'BFS' else GraphTraversal.DFS
+
+    if prio_target != None and prio_degree != None and prio_number != None:
+        heursitics_str = prio_target + ' ' + prio_degree + ' ' + prio_number
+    else:
+        heursitics_str = test_case.get('heuristic', DEFAULT_PARAMS['heuristic'])
 
     shape_schema = ShapeSchema(
         schema_dir=os.path.realpath(test_case['schemaDir']),
         schema_format="JSON",
         endpoint_url=TEST_ENDPOINT,
-        graph_traversal=GraphTraversal.BFS if test_case.get('traversalStrategie', DEFAULT_PARAMS['traversalStrategie']) == "BFS" else GraphTraversal.DFS,
-        heuristics=parse_heuristics(test_case.get('heuristic', DEFAULT_PARAMS['heuristic'])),
-        use_selective_queries=test_case.get('selective', DEFAULT_PARAMS['selective']),
+        graph_traversal=graph_traversal,
+        heuristics=parse_heuristics(heursitics_str),
+        use_selective_queries=use_selective_queries,
         max_split_size=test_case.get('maxSplit', DEFAULT_PARAMS['maxSplit']),
         output_dir=OUTPUT_DIR,
         order_by_in_queries=test_case.get('orderBy', DEFAULT_PARAMS['orderBy']),
