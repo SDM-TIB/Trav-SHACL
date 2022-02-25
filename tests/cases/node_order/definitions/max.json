@@ -1,0 +1,16 @@
+{
+    "task": "a",
+    "traversalStrategie": "DFS",
+    "schemaDir": "./tests/cases/node_order/shapes/Afatinib_EGFR_treatmentline_max",
+    "heuristic": "TARGET IN BIG",
+    "targetShape": "EGFRNegativePatient",
+    "result": {
+        "validTargets": [
+            ["http://clarify2020.eu/entity/410205", "OncologicalTreatmentLine"]
+        ], 
+        "invalidTargets": [
+            ["http://clarify2020.eu/entity/109511", "OncologicalTreatmentLine"], 
+            ["http://clarify2020.eu/entity/1314650", "OncologicalTreatmentLine"]
+        ]
+    }
+}

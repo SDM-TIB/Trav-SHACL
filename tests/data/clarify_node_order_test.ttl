@@ -1,0 +1,52 @@
+@prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix ns1:	<http://clarify2020.eu/vocab/> .
+@prefix ns2:	<http://clarify2020.eu/entity/> .
+
+
+##########################################
+# Two persons violating the constraint   #
+##########################################
+
+<http://clarify2020.eu/entity/109511>	rdf:type	ns1:EGFRNegativePatient ;
+	ns1:hasOncologicalTreatmentLine	<http://clarify2020.eu/entity/109511_OncologicalTL_1> .
+
+<http://clarify2020.eu/entity/109511_OncologicalTL_1>	rdf:type	ns1:OncologicalTreatmentLine ; # <-- valid OncologicalTreatmentLine as it contains Afatinib
+	ns1:hasDrug	ns2:UNK ,
+		ns2:Afatinib .
+
+
+
+<http://clarify2020.eu/entity/1314650>	rdf:type	ns1:EGFRNegativePatient ;
+	ns1:hasOncologicalTreatmentLine	<http://clarify2020.eu/entity/1314650_OncologicalTL_1> ,
+		<http://clarify2020.eu/entity/1314650_OncologicalTL_2> ,
+		<http://clarify2020.eu/entity/1314650_OncologicalTL_3> ,
+		<http://clarify2020.eu/entity/1314650_OncologicalTL_4> .
+
+<http://clarify2020.eu/entity/1314650_OncologicalTL_1>	rdf:type	ns1:OncologicalTreatmentLine ; # <-- invalid
+	ns1:hasDrug	ns2:Paclitaxel ,
+		ns2:Carboplatin ,
+		ns2:UNK .
+<http://clarify2020.eu/entity/1314650_OncologicalTL_2>	rdf:type	ns1:OncologicalTreatmentLine ; # <-- invalid
+	ns1:hasDrug	ns2:Gemcitabine ,
+		ns2:UNK ,
+		ns2:Carboplatin .
+<http://clarify2020.eu/entity/1314650_OncologicalTL_3>	rdf:type	ns1:OncologicalTreatmentLine ; # <-- valid OncologicalTreatmentLine as it contains Afatinib
+	ns1:hasDrug	ns2:Afatinib ,
+		ns2:UNK ,
+		ns2:Pembrolizumab .
+<http://clarify2020.eu/entity/1314650_OncologicalTL_4>	rdf:type	ns1:OncologicalTreatmentLine ; # <-- invalid
+	ns1:hasDrug	ns2:UNK ,
+		ns2:Vinorelbine ,
+		ns2:Carboplatin .
+
+##########################################
+# A person not violating the constraint  #
+##########################################
+
+<http://clarify2020.eu/entity/410205>	rdf:type	ns1:EGFRNegativePatient ;
+	ns1:hasOncologicalTreatmentLine	<http://clarify2020.eu/entity/410205_OncologicalTL_1> .
+
+<http://clarify2020.eu/entity/410205_OncologicalTL_1>	rdf:type	ns1:OncologicalTreatmentLine ; # <-- invalid
+	ns1:hasDrug	ns2:Pemetrexed ,
+		ns2:Atezolizumab ,
+		ns2:Carboplatin .

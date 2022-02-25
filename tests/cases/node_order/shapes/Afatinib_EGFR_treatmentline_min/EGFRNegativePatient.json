@@ -1,0 +1,18 @@
+{
+	"name": "EGFRNegativePatient",
+	"targetDef": {
+		"query":"SELECT ?x WHERE {?x a <http://clarify2020.eu/vocab/EGFRNegativePatient>}",
+		"class": "<http://clarify2020.eu/vocab/EGFRNegativePatient>"
+	},
+	"prefix": {
+		"clarify": "<http://clarify2020.eu/vocab/>"
+	},
+	"constraintDef": {
+		"conjunctions": [
+			[
+				{ "path": "clarify:hasOncologicalTreatmentLine", "min": 1, "shape": "OncologicalTreatmentLine" }
+			]
+		]
+	}
+}
+

@@ -1,0 +1,18 @@
+{
+	"name": "OncologicalTreatmentLine",
+	"targetDef": {
+		"query":"SELECT ?x WHERE {?x a <http://clarify2020.eu/vocab/OncologicalTreatmentLine>}",
+		"class": "<http://clarify2020.eu/vocab/OncologicalTreatmentLine>"
+	},
+	"prefix": {
+		"clarify": "<http://clarify2020.eu/vocab/>"
+	},
+	"constraintDef": {
+		"conjunctions": [
+			[
+				{ "path": "clarify:hasDrug", "min": 1, "value": "<http://clarify2020.eu/entity/Afatinib>" }
+			]
+		]
+	}
+}
+
