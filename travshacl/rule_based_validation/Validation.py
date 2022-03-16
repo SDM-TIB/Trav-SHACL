@@ -178,8 +178,9 @@ class Validation:
         """
         shape_rp = shape.get_rule_pattern()
 
-        min_query_rp = shape.minQuery.get_rule_pattern()
-        self.interleave(state, shape, shape.minQuery, filtering_shape, min_query_rp, shape_rp, "min")
+        if shape.minQuery is not None:
+            min_query_rp = shape.minQuery.get_rule_pattern()
+            self.interleave(state, shape, shape.minQuery, filtering_shape, min_query_rp, shape_rp, "min")
 
         for q in shape.maxQueries:
             max_query_rp = q.get_rule_pattern()

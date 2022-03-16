@@ -128,15 +128,16 @@ class Shape:
 
         # Build a unique set of triples (+ filter) for all min constraints
         min_id = self.constraintsId + "_pos"
-        self.minQuery = self.QueryGenerator.generate_query(
-                min_id,
-                [c for c in min_constraints if c.get_shape_ref() is not None],
-                self.useSelectiveQueries,
-                self.targetQueryNoPref,
-                self.includePrefixes,
-                self.ORDERBYinQueries,
-                subquery
-        )
+        if len(min_constraints) > 0:
+            self.minQuery = self.QueryGenerator.generate_query(
+                    min_id,
+                    [c for c in min_constraints if c.get_shape_ref() is not None],
+                    self.useSelectiveQueries,
+                    self.targetQueryNoPref,
+                    self.includePrefixes,
+                    self.ORDERBYinQueries,
+                    subquery
+            )
 
         # Build one set of triples (+ filter) for each max constraint (only one max constraint per query is allowed)
         max_ids = [self.constraintsId + "_max_" + str(i) for i in range(1, len(max_constraints) + 1)]
@@ -167,7 +168,7 @@ class Shape:
 
     def __get_disjunct_rp_body(self):
         focus_node_var = VariableGenerator.get_focus_node_var()
-        min_query = [(self.minQuery.get_id(), focus_node_var, True)]
+        min_query = [(self.minQuery.get_id(), focus_node_var, True)] if self.minQuery is not None else []
         max_queries = [(s, focus_node_var, False) for s in [q.get_id() for q in self.maxQueries]]
         return min_query + max_queries
 
