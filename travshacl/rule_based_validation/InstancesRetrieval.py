@@ -176,11 +176,10 @@ class InstancesRetrieval:
         if (shortest_inst_list == prev_val_list and inst_type == "pending") \
             or (shortest_inst_list == prev_inv_list and inst_type == "violated"):
             query_template = shape.queriesWithVALUES[filtering_shape.get_id()].get_sparql()
-            separator = " "
         else:
             query_template = shape.queriesWithFILTER_NOT_IN[filtering_shape.get_id()].get_sparql()
-            separator = ","
 
+        separator = " "
         split_instances = self.__get_formatted_instances(shortest_inst_list, separator, max_instances_per_query)
         return [query_template.replace("$instances_to_add$", sublist) for sublist in split_instances]
 
