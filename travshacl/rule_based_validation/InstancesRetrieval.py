@@ -176,11 +176,10 @@ class InstancesRetrieval:
         if (shortest_inst_list == prev_val_list and inst_type == "pending") \
             or (shortest_inst_list == prev_inv_list and inst_type == "violated"):
             query_template = shape.queriesWithVALUES[filtering_shape.get_id()].get_sparql()
-            separator = " "
         else:
             query_template = shape.queriesWithFILTER_NOT_IN[filtering_shape.get_id()].get_sparql()
-            separator = ","
 
+        separator = " "
         split_instances = self.__get_formatted_instances(shortest_inst_list, separator, max_instances_per_query)
         return [query_template.replace("$instances_to_add$", sublist) for sublist in split_instances]
 
@@ -204,6 +203,18 @@ class InstancesRetrieval:
         prev_inv_list = set() if filtering_shape is None else filtering_shape.get_invalid_targets()
         query_template = q.get_sparql()
 
+        if use_selective_queries and "$inter_shape_type_to_add$" in query_template:
+            for var, inter_shape_name in q.get_inter_shape_refs_names().items():
+                inter_shape = self.shapes_dict[inter_shape_name]
+                inter_shape_triple = ''
+                if inter_shape.targetType == 'class':
+                    inter_shape_triple = get_target_node_statement(inter_shape.targetQueryNoPref).replace('?x', '?' + var)
+                    if inter_shape_triple[-1] != '}':
+                        inter_shape_triple += '.'
+                query_template = query_template.replace("$inter_shape_type_to_add$", inter_shape_triple)
+        else:
+            query_template = query_template.replace("$inter_shape_type_to_add$", "")
+
         if use_selective_queries and \
                 filtering_shape is not None and \
                 len(prev_val_list) > 0 and len(prev_inv_list) > 0 and \
@@ -224,19 +235,7 @@ class InstancesRetrieval:
                                            values_clauses.replace("$instances$", sublist) + inter_shape_triples)
                     for sublist in split_instances]
 
-        if use_selective_queries and "$inter_shape_type_to_add$" in query_template:
-            for var, inter_shape_name in q.get_inter_shape_refs_names().items():
-                inter_shape = self.shapes_dict[inter_shape_name]
-                inter_shape_triple = ''
-                if inter_shape.targetType == 'class':
-                    inter_shape_triple = get_target_node_statement(inter_shape.targetQueryNoPref).replace('?x', '?' + var)
-                    if inter_shape_triple[-1] != '}':
-                        inter_shape_triple += '.'
-                query_template = query_template.replace("$inter_shape_type_to_add$", inter_shape_triple)
-        else:
-            query_template = query_template.replace("$inter_shape_type_to_add$", '')
-
-        return [query_template.replace("$filter_clause_to_add$", "\n")]
+        return [query_template.replace("$filter_clause_to_add$", "")]
 
     @staticmethod
     def __get_formatted_instances(instances, separator, max_list_len):

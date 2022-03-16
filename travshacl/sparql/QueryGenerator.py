@@ -137,12 +137,15 @@ class QueryGenerator:
         ref_path = constraint[0].path
         focus_var = VariableGenerator.get_focus_node_var()
         target_node = get_target_node_statement(target_query)
-        query = ''.join([prefixes,
-                         "SELECT DISTINCT ?" + focus_var + " WHERE {\n",
-                         "?" + focus_var + " " + ref_path + " ?inst.\n",
-                         target_node + "\n",
-                         "FILTER (?inst NOT IN ( $instances_to_add$ )). }\n",
-                         " ORDER BY ?" + focus_var if include_order_by else ''])
+        query = ''.join([
+            prefixes,
+            "SELECT DISTINCT ?" + focus_var + " WHERE {\n",
+            target_node + " .\n",
+            "FILTER NOT EXISTS {\n",
+            "VALUES ?inst { $instances_to_add$ }.\n",
+            "?" + focus_var + " " + ref_path + " ?inst.\n",
+            "}\n}"
+        ])
         return Query(None, None, query)
 
     # CONSTRAINT QUERIES #
