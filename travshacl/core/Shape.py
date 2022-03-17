@@ -90,6 +90,16 @@ class Shape:
     def get_shape_refs(self):
         return [c.get_shape_ref() for c in self.constraints if c.get_shape_ref() is not None]
 
+    def is_max_zero_ref(self, other_shape_id):
+        """ Checks if a referenced shape occurs in a constraint with max zero cardinality """
+        ref_constraints = [c for c in self.constraints if c.get_shape_ref() == other_shape_id and c.max == 0]
+        return True if ref_constraints else False
+
+    def is_max_ref(self, other_shape_id):
+        """ Checks if a referenced shape occurs in a max cardinality constraint """
+        ref_constraints = [c for c in self.constraints if c.get_shape_ref() == other_shape_id and c.max != -1]
+        return True if ref_constraints else False
+
     def get_rule_pattern(self):
         return self.rulePattern
 
