@@ -100,7 +100,8 @@ class Validation:
         next_focus_shape_name = next_focus_shape.get_id()
         filtering_shape = self.get_evaluated_out_neighbor(next_focus_shape, state.visited_shapes, state)
         shapes_state[next_focus_shape_name]['filtering_shape'] = filtering_shape
-        if self.selectivity_enabled and filtering_shape is not None:
+        max_ref = next_focus_shape.is_max_ref(filtering_shape.get_id()) if filtering_shape is not None else True  # TODO: check if filtering based on max constraints is possible
+        if self.selectivity_enabled and filtering_shape is not None and not max_ref:
             # A query can filter its answers with (in)validated targets given by an evaluated out-neighboring shape
             pending, invalid = self.InstRetrieval.extract_targets_with_filter(next_focus_shape, filtering_shape)
             for target in invalid:
@@ -249,7 +250,11 @@ class Validation:
 
                                     # if out-neighbor has no more targets to validate (recursive cases excluded)
                                     if a_state['remaining_targets_count'] == 0:
-                                        negated_body = True
+                                        if q.max_zero:
+                                            is_body_inferred = False
+                                            is_body_inferrable = False
+                                        else:
+                                            negated_body = True
                                         break  # if at least one negated body atom, rule cannot be inferred -> halt loop
                                     else:
                                         is_body_inferred = False

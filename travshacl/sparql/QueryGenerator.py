@@ -30,7 +30,7 @@ def get_target_node_statement(target_query):
 class Query:
     """Internal representation of a SPARQL query."""
 
-    def __init__(self, id_, rule_pattern, sparql, inter_shape_refs=None):
+    def __init__(self, id_, rule_pattern, sparql, inter_shape_refs=None, max_zero=False):
         """
         Creates a new instance of a SPARQL query.
 
@@ -38,11 +38,13 @@ class Query:
         :param rule_pattern: query rule pattern associated with the query
         :param sparql: actual SPARQL query, i.e., a string complying with the SPARQL protocol
         :param inter_shape_refs: used to note references to other shapes
+        :param max_zero: whether this is a max zero query (needs special treatment)
         """
         self.id = id_
         self.rule_pattern = rule_pattern
         self.sparql = sparql
         self.inter_shape_refs = inter_shape_refs
+        self.max_zero = max_zero
 
     def get_id(self):
         return self.id
@@ -444,9 +446,15 @@ class QueryBuilder:
         :param rule_pattern: the query rule pattern associated with the query
         :param include_prefixes: indicates whether or not prefixes should be included in the query
         """
+        max_zero_query = False
+        for c in self.constraints:
+            if c.max == 0:
+                max_zero_query = True
+
         return Query(
             self.id,
             rule_pattern,
             self.get_sparql(include_prefixes, False),
-            self.inter_shape_refs
+            self.inter_shape_refs,
+            max_zero_query
         )
