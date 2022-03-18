@@ -6,7 +6,8 @@
     "targetShape": "EGFRNegativePatient",
     "result": {
         "validTargets": [
-            ["http://clarify2020.eu/entity/410205", "OncologicalTreatmentLine"]
+            ["http://clarify2020.eu/entity/410205", "OncologicalTreatmentLine"],
+            ["http://clarify2020.eu/entity/1315408", "OncologicalTreatmentLine"]
         ], 
         "invalidTargets": [
             ["http://clarify2020.eu/entity/109511", "OncologicalTreatmentLine"], 

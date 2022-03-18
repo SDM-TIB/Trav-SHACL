@@ -50,3 +50,5 @@
 	ns1:hasDrug	ns2:Pemetrexed ,
 		ns2:Atezolizumab ,
 		ns2:Carboplatin .
+
+<http://clarify2020.eu/entity/1315408> rdf:type ns1:EGFRNegativePatient .
