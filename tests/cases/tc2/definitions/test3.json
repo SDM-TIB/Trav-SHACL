@@ -67,6 +67,26 @@
             [
                 "http://example.org/testGraph2#nodeA_14",
                 "ShapeB"
+            ],
+            [
+                "http://example.org/testGraph2#nodeA_15",
+                "ShapeB"
+            ],
+            [
+                "http://example.org/testGraph2#nodeA_16",
+                "ShapeB"
+            ],
+            [
+                "http://example.org/testGraph2#nodeA_17",
+                "ShapeB"
+            ],
+            [
+                "http://example.org/testGraph2#nodeA_18",
+                "ShapeB"
+            ],
+            [
+                "http://example.org/testGraph2#nodeA_19",
+                "ShapeB"
             ]
         ]
     }
