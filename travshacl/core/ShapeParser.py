@@ -62,7 +62,7 @@ class ShapeParser:
                 max_split_size=max_split_size,
                 order_by_in_queries=order_by_in_queries
             ) for p in files_abs_paths]
-            #print("Unexpected format: " + shape_format)
+            # print("Unexpected format: " + shape_format)
 
     @staticmethod
     def get_file_extension(shape_format):
@@ -128,18 +128,23 @@ class ShapeParser:
 
         name = self.get_sname(g_file)
         id_ = name[0][0] + "_d1"  # str(i + 1) but there is only one set of conjunctions
-        target_ref = name[0][1]
+        target_ref = name[0][1]  # object of te shape name
 
         # to get the target_ref and target_type
-        data_type = self.get_targetdef(g_file, name[0][0], target_ref)
+        data_type, data_query = self.get_targetdef(g_file)
         if data_type[0] is not None:
             target_def = data_type[0]
-            target_type = 'Class'
+            target_query = data_query
+            target_type = 'class'
+
         elif data_type[1] is not None:
             target_def = data_type[1]
-            target_type = 'Node'
+            target_query = data_query
+            target_type = 'node'
+
         else:
             target_def = None
+            target_query = None
             target_type = None
 
         const_list = ['minCount', 'maxCount', 'qualifiedValueShape', 'qualifiedMinCount',
@@ -154,9 +159,17 @@ class ShapeParser:
         include_sparql_prefixes = self.abbreviated_syntax_used(constraints)
         prefixes = None
         referenced_shapes = self.shape_references(const_array)
-        target_query = None
 
-        return Shape(name[0][0], target_def, target_type, target_query, constraints, id_, referenced_shapes,
+        # helps to navigate the shape.__compute_target_queries function
+        referenced_shape = {key: '<' + referenced_shapes[key] + '>'
+                            for key in referenced_shapes.keys()
+                            if urlparse(referenced_shapes[key]).netloc != ''}
+
+        if target_def is not None:
+            if urlparse(target_def).netloc != '':  # if the target node is a url, add '<>' to it
+                target_def = '<' + target_def + '>'
+
+        return Shape(name[0][0], target_def, target_type, target_query, constraints, id_, referenced_shape,
                      use_selective_queries, max_split_size, order_by_in_queries, include_sparql_prefixes, prefixes)
 
     @staticmethod
@@ -201,7 +214,7 @@ class ShapeParser:
         """
         extract the subject of the main shape
 
-        :param filename: file to be processed
+        :param filename: file to be parsed
         :return: the main shape
         """
         query = '''
@@ -210,43 +223,43 @@ class ShapeParser:
             '''
 
         return [[str(row.asdict()['sub'].toPython()), str(row.asdict()['obj'].toPython())]
-                       for row in filename.query(query)]
+                for row in filename.query(query)]
 
     @staticmethod
-    def get_targetdef(filename, sub_ref, obj_ref):
+    def get_targetdef(filename):
         """
         extract the subject of the main shape
 
-        :param filename:
-        :param obj_ref: the target object for the main shape
-        :param sub_ref:
+        :param filename: file to be parsed
         :return: the target node or  target class
         """
 
         type_list = ['targetClass', 'targetNode']
         datatype = []
-        select_stat = 'SELECT ?target WHERE { :'
-        top_q = ' a sh:'
-        mid = '; sh:'
+        select_stat = 'SELECT ?target WHERE { '
+        select_end = 'SELECT ?name WHERE { '
+        top_q = '?name sh:'
         close = ' ?target. }'
 
         for i in type_list:
-            query_td = select_stat + str(sub_ref).split('/')[-1] + top_q + str(obj_ref).split('#')[-1] + mid + i + close
-            target_def = filename.query(query_td)
+            query_sd = select_stat + top_q + i + close
+            query_ed = select_end + top_q + i
+            target_def = filename.query(query_sd)
             if len(target_def) != 0:
                 for row in target_def:
                     d_type = str(row.asdict()['target'].toPython())
-                    datatype.append(d_type.split('/')[-1])
+                    datatype.append(d_type)
+                    data_query = query_ed + ' ' + d_type
             else:
                 datatype.append(None)
 
-        return datatype
+        return datatype, data_query
 
     @staticmethod
     def querylist(constraint, name, target_ref):
         """
 
-        :param name:
+        :param name: shape name
         :param constraint: list of constraints
         :param target_ref: the target object for the main shape
         :return: List of 4 queries for each constraint
@@ -266,10 +279,14 @@ class ShapeParser:
         end_part_ya = ' [?y_data ?a_data] ] .}'
 
         for i in constraint:
-            query3 = select_xy + str(name).split('/')[-1] + top_part + str(target_ref).split('#')[-1] + middle_part_x + i + end_part_y
-            query2 = select_xzy + str(name).split('/')[-1] + top_part + str(target_ref).split('#')[-1] + middle_part_xz + i + end_part_y
-            query1 = select_xya + str(name).split('/')[-1] + top_part + str(target_ref).split('#')[-1] + middle_part_x + i + end_part_ya
-            query0 = select_xzya + str(name).split('/')[-1] + top_part + str(target_ref).split('#')[-1] + middle_part_xz + i + end_part_ya
+            query3 = select_xy + str(name).split('/')[-1] + top_part + str(target_ref).split('#')[
+                -1] + middle_part_x + i + end_part_y
+            query2 = select_xzy + str(name).split('/')[-1] + top_part + str(target_ref).split('#')[
+                -1] + middle_part_xz + i + end_part_y
+            query1 = select_xya + str(name).split('/')[-1] + top_part + str(target_ref).split('#')[
+                -1] + middle_part_x + i + end_part_ya
+            query0 = select_xzya + str(name).split('/')[-1] + top_part + str(target_ref).split('#')[
+                -1] + middle_part_xz + i + end_part_ya
 
             query_list = [query0, query1, query2, query3]
             query_dict[i] = query_list
