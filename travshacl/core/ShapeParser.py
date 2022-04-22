@@ -147,6 +147,10 @@ class ShapeParser:
             target_query = None
             target_type = None
 
+        if target_def is not None:
+            if urlparse(target_def).netloc != '':  # if the target node is a url, add '<>' to it
+                target_def = '<' + target_def + '>'
+
         const_list = ['minCount', 'maxCount', 'qualifiedValueShape', 'qualifiedMinCount',
                       'qualifiedMaxCount', 'datatype', 'not']
 
@@ -161,15 +165,17 @@ class ShapeParser:
         referenced_shapes = self.shape_references(const_array)
 
         # helps to navigate the shape.__compute_target_queries function
-        referenced_shape = {key: '<' + referenced_shapes[key] + '>'
+        referenced_shape = {'<' + key + '>': '<' + referenced_shapes[key] + '>'
                             for key in referenced_shapes.keys()
                             if urlparse(referenced_shapes[key]).netloc != ''}
 
-        if target_def is not None:
-            if urlparse(target_def).netloc != '':  # if the target node is a url, add '<>' to it
-                target_def = '<' + target_def + '>'
+        # to helps to navigate the ShapeSchema.compute_edges function
+        if urlparse(name[0][0]).netloc != '':
+            name_ = '<' + name[0][0] + '>'
+        else:
+            name_ = name[0][0]
 
-        return Shape(name[0][0], target_def, target_type, target_query, constraints, id_, referenced_shape,
+        return Shape(name_, target_def, target_type, target_query, constraints, id_, referenced_shape,
                      use_selective_queries, max_split_size, order_by_in_queries, include_sparql_prefixes, prefixes)
 
     @staticmethod
@@ -236,20 +242,21 @@ class ShapeParser:
 
         type_list = ['targetClass', 'targetNode']
         datatype = []
+        data_query = None
         select_stat = 'SELECT ?target WHERE { '
-        select_end = 'SELECT ?name WHERE { '
+        select_end = 'SELECT ?x WHERE { ?x a <'
         top_q = '?name sh:'
         close = ' ?target. }'
 
         for i in type_list:
             query_sd = select_stat + top_q + i + close
-            query_ed = select_end + top_q + i
+            #query_ed = select_end + top_q + i
             target_def = filename.query(query_sd)
             if len(target_def) != 0:
                 for row in target_def:
                     d_type = str(row.asdict()['target'].toPython())
                     datatype.append(d_type)
-                    data_query = query_ed + ' ' + d_type
+                    data_query = select_end + d_type + '> }'
             else:
                 datatype.append(None)
 
@@ -535,6 +542,16 @@ class ShapeParser:
         if urlparse(path).netloc != '':  # if the predicate is a url, add '<>' to it
             o_path = '<' + path + '>'
 
+
+        if urlparse(shape_ref).netloc != '' and shape_ref is not None:  # if the shape reference is a url, add '<>' to it
+            o_shape_ref = '<' + shape_ref + '>'
+
+        if urlparse(value).netloc != '' and value is not None:  # if the value reference is a url, add '<>' to it
+            o_value = '<' + value + '>'
+
+        if urlparse(datatype).netloc != '' and datatype is not None:  # if the data type is a url, add '<>' to it
+            o_datatype = '<' + datatype + '>'
+
         if o_path is not None:
             if o_min is not None:
                 if o_max is not None:
@@ -545,5 +562,3 @@ class ShapeParser:
             if o_max is not None:
                 return MaxOnlyConstraint(var_generator, id_, o_path, o_max, o_neg, o_datatype, o_value, o_shape_ref,
                                          target_def)
-
-
