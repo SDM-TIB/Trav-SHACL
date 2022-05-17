@@ -6,7 +6,7 @@ import os
 from urllib.parse import urlparse
 
 import collections
-from rdflib import BNode
+import rdflib.term
 from rdflib import Graph
 from itertools import islice
 
@@ -126,32 +126,35 @@ class ShapeParser:
         g_file = Graph()  # create graph instance
         g_file.parse(filename)
 
-        name = self.get_sname(g_file)
-        id_ = name[0][0] + "_d1"  # str(i + 1) but there is only one set of conjunctions
-        target_ref = name[0][1]  # object of te shape name
+        queries = self.get_QUERY()
+
+        name = [str(row[0]) for row in g_file.query(queries[0])]
+        #name = self.get_sname(g_file)
+        id_ = name[0] + "_d1"  # str(i + 1) but there is only one set of conjunctions
 
         # to get the target_ref and target_type
-        data_type, data_query = self.get_targetdef(g_file)
-        if data_type[0] is not None:
-            target_def = data_type[0]
-            target_query = data_query
-            target_type = 'class'
+        if len(g_file.query(queries[1].format(shape=name[0]))) != 0:
+            for res in g_file.query(queries[1].format(shape=name[0])):
+                 target_def = str(res[0])
+                 target_type = 'class'
+                 break
 
-        elif data_type[1] is not None:
-            target_def = data_type[1]
-            target_query = data_query
-            target_type = 'node'
+        elif len(g_file.query(queries[2].format(shape=name[0]))) != 0:
+            for res in g_file.query(queries[2].format(shape=name[0])):
+                 target_def = str(res[0])
+                 target_type = 'node'
+                 break
 
         else:
             target_def = None
-            target_query = None
             target_type = None
 
         if target_def is not None:
+            target_query = 'SELECT ?x WHERE { ?x a <' + target_def + '> }'  # come up with a query for this
             if urlparse(target_def).netloc != '':  # if the target node is a url, add '<>' to it
                 target_def = '<' + target_def + '>'
 
-        cons_dict = self.parse_all_const(g_file, name=name[0][0], target_def=target_def, target_type=target_type)
+        cons_dict = self.parse_all_const(g_file, name=name[0], target_def=target_def, target_type=target_type, query=queries)
 
         const_array = list(cons_dict.values())  # change the format to an array
         constraints = self.parse_constraints_ttl(const_array, target_def, id_)
@@ -166,10 +169,10 @@ class ShapeParser:
                             if urlparse(referenced_shapes[key]).netloc != ''}
 
         # to helps to navigate the ShapeSchema.compute_edges function
-        if urlparse(name[0][0]).netloc != '':
-            name_ = '<' + name[0][0] + '>'
+        if urlparse(name[0]).netloc != '':
+            name_ = '<' + name[0] + '>'
         else:
-            name_ = name[0][0]
+            name_ = name[0]
 
         return Shape(name_, target_def, target_type, target_query, constraints, id_, referenced_shape,
                      use_selective_queries, max_split_size, order_by_in_queries, include_sparql_prefixes, prefixes)
@@ -203,8 +206,8 @@ class ShapeParser:
         """
         Break down list of input (dictionaries) into individual dictionaries
 
+        :param datei: list of input to be broken down
         :param SIZE: tells the length or size for each output
-        :datei: list of input to be broken down
         :return: inputs divided in len(SIZE)
         """
         it = iter(datei)
@@ -212,123 +215,87 @@ class ShapeParser:
             yield {k: datei[k] for k in islice(it, SIZE)}
 
     @staticmethod
-    def get_sname(filename):
-        """
-        extract the subject of the main shape
+    def get_QUERY():
 
-        :param filename: file to be parsed
-        :return: the main shape
-        """
-        query = '''
-                SELECT ?sub ?obj WHERE { 
-                ?sub a ?obj. }
-            '''
+        QUERY_SHAPES = """SELECT DISTINCT ?shape WHERE {
+            ?shape a <http://www.w3.org/ns/shacl#NodeShape> .
+            }"""
 
-        return [[str(row.asdict()['sub'].toPython()), str(row.asdict()['obj'].toPython())]
-                for row in filename.query(query)]
-
-    @staticmethod
-    def get_targetdef(filename):
-        """
-        extract the subject of the main shape
-
-        :param filename: file to be parsed
-        :return: the target node or  target class
+        QUERY_TARGET_1 = """SELECT ?target WHERE {{
+            <{shape}> a <http://www.w3.org/ns/shacl#NodeShape> .
+            <{shape}> <http://www.w3.org/ns/shacl#targetClass> ?target .
+        }}
         """
 
-        type_list = ['targetClass', 'targetNode']
-        datatype = []
-        data_query = None
-        select_stat = 'SELECT ?target WHERE { '
-        select_end = 'SELECT ?x WHERE { ?x a <'
-        top_q = '?name sh:'
-        close = ' ?target. }'
+        QUERY_TARGET_2 = """SELECT ?target WHERE {{
+                    <{shape}> a <http://www.w3.org/ns/shacl#NodeShape> .
+                    <{shape}> <http://www.w3.org/ns/shacl#targetNode> ?target .
+                }}
+                """
 
-        for i in type_list:
-            query_sd = select_stat + top_q + i + close
-            #query_ed = select_end + top_q + i
-            target_def = filename.query(query_sd)
-            if len(target_def) != 0:
-                for row in target_def:
-                    d_type = str(row.asdict()['target'].toPython())
-                    datatype.append(d_type)
-                    data_query = select_end + d_type + '> }'
-            else:
-                datatype.append(None)
-
-        return datatype, data_query
-
-    @staticmethod
-    def get_query():
-        query_1 = '''
-        SELECT ?x_data ?y_data ?z_data
-        WHERE { ?name sh:path ?x_data;
-            ?y_data ?z_data.}
-        '''
-
-        query_2 = '''
-        SELECT ?x_data ?y_data ?z1_data ?z2_data 
-        WHERE { ?name sh:path ?x_data;
-            ?y_data [?z1_data ?z2_data].}
-        '''
-
-        return query_1, query_2
-
-    def get_res(self, filename):
+        QUERY_CONSTRAINTS = """SELECT ?constraint WHERE {{
+          <{shape}> a <http://www.w3.org/ns/shacl#NodeShape> .
+          <{shape}> <http://www.w3.org/ns/shacl#property> ?constraint .
+        }}
         """
 
+        QUERY_CONSTRAINT_DETAILS = """SELECT ?p ?o WHERE {{
+          ?s ?p ?o .
+          FILTER( str(?s) = "{constraint}" )
+        }}"""
+
+        QUERY_QVS_REF_1 = """SELECT ?shape_ref WHERE {{
+              ?s <http://www.w3.org/ns/shacl#node> ?shape_ref .
+              FILTER ( str(?s) = "{qvs}" )
+            }}"""
+
+        QUERY_QVS_REF_2 = """SELECT ?shape_ref WHERE {{
+                  ?s <http://www.w3.org/ns/shacl#value> ?shape_ref .
+                  FILTER ( str(?s) = "{qvs}" )
+                }}"""
+
+        return QUERY_SHAPES, QUERY_TARGET_1, QUERY_TARGET_2, QUERY_CONSTRAINTS, QUERY_CONSTRAINT_DETAILS, QUERY_QVS_REF_1, QUERY_QVS_REF_2
+
+    def get_res(self, filename, name, query):
+        """
+
+        :param query: List of queries
+        :param name: name of the Shape
         :param filename: shape file in ttl format
         :return: valid response from query execution
         """
 
-        query_1, query_2 = self.get_query()
-        full_list_1 = []
+        exp_dict = collections.defaultdict(list)
+        for constraint in filename.query(query[3].format(shape=name)):
+            constraint_id = constraint[0]
 
-        query_res_1 = filename.query(query_1)
-        query_res_2 = filename.query(query_2)
+            for detail in filename.query(query[4].format(constraint=constraint_id)):
 
-        # to remove BNode
-        BNode_list = []
-        for row in query_res_2:
-            BNode_list.append(row)
+                if isinstance(detail.asdict()['o'], rdflib.term.BNode):
+                    qv_type = detail.asdict()['p']
+                    qvs = detail.asdict()['o']
+                    if len(filename.query(query[5].format(qvs=qvs))) != 0:
+                        for shape_ref in filename.query(query[5].format(qvs=qvs)):
+                            dict_1 = [qv_type, ['shape', str(shape_ref.asdict()['shape_ref'])]]
+                        exp_dict[str(constraint_id)].append(dict_1.copy())
 
-        for row in query_res_1:
-            row = list(row)
-            if type(row[2]) is BNode:
-                row[2] = [BNode_list[0][2], BNode_list[0][3]]
-                BNode_list.pop(0)
-            full_list_1.append(row)
+                    else:
+                        for shape_ref in filename.query(query[6].format(qvs=qvs)):
+                            dict_1 = [qv_type, ['value', str(shape_ref.asdict()['shape_ref'])]]
+                        exp_dict[str(constraint_id)].append(dict_1.copy())
 
-        return full_list_1
 
-    def to_dict(self, filename):
+                else:
+                    #detail_dict = detail.asdict()
+                    dict_2 = [str(detail['p']), str(detail['o'])]
+                    exp_dict[str(constraint_id)].append(dict_2.copy())
+
+        return exp_dict
+
+    def parse_all_const(self, filename, name, target_def, target_type, query):
         """
 
-        :param filename: shape file in ttl format
-        :return: convert the response list to dictionary
-        """
-        full_list = self.get_res(filename)
-        full_dict_2 = collections.defaultdict(list)
-        i = 0
-        for row_data in full_list:
-            # row = list(row)
-
-            if str(row_data[1].split('#')[-1]) == 'path':
-                i = i + 1
-                row_data[0] = str(row_data[0]) + '_' + str(i)
-                row_data[2] = str(row_data[2]) + '_' + str(i)
-            else:
-                row_data[0] = str(row_data[0]) + '_' + str(i)
-                if type(row_data[2]) is not list:
-                    row_data[2] = str(row_data[2]) + '_' + str(i)
-
-            full_dict_2[row_data[0]].append([row_data[1], row_data[2]])
-
-        return full_dict_2
-
-    def parse_all_const(self, filename, name, target_def, target_type):
-        """
-
+        :param query: List of queries
         :param name: name of the shape
         :param target_type: indicates the target type of the shape, e.g., class or node
         :param target_def: target definition of the shape
@@ -336,7 +303,7 @@ class ShapeParser:
         :return: all constraints belonging to the shape
         """
 
-        cons_dict = self.to_dict(filename)
+        cons_dict = self.get_res(filename, name, query)
         trav_dict = {}
         exp_dict = {}
 
@@ -358,26 +325,26 @@ class ShapeParser:
 
                     for i in dv:
                         if 'path' in str(i[0]).lower():
-                            trav_dict['path'] = str(i[1]).split('_')[0]
+                            trav_dict['path'] = str(i[1])
 
                         if 'min' in str(i[0]).lower():
-                            trav_dict['min'] = str(i[1]).split('_')[0]
+                            trav_dict['min'] = str(i[1])
 
                         if 'max' in str(i[0]).lower():
-                            trav_dict['max'] = str(i[1]).split('_')[0]
+                            trav_dict['max'] = str(i[1])
 
                         if 'datatype' in str(i[0]).lower():
-                            trav_dict['datatype'] = str(i[1]).split('_')[0]
+                            trav_dict['datatype'] = str(i[1])
 
                         if 'valueshape' in str(i[0]).lower():
                             if 'value' in str(i[1][0]).lower():
                                 trav_dict['value'] = str(i[1][1])
 
-                            if 'node' in str(i[1][0]).lower():
+                            if 'shape' in str(i[1][0]).lower():
                                 trav_dict['shape'] = str(i[1][1])
 
                         if 'not' in str(i[0]).lower():
-                            trav_dict['negated'] = str(i[1]).split('_')[0]
+                            trav_dict['negated'] = str(i[1])
 
                 exp_dict[str(dk)] = trav_dict.copy()
 
