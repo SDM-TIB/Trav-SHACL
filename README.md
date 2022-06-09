@@ -12,8 +12,7 @@ We will add this feature in the future.
 
 ### Prerequisites
 The following guides assume:
-* Your shape schema is placed in `./shapes`
-  * At the moment Trav-SHACL only parses SHACL shapes in JSON format, see the `eval-www2021` branch for an example
+* Your shape schema is placed in `./shapes` and is specified in `JSON` (see the `eval-www2021` branch for an example)
 * There is a SPARQL endpoint running that you can connect to, in this example it is `http://localhost:14000/sparql`
   * The endpoint is running in Docker
   * It is connected to the Docker network `semantic-web`
@@ -32,6 +31,7 @@ The following guides assume:
 * `--selective` (optional) - use more selective queries for constraint queries
 * `--outputs` (optional) - creates one file each for violated and validated targets, otherwise only statistics and traces will be stored
 * `-m` (optional) - maximum number of entities in FILTER or VALUES clause of a SPARQL query, default: 256
+* `-j` / `--json` (optional) - indicates that the SHACL shape schema is expressed in JSON
 
 ### Run with Docker
 In order to connect to the SPARQL endpoint, it must be accessible from within the Docker container.
@@ -43,13 +43,13 @@ docker build -t travshacl .
 docker run --name trav-shacl -v $(pwd)/shapes:/shapes -v $(pwd)/results:/results --network=semantic-web -d travshacl
 
 # Run the Validation
-docker exec -it trav-shacl bash -c "python3 main.py -d /shapes http://endpoint1:8890/sparql /results/ DFS --heuristics TARGET IN BIG --orderby --selective --outputs"
+docker exec -it trav-shacl bash -c "python3 main.py -d /shapes http://endpoint1:8890/sparql /results/ DFS --heuristics TARGET IN BIG --orderby --selective --outputs --json"
 ```
 
 ### Run with Python3
 ```bash
 pip3 install -r requirements.txt
-python3 main.py -d ./shapes http://localhost:14000/sparql ./results/ DFS --heuristics TARGET IN BIG --orderby --selective --outputs
+python3 main.py -d ./shapes http://localhost:14000/sparql ./results/ DFS --heuristics TARGET IN BIG --orderby --selective --outputs --json
 ```
 
 ## Publications
