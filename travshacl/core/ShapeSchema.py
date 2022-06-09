@@ -141,7 +141,7 @@ class ShapeSchema:
                          if self.shapesDict[name].get_target_query() is not None]
         target_shape_predicates = [s.get_id() for s in target_shapes]
 
-        Validation(
+        return Validation(
             self.endpointURL,
             node_order,
             self.shapesDict,
@@ -151,7 +151,7 @@ class ShapeSchema:
             self.saveStats,
             self.saveTargetsToFile
         ).exec()
-        return 'Go to log files in {} folder to see report'.format(self.outputDirName)
+        # return 'Go to log files in {} folder to see report'.format(self.outputDirName)
 
     def compute_in_and_outdegree(self):
         """Computes the in- and outdegree of each shape."""

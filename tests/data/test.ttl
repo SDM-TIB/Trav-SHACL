@@ -1,0 +1,10 @@
+@prefix test: <http://test.example.com/> .
+
+test:ClassA_Instance0  a  test:ClassA ;
+  test:property0  "some-value" .
+
+test:ClassA_Instance1  a  test:ClassA ;
+  test:property0  "some-value" ,
+                  "some-other-value" .
+
+test:ClassA_Instance2  a  test:ClassA .
