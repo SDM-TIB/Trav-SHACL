@@ -2,3 +2,5 @@ Dockerfile
 venv/
 output/
 example/
+tests/
+requirements-dev.txt

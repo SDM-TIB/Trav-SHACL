@@ -1,11 +1,14 @@
-FROM ubuntu:20.04
+FROM python:3.9.10-slim-buster
+MAINTAINER Philipp D. Rohde <philipp.rohde@tib.eu>
 
-WORKDIR /apps/travshacl
-COPY . /apps/travshacl
+# install dependencies
+COPY requirements.txt /TravSHACL/requirements.txt
+RUN python -m pip install --upgrade --no-cache-dir pip==22.0.* && \
+    python -m pip install --no-cache-dir -r /TravSHACL/requirements.txt
 
-RUN apt-get update &&\
-    apt-get install -y --no-install-recommends python3.8 python3-pip python3-setuptools curl grep &&\
-    apt-get clean &&\
-    pip3 install --no-cache-dir -r requirements.txt
+# copy the source code into the container
+COPY . /TravSHACL
+WORKDIR /TravSHACL
 
+# Trav-SHACL is no servie; so make the container stay active
 CMD ["tail", "-f", "/dev/null"]
