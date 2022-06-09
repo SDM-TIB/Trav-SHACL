@@ -44,8 +44,10 @@ if __name__ == '__main__':
     parser.add_argument("--outputs", action='store_true', default=False,
                         help="Save classified targets to output files", required=False)
 
-    args = parser.parse_args()
+    parser.add_argument("-j", "--json", action='store_true', default=False,
+                        help="Indicates that the SHACL shape schema is expressed in JSON", required=False)
 
+    args = parser.parse_args()
     eval_shape_schema(args)
 
     end = time.time()

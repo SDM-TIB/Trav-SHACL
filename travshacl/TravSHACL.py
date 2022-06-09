@@ -56,7 +56,7 @@ def eval_shape_schema(args):
     create_output_dir(args.outputDir)
     shape_schema = ShapeSchema(
         schema_dir=args.d,
-        schema_format="JSON",
+        schema_format="JSON" if args.json else "SHACL",
         endpoint_url=args.endpoint,
         graph_traversal=GraphTraversal.BFS if args.graphTraversal == "BFS" else GraphTraversal.DFS,
         heuristics=parse_heuristics(args.heuristics),
