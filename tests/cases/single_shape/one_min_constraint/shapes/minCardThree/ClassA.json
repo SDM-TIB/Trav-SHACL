@@ -1,5 +1,5 @@
 {
-  "name": "SingleShapeOneMin",
+  "name": "ClassA",
   "targetDef": {
     "query": "SELECT ?x WHERE { ?x a test:ClassA }",
     "class": "test:ClassA"
@@ -10,7 +10,7 @@
   "constraintDef": {
     "conjunctions": [
       [
-        { "path": "test:property0", "min":  0 }
+        { "path": "test:property0", "min":  3 }
       ]
     ]
   }
