@@ -1,0 +1,12 @@
+{
+  "schemaDir": "./tests/cases/single_shape/one_min_one_max/shapes/property0_max2_property1_min3",
+  "groundTruth": {
+    "valid": [],
+    "invalid": [
+      "http://test.example.com/ClassA_Instance0",
+      "http://test.example.com/ClassA_Instance1",
+      "http://test.example.com/ClassA_Instance2",
+      "http://test.example.com/ClassA_Instance3"
+    ]
+  }
+}

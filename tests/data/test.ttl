@@ -1,16 +1,34 @@
 @prefix test: <http://test.example.com/> .
 
 test:ClassA_Instance0  a  test:ClassA ;
-  test:property0  "some-value" .
+  test:property0  "some-value" ;
+  test:property1  1989 ;
+  test:property2  "value1" ;
+  test:property3  0.1 ,
+                  0.2 ,
+                  0.3 ,
+                  0.4 ,
+                  0.5 .
 
 test:ClassA_Instance1  a  test:ClassA ;
   test:property0  "some-value" ,
-                  "some-other-value" .
+                  "some-other-value" ;
+  test:property1  1990 ;
+  test:property2  "value1" ,
+                  "value2" ;
+  test:property3  0.2 ,
+                  0.4 ,
+                  0.6 .
 
-test:ClassA_Instance2  a  test:ClassA .
+test:ClassA_Instance2  a  test:ClassA ;
+  test:property3  1.0 .
 
 test:ClassA_Instance3  a  test:ClassA ;
   test:property0  "some-value" ,
                   "some-other-value" ,
                   "yet-another-value" ,
-                  "again-another-value" .
+                  "again-another-value" ;
+  test:property1  1991 ;
+  test:property3  0.25 ,
+                  0.50 ,
+                  0.75 .

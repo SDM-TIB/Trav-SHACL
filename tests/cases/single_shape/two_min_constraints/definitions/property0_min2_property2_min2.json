@@ -1,0 +1,13 @@
+{
+  "schemaDir": "./tests/cases/single_shape/two_min_constraints/shapes/property0_min2_property2_min2",
+  "groundTruth": {
+    "valid": [
+      "http://test.example.com/ClassA_Instance1"
+    ],
+    "invalid": [
+      "http://test.example.com/ClassA_Instance0",
+      "http://test.example.com/ClassA_Instance2",
+      "http://test.example.com/ClassA_Instance3"
+    ]
+  }
+}
