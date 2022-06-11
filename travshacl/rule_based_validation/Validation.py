@@ -179,6 +179,19 @@ class Validation:
         """
         shape_rp = shape.get_rule_pattern()
 
+        if shape.minQuery is None and not shape.maxQueries:  # current shape is a shape without constraints
+            shape_name = shape.get_id()
+            shapes_state = state.shapes_state
+            remaining_targets = state.remaining_targets
+            to_remove = []
+            for head in remaining_targets:
+                if head[0] == shape_name:
+                    self.register_target(head, "valid", shape_name, shapes_state)
+                    to_remove.append(head)
+                    shapes_state[shape_name]['remaining_targets_count'] -= 1
+            for head in to_remove:
+                remaining_targets.discard(head)
+
         if shape.minQuery is not None:
             min_query_rp = shape.minQuery.get_rule_pattern()
             self.interleave(state, shape, shape.minQuery, filtering_shape, min_query_rp, shape_rp, "min")
