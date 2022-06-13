@@ -2,10 +2,10 @@
   "schemaDir": "./tests/cases/single_shape/one_max_constraint/shapes/maxCardOne",
   "groundTruth": {
     "valid": [
+      "http://test.example.com/ClassA_Instance0",
       "http://test.example.com/ClassA_Instance2"
     ],
     "invalid": [
-      "http://test.example.com/ClassA_Instance0",
       "http://test.example.com/ClassA_Instance1",
       "http://test.example.com/ClassA_Instance3"
     ]
