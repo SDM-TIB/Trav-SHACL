@@ -278,8 +278,8 @@ class QueryBuilder:
         """
         Get the SPARQL query corresponding to the current state of the QueryBuilder.
 
-        :param include_prefixes: indicates whether or not prefixes should be included in the query
-        :param is_subquery: indicates whether or not the query is considered to be a sub-query
+        :param include_prefixes: indicates whether prefixes should be included in the query
+        :param is_subquery: indicates whether the query is considered to be a sub-query
         :return: the SPARQL query as a string
         """
         if is_subquery:
@@ -307,13 +307,10 @@ class QueryBuilder:
             else:
                 return ''.join([prefixes,
                                 self.__get_projection_string(),
-                                " WHERE {\n", target_node, "{ SELECT ?",
-                                VariableGenerator.get_focus_node_var(),
-                                " (COUNT(?", self.triples[0].rsplit("?", 1)[1][:-1], ") AS ?cnt) WHERE {\n",
-                                'OPTIONAL { ', self.triples[0], ' }\n} GROUP BY ?',
+                                " WHERE {\n", target_node,
+                                ' OPTIONAL { ', self.triples[0], ' }\n} GROUP BY ?',
                                 VariableGenerator.get_focus_node_var(),
                                 ' HAVING (COUNT(?', self.triples[0].rsplit("?", 1)[1][:-1], ') > ', str(self.constraints[0].max), ')',
-                                '\n}}',
                                 " ORDER BY ?" + VariableGenerator.get_focus_node_var() if self.include_ORDERBY else ''])
 
         query = ''.join([prefixes,
