@@ -178,11 +178,11 @@ class Validation:
         :param filtering_shape: shape (referenced by focus 'shape') providing filtering instances
         """
         shape_rp = shape.get_rule_pattern()
+        shape_name = shape.get_id()
+        shapes_state = state.shapes_state
+        remaining_targets = state.remaining_targets
 
         if shape.minQuery is None and not shape.maxQueries:  # current shape is a shape without constraints
-            shape_name = shape.get_id()
-            shapes_state = state.shapes_state
-            remaining_targets = state.remaining_targets
             to_remove = []
             for head in remaining_targets:
                 if head[0] == shape_name:
@@ -199,6 +199,28 @@ class Validation:
         for q in shape.maxQueries:
             max_query_rp = q.get_rule_pattern()
             self.interleave(state, shape, q, filtering_shape, max_query_rp, shape_rp, "max")
+            # after running the max constraints, rules need to be added for the instances that were not
+            # in the query result since they will still be valid and may need to be checked further
+            for head in remaining_targets:
+                if head[0] == shape_name:
+                    body = set()
+                    for i, atom_pattern in enumerate(shape_rp.body):
+                        a = (atom_pattern[0], head[1], atom_pattern[2])
+                        body.add(a)
+
+                    s_head = (shape_name, head[1], True)
+
+                    if s_head not in state.rule_map.keys():
+                        s = set()
+                        s.add(frozenset(body))
+                        state.rule_map[s_head] = s
+                        state.rule_number += 1
+                        state.total_rule_number += 1
+                    else:
+                        if frozenset(body) not in state.rule_map[s_head]:
+                            state.rule_number += 1
+                            state.total_rule_number += 1
+                        state.rule_map[s_head].add(frozenset(body))
 
     def interleave(self, state, shape, q, filtering_shape, q_rule_pattern, s_rule_pattern, q_type):
         """
