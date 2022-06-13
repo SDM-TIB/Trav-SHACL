@@ -7,7 +7,8 @@
       "http://test.example.com/ClassA_Instance3"
     ],
     "invalid": [
-      "http://test.example.com/ClassA_Instance2"
+      "http://test.example.com/ClassA_Instance2",
+      "http://test.example.com/ClassA_Instance4"
     ]
   }
 }

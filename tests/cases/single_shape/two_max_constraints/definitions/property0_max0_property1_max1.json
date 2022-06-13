@@ -2,7 +2,8 @@
   "schemaDir": "./tests/cases/single_shape/two_max_constraints/shapes/property0_max0_property1_max1",
   "groundTruth": {
     "valid": [
-      "http://test.example.com/ClassA_Instance2"
+      "http://test.example.com/ClassA_Instance2",
+      "http://test.example.com/ClassA_Instance4"
     ],
     "invalid": [
       "http://test.example.com/ClassA_Instance0",

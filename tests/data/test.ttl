@@ -21,6 +21,7 @@ test:ClassA_Instance1  a  test:ClassA ;
                   0.6 .
 
 test:ClassA_Instance2  a  test:ClassA ;
+  test:property1  1998 ;
   test:property3  1.0 .
 
 test:ClassA_Instance3  a  test:ClassA ;
@@ -32,3 +33,5 @@ test:ClassA_Instance3  a  test:ClassA ;
   test:property3  0.25 ,
                   0.50 ,
                   0.75 .
+
+test:ClassA_Instance4  a  test:ClassA .
