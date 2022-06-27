@@ -35,3 +35,64 @@ test:ClassA_Instance3  a  test:ClassA ;
                   0.75 .
 
 test:ClassA_Instance4  a  test:ClassA .
+
+test:ClassB_Instance0  a  test:ClassB ;
+  test:property0  "some value" ;
+  test:toC  test:ClassC_Instance0 .
+
+test:ClassB_Instance1  a  test:ClassB ;
+  test:property0  "some value" ;
+  test:toC  test:ClassC_Instance3 .
+
+test:ClassB_Instance2  a  test:ClassB ;
+  test:property0  "some value" ;
+  test:toC  test:ClassC_Instance0 ,
+            test:ClassC_Instance1 ,
+            test:ClassC_Instance2 .
+
+test:ClassB_Instance3  a  test:ClassB ;
+  test:property0  "some value" ;
+  test:toC  test:ClassC_Instance0 ,
+            test:ClassC_Instance1 ,
+            test:ClassC_Instance3 .
+
+test:ClassB_Instance4  a  test:ClassB ;
+  test:toC  test:ClassC_Instance0 .
+
+test:ClassB_Instance5  a  test:ClassB ;
+  test:toC  test:ClassC_Instance3 .
+
+test:ClassB_Instance6  a  test:ClassB ;
+  test:toC  test:ClassC_Instance0 ,
+            test:ClassC_Instance1 ,
+            test:ClassC_Instance2 .
+
+test:ClassB_Instance7  a  test:ClassB ;
+  test:toC  test:ClassC_Instance0 ,
+            test:ClassC_Instance1 ,
+            test:ClassC_Instance3 .
+
+test:ClassB_Instance8  a  test:ClassB ;
+  test:property0  "some value" ,
+                  "another value" ,
+                  "and yet another one" ;
+  test:toC  test:ClassC_Instance0 .
+
+test:ClassB_Instance9  a  test:ClassB ;
+  test:property0  "some value" ,
+                  "another value" ,
+                  "and yet another one" ;
+  test:toC  test:ClassC_Instance3 .
+
+test:ClassB_Instance10  a  test:ClassB .
+
+test:ClassC_Instance0  a  test:ClassC ;
+  test:property0  "some value" .
+
+test:ClassC_Instance1  a  test:ClassC ;
+  test:property0  "some value" .
+
+test:ClassC_Instance2  a  test:ClassC ;
+  test:property0  "some value" .
+
+test:ClassC_Instance3  a  test:ClassC .

@@ -1,0 +1,17 @@
+{
+  "name": "ClassB",
+  "targetDef": {
+    "query": "SELECT ?x WHERE { ?x a test:ClassB }",
+    "class": "test:ClassB"
+  },
+  "prefix": {
+    "test": "<http://test.example.com/>"
+  },
+  "constraintDef": {
+    "conjunctions": [
+      [
+        { "path": "test:toC", "min": 1, "shape": "ClassC" }
+      ]
+    ]
+  }
+}

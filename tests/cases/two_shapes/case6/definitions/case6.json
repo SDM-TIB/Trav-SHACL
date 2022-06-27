@@ -1,0 +1,24 @@
+{
+  "schemaDir": "./tests/cases/two_shapes/case6/shapes/",
+  "groundTruth": {
+    "valid": [
+      "http://test.example.com/ClassC_Instance0",
+      "http://test.example.com/ClassC_Instance1",
+      "http://test.example.com/ClassC_Instance2",
+      "http://test.example.com/ClassB_Instance0",
+      "http://test.example.com/ClassB_Instance2",
+      "http://test.example.com/ClassB_Instance3",
+      "http://test.example.com/ClassB_Instance4",
+      "http://test.example.com/ClassB_Instance6",
+      "http://test.example.com/ClassB_Instance7"
+    ],
+    "invalid": [
+      "http://test.example.com/ClassC_Instance3",
+      "http://test.example.com/ClassB_Instance1",
+      "http://test.example.com/ClassB_Instance5",
+      "http://test.example.com/ClassB_Instance8",
+      "http://test.example.com/ClassB_Instance9",
+      "http://test.example.com/ClassB_Instance10"
+    ]
+  }
+}
