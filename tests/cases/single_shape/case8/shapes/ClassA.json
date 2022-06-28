@@ -1,0 +1,15 @@
+{
+  "name": "ClassA",
+  "targetDef": {
+    "query": "SELECT ?x WHERE { ?x a test:ClassA }",
+    "class": "test:ClassA"
+  },
+  "prefix": {
+    "test": "<http://test.example.com/>"
+  },
+  "constraintDef": {
+    "conjunctions": [
+      []
+    ]
+  }
+}

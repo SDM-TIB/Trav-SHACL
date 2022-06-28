@@ -1,40 +1,42 @@
 @prefix test: <http://test.example.com/> .
 
 test:ClassA_Instance0  a  test:ClassA ;
-  test:property0  "some-value" ;
-  test:property1  1989 ;
-  test:property2  "value1" ;
-  test:property3  0.1 ,
-                  0.2 ,
-                  0.3 ,
-                  0.4 ,
-                  0.5 .
+  test:property0  "some value" ;
+  test:property1  1989 .
 
 test:ClassA_Instance1  a  test:ClassA ;
-  test:property0  "some-value" ,
-                  "some-other-value" ;
-  test:property1  1990 ;
-  test:property2  "value1" ,
-                  "value2" ;
-  test:property3  0.2 ,
-                  0.4 ,
-                  0.6 .
+  test:property0  "some value" ,
+                  "some other value" ;
+  test:property1  1990 ,
+                  1991 .
 
 test:ClassA_Instance2  a  test:ClassA ;
-  test:property1  1998 ;
-  test:property3  1.0 .
+  test:property0  "some value" ,
+                  "some other value" ,
+                  "yet another value" ;
+  test:property1  1992 ,
+                  1998 ,
+                  2011 .
 
 test:ClassA_Instance3  a  test:ClassA ;
-  test:property0  "some-value" ,
-                  "some-other-value" ,
-                  "yet-another-value" ,
-                  "again-another-value" ;
-  test:property1  1991 ;
-  test:property3  0.25 ,
-                  0.50 ,
-                  0.75 .
+  test:property0  "some value" ,
+                  "some other value" ,
+                  "yet another value" ,
+                  "again another value" ;
+  test:property1  1963 ,
+                  2017 ,
+                  2019 ,
+                  2024 .
 
 test:ClassA_Instance4  a  test:ClassA .
+
+test:ClassA_Instance5  a  test:ClassA ;
+  test:property1  2023 .
+
+test:ClassA_Instance6  a  test:ClassA ;
+  test:property1  2004 ,
+                  2021 ,
+                  2022 .
 
 test:ClassB_Instance0  a  test:ClassB ;
   test:property0  "some value" ;
