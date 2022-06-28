@@ -6,6 +6,8 @@ import time
 
 from travshacl.sparql.SPARQLEndpoint import SPARQLEndpoint
 from travshacl.sparql.QueryGenerator import get_target_node_statement
+from travshacl.constraints.MinOnlyConstraint import MinOnlyConstraint
+from travshacl.constraints.MaxOnlyConstraint import MaxOnlyConstraint
 
 
 class InstancesRetrieval:
@@ -77,93 +79,14 @@ class InstancesRetrieval:
         # Valid and invalid instances of the previous evaluated shape (if any)
         prev_val_list = set() if filtering_shape is None else filtering_shape.get_valid_targets()
         prev_inv_list = set() if filtering_shape is None else filtering_shape.get_invalid_targets()
-
-        pending_targets = self.__get_pending_targets(shape, prev_val_list, prev_inv_list, filtering_shape)
-        self.stats.update_log(''.join(["\nNumber of targets retrieved: ", str(len(pending_targets))]))
-
-        inv_targets = self.__get_invalid_targets(shape, prev_val_list, prev_inv_list, filtering_shape)
-        self.stats.update_log(''.join(["\nNumber of targets retrieved: ", str(len(inv_targets))]))
-
-        return pending_targets, inv_targets
-
-    def __get_pending_targets(self, shape, prev_val_list, prev_inv_list, filtering_shape):
-        """
-        Retrieves all targets of the current 'shape' based on the result of a previously evaluated neighbor
-        for which the validation status has still to be determined, i.e., they are pending.
-
-        :param shape: focus shape being evaluated
-        :param prev_val_list: list of valid instances from neighboring shape
-        :param prev_inv_list: list of invalid instances from neighboring shape
-        :param filtering_shape: previously evaluated neighboring shape
-        :return: bindings for all pending targets based on the previously evaluated instances
-        """
-        if len(prev_val_list) == 0:
-            return set()
-
-        query = self.__filter_target_query(shape, prev_val_list, prev_inv_list, filtering_shape, "pending")
         pending_targets = set()
-        start = time.time() * 1000.0
-        for q in query:
-            self.stats.update_log("\nEvaluating target query for " + shape.id + ":\n" + q)
-            bindings = self.endpoint.run_query(q)["results"]["bindings"]
-            pending_targets.update([(shape.id, b["x"]["value"], True) for b in bindings])
-        end = time.time() * 1000.0
-        self.stats.record_query_exec_time(end - start)
-        self.stats.record_query()
-        return pending_targets
-
-    def __get_invalid_targets(self, shape, prev_val_list, prev_inv_list, filtering_shape):
-        """
-        Retrieves all invalid targets of current 'shape' based on the result of a previously evaluated neighbor.
-
-        :param shape: focus shape being evaluated
-        :param prev_val_list: list of valid instances from neighboring shape
-        :param prev_inv_list: list of invalid instances from neighboring shape
-        :param filtering_shape: previously evaluated neighboring shape
-        :return: bindings for all invalid targets based on the previously evaluated instances
-        """
-        if len(prev_inv_list) == 0:
-            return set()
-
-        query = self.__filter_target_query(shape, prev_val_list, prev_inv_list, filtering_shape, "violated")
         inv_targets = set()
-        start = time.time() * 1000.0
-        for idx, q in enumerate(query):
-            self.stats.update_log("\nEvaluating target query for " + shape.id + ":\n" + q)
-            bindings = self.endpoint.run_query(q)["results"]["bindings"]
-            if idx == 0:  # update empty set
-                inv_targets.update([(shape.id, b["x"]["value"], True) for b in bindings])
-            else:
-                inv_targets.intersection([(shape.id, b["x"]["value"], True) for b in bindings])
-        end = time.time() * 1000.0
-        self.stats.record_query_exec_time(end - start)
-        self.stats.record_query()
-        return inv_targets
 
-    def __filter_target_query(self, shape, prev_val_list, prev_inv_list, filtering_shape, inst_type):
-        """
-        Gets query template for valid (VALUES) and invalid (FILTER NOT IN) instances of current 'shape' and
-        instantiates the $instances_to_add$ string with the actual instances given by the evaluated neighbor
-        shape's list of instances.
-
-        Local variables:
-            max_split_number: heuristic of maximum possible number of instances considered for using filtering queries
-                            instead of the initial target query (currently hard-coded to 256)
-            max_instances_per_query: number from which the list is going to start being split because of the max
-                            number of characters allowed in a SPARQL endpoint's query
-
-        :param shape: focus shape being evaluated
-        :param prev_val_list: list of valid instances from neighboring shape
-        :param prev_inv_list: list of invalid instances from neighboring shape
-        :param filtering_shape: previously evaluated neighboring shape
-        :param inst_type: string indicating the type of instances to retrieve ("pending" or "violated")
-        :return: One or multiple queries depending on whether the instances list was split or not.
-                 If the instances list was not split, the variable 'query' returns an array with one single query.
-        """
-        self.stats.update_log(''.join(["\n", inst_type, " instances retrieval ", shape.get_id(),
-                              ": [out-neighbor's (", filtering_shape.get_id(), ")"]))
+        self.stats.update_log(''.join(["\n", "instances retrieval ", shape.get_id(),
+                                       ": [out-neighbor's (", filtering_shape.get_id(), ")"]))
         self.stats.update_log(''.join([" instances: ", str(len(prev_val_list)), " valid ",
                                        str(len(prev_inv_list)), " invalid]"]))
+
         max_split_number = 256
         max_instances_per_query = 115
         shortest_inst_list = prev_val_list if len(prev_val_list) < len(prev_inv_list) else prev_inv_list
@@ -173,15 +96,39 @@ class InstancesRetrieval:
                 len(shortest_inst_list) > max_split_number:
             return [shape.get_target_query()]
 
-        if (shortest_inst_list == prev_val_list and inst_type == "pending") \
-            or (shortest_inst_list == prev_inv_list and inst_type == "violated"):
-            query_template = shape.queriesWithVALUES[filtering_shape.get_id()].get_sparql()
-        else:
-            query_template = shape.queriesWithFILTER_NOT_IN[filtering_shape.get_id()].get_sparql()
-
+        query_template = shape.queriesFilters[filtering_shape.get_id()]
+        constraint = query_template["constraint"]
+        query_template = query_template["query_valid"].get_sparql() if shortest_inst_list == prev_val_list else query_template["query_invalid"].get_sparql()
         separator = " "
+
         split_instances = self.__get_formatted_instances(shortest_inst_list, separator, max_instances_per_query)
-        return [query_template.replace("$instances_to_add$", sublist) for sublist in split_instances]
+        query = [query_template.replace("$instances_to_add$", sublist) for sublist in split_instances]
+
+        start = time.time() * 1000.0
+        for q in query:
+            self.stats.update_log("\nEvaluating target query for " + shape.id + ":\n" + q)
+            bindings = self.endpoint.run_query(q)["results"]["bindings"]
+            for b in bindings:
+                instance = b['x']['value']
+                cardinality = int(b['cnt']['value'])
+
+                if isinstance(constraint, MinOnlyConstraint):
+                    if cardinality < constraint.min:
+                        inv_targets.update([(shape.id, instance, True)])
+                    else:
+                        pending_targets.update([(shape.id, instance, True)])
+                elif isinstance(constraint, MaxOnlyConstraint):
+                    if cardinality > constraint.max:
+                        inv_targets.update([(shape.id, instance, True)])
+                    else:
+                        pending_targets.update([(shape.id, instance, True)])
+        end = time.time() * 1000.0
+        self.stats.record_query_exec_time(end - start)
+        self.stats.record_query()
+        self.stats.update_log("\nelapsed: " + str(end - start) + " ms\n")
+        self.stats.update_log("\nNumber of pending targets: " + str(len(pending_targets)))
+        self.stats.update_log("\nNumber of invalid targets: " + str(len(inv_targets)))
+        return pending_targets, inv_targets
 
     def rewrite_constraint_query(self, shape, q, filtering_shape, q_type, use_selective_queries):
         """

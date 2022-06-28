@@ -83,10 +83,9 @@ class QueryGenerator:
             return None
         if type_ == "plain_target":
             return self._plain_target_query(target_query, include_prefixes, include_order_by)
-        elif type_ == "template_VALUES":
-            return self._values_target_query(ref_constraint, target_query, include_prefixes, include_order_by)
-        elif type_ == "template_FILTER_NOT_IN":
-            return self._filter_not_in_target_query(ref_constraint, target_query, include_prefixes, include_order_by)
+        elif type_ == "template_FILTER":
+            return self._target_query_filter(ref_constraint, target_query, include_prefixes, include_order_by, True), \
+                   self._target_query_filter(ref_constraint, target_query, include_prefixes, include_order_by, False)
 
     def _plain_target_query(self, target_query, include_prefixes, include_order_by):
         """
@@ -103,50 +102,31 @@ class QueryGenerator:
                         target_query,
                         " ORDER BY ?" + focus_var if include_order_by else ''])
 
-    def _values_target_query(self, constraint, target_query, include_prefixes, include_order_by):
+    def _target_query_filter(self, constraint, target_query, include_prefixes, include_order_by, filter_by_valid=True):
         """
-        Generates a target query including a VALUES clause to filter based on valid instances.
+        Generates a target query for filtering based on links to valid or invalid instances of the neighboring shape.
 
         :param constraint: constraint that refers to this target query
         :param target_query: target query string parsed from the input file
-        :param include_prefixes: indicates whether or not prefixes should be included in the query
-        :param include_order_by: indicates whether or not the ORDER BY clause will be added
+        :param include_prefixes: indicates whether prefixes should be included in the query
+        :param include_order_by: indicates whether the ORDER BY clause will be added
+        :param: filter_by_valid: indicates whether valid instances will be used for filtering or invalid ones
         :return: target query with VALUES clause
         """
         prefixes = self.shape.get_prefix_string() if include_prefixes else ''
         ref_path = constraint[0].path
         focus_var = VariableGenerator.get_focus_node_var()
         target_node = get_target_node_statement(target_query)
-        query = ''.join([prefixes,
-                         "SELECT DISTINCT ?" + focus_var + " WHERE {\n",
-                         "VALUES ?inst { $instances_to_add$ }. \n",
-                         "?" + focus_var + " " + ref_path + " ?inst.\n",
-                         target_node + "\n}\n",
-                         " ORDER BY ?" + focus_var if include_order_by else ''])
-        return Query(None, None, query)
-
-    def _filter_not_in_target_query(self, constraint, target_query, include_prefixes, include_order_by):
-        """
-        Generates a target query including a FILTER NOT IN clause to filter based on invalid instances.
-
-        :param constraint: constraint that refers to this target query
-        :param target_query: target query string parsed from the input file
-        :param include_prefixes: indicates whether or not prefixes should be included in the query
-        :param include_order_by: indicates whether or not the ORDER BY clause will be added
-        :return: target query with FILTER NOT IN clause
-        """
-        prefixes = self.shape.get_prefix_string() if include_prefixes else ''
-        ref_path = constraint[0].path
-        focus_var = VariableGenerator.get_focus_node_var()
-        target_node = get_target_node_statement(target_query)
+        count = "(COUNT(DISTINCT ?inst) AS ?cnt)" if filter_by_valid else "((COUNT(DISTINCT ?inst2) - COUNT(DISTINCT ?inst)) AS ?cnt)"
+        additional_triple_pattern = "  OPTIONAL { ?" + focus_var + " " + ref_path + " ?inst2 . }\n" if not filter_by_valid else ""
         query = ''.join([
             prefixes,
-            "SELECT DISTINCT ?" + focus_var + " WHERE {\n",
-            target_node + " .\n",
-            "FILTER NOT EXISTS {\n",
-            "VALUES ?inst { $instances_to_add$ }.\n",
-            "?" + focus_var + " " + ref_path + " ?inst.\n",
-            "}\n}"
+            "SELECT DISTINCT ?" + focus_var + " " + count + " WHERE {\n ",
+            target_node + "\n",
+            additional_triple_pattern,
+            "  OPTIONAL {\n", "    VALUES ?inst { $instances_to_add$ }. \n",
+            "    ?" + focus_var + " " + ref_path + " ?inst .\n  }\n",
+            "}\n", " ORDER BY ?" + focus_var if include_order_by else ''
         ])
         return Query(None, None, query)
 

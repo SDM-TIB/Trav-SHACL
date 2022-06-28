@@ -49,8 +49,7 @@ class Shape:
 
         self.referencedShapes = referenced_shapes
         self.parentShapes = set()
-        self.queriesWithVALUES = {}
-        self.queriesWithFILTER_NOT_IN = {}  # complement of VALUES
+        self.queriesFilters = {}
         self.targets = {"valid": set(), "violated": set()}
 
         self.useSelectiveQueries = use_selective_queries
@@ -115,19 +114,17 @@ class Shape:
                                         self.includePrefixes,
                                         self.ORDERBYinQueries)
 
-        self.queriesWithVALUES = {ref: self.QueryGenerator.generate_target_query(
-                                        "template_VALUES",
-                                        [c for c in self.constraints if c.path == self.referencedShapes[ref]],
-                                        self.targetQueryNoPref,
-                                        self.includePrefixes,
-                                        self.ORDERBYinQueries) for ref in self.referencedShapes.keys()}
-
-        self.queriesWithFILTER_NOT_IN = {ref: self.QueryGenerator.generate_target_query(
-                                        "template_FILTER_NOT_IN",
-                                        [c for c in self.constraints if c.path == self.referencedShapes[ref]],
-                                        self.targetQueryNoPref,
-                                        self.includePrefixes,
-                                        self.ORDERBYinQueries) for ref in self.referencedShapes.keys()}
+        self.queriesFilters = {}
+        for ref in self.referencedShapes.keys():
+            for c in self.constraints:
+                if c.path == self.referencedShapes[ref]:
+                    query_valid, query_invalid = self.QueryGenerator.generate_target_query("template_FILTER", [c], self.targetQueryNoPref, self.includePrefixes, self.ORDERBYinQueries)
+                    ref_dict = {
+                        "query_valid": query_valid,
+                        "query_invalid": query_invalid,
+                        "constraint": c
+                    }
+                    self.queriesFilters[ref] = ref_dict
 
     def compute_constraint_queries(self):
         """Computes all constraint queries for the shape."""
