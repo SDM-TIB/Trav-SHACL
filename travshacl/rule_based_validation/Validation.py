@@ -277,22 +277,10 @@ class Validation:
                             if a not in a_state['inferred']:
                                 if (a[0], a[1], not a[2]) not in a_state['inferred']:
                                     is_body_inferred = False
-                                    is_body_inferrable = False
                                     continue  # exclude non-selective answers from interleaving
                                 else:
-                                    # case (1) - negate (unmatchable body atoms)
-                                    a_state['inferred'].add((a[0], a[1], False))  # infer negated atom
-
-                                    # if out-neighbor has no more targets to validate (recursive cases excluded)
-                                    if a_state['remaining_targets_count'] == 0:
-                                        if q.max_zero:
-                                            is_body_inferred = False
-                                            is_body_inferrable = False
-                                        else:
-                                            negated_body = True
-                                        break  # if at least one negated body atom, rule cannot be inferred -> halt loop
-                                    else:
-                                        is_body_inferred = False
+                                    is_body_inferred = False
+                                    is_body_inferrable = False
                         else:
                             is_body_inferred = False
 
@@ -328,7 +316,7 @@ class Validation:
                         else:
                             if frozenset(body) not in state.rule_map[q_head]:
                                 new_rules_count += 1
-                            state.rule_map[q_head].add(frozenset(body))
+                                state.rule_map[q_head].add(frozenset(body))
                 else:
                     t_state['inferred'].add(q_head)
                     rules_directly_inferred += 1
@@ -372,7 +360,7 @@ class Validation:
                     else:
                         if frozenset(body) not in state.rule_map[s_head]:
                             new_rules_count += 1
-                        state.rule_map[s_head].add(frozenset(body))
+                            state.rule_map[s_head].add(frozenset(body))
                 else:
                     if s_head not in t_state['inferred']:
                         t_state['inferred'].add(s_head)
