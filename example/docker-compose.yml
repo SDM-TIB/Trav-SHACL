@@ -3,10 +3,10 @@ version: '2'
 services:
   example_data:
     container_name: travshacl_example_data
-    image: kemele/virtuoso:7-stable
+    image: prohde/virtuoso-opensource-7:7.2.6
     volumes:
-      - ./data/pre-loaded:/data
-    mem_limit: 4g
+      - ./data/pre-loaded:/database
+    mem_limit: 2g
     ports:
       - '9090:8890'
     networks:
