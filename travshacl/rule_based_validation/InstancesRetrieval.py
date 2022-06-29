@@ -94,7 +94,8 @@ class InstancesRetrieval:
         if prev_val_list == prev_inv_list or \
                 len(prev_val_list) == 0 or len(prev_inv_list) == 0 or \
                 len(shortest_inst_list) > max_split_number:
-            return [shape.get_target_query()]
+            pending_targets = self.extract_targets(shape)
+            return pending_targets, inv_targets
 
         query_template = shape.queriesFilters[filtering_shape.get_id()]
         constraint = query_template["constraint"]
