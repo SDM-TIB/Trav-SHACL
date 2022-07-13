@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 __author__ = "Philipp D. Rohde and Monica Figuera"
 
-from travshacl.core.ShapeParser import ShapeParser
-from travshacl.rule_based_validation.Validation import Validation
+from TravSHACL.core.ShapeParser import ShapeParser
+from TravSHACL.rule_based_validation.Validation import Validation
 
 
 class ShapeSchema:

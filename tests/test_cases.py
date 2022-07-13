@@ -3,9 +3,9 @@ from glob import glob
 
 import pytest
 
-from travshacl.TravSHACL import parse_heuristics
-from travshacl.core.GraphTraversal import GraphTraversal
-from travshacl.core.ShapeSchema import ShapeSchema
+from TravSHACL.TravSHACL import parse_heuristics
+from TravSHACL.core.GraphTraversal import GraphTraversal
+from TravSHACL.core.ShapeSchema import ShapeSchema
 
 TEST_ENDPOINT = "http://localhost:8899/sparql"
 

@@ -3,9 +3,9 @@ __author__ = "Monica Figuera and Philipp D. Rohde"
 
 import itertools
 
-from travshacl.utils.VariableGenerator import VariableGenerator
-from travshacl.core.RulePattern import RulePattern
-from travshacl.sparql.QueryGenerator import QueryGenerator
+from TravSHACL.utils.VariableGenerator import VariableGenerator
+from TravSHACL.core.RulePattern import RulePattern
+from TravSHACL.sparql.QueryGenerator import QueryGenerator
 
 
 class Shape:

@@ -5,14 +5,14 @@ __author__ = "Monica Figuera"
 
 from typing import TYPE_CHECKING
 
-from travshacl.constraints.MaxOnlyConstraint import MaxOnlyConstraint
+from TravSHACL.constraints.MaxOnlyConstraint import MaxOnlyConstraint
 
 if TYPE_CHECKING:
-    from travshacl.core.Shape import Shape
+    from TravSHACL.core.Shape import Shape
 
-from travshacl.utils.VariableGenerator import VariableGenerator
-from travshacl.constraints.Constraint import Constraint
-from travshacl.core.RulePattern import RulePattern
+from TravSHACL.utils.VariableGenerator import VariableGenerator
+from TravSHACL.constraints.Constraint import Constraint
+from TravSHACL.core.RulePattern import RulePattern
 
 
 def get_target_node_statement(target_query):

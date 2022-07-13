@@ -4,7 +4,7 @@ __author__ = "Philipp D. Rohde and Monica Figuera"
 import argparse
 import time
 
-from travshacl.TravSHACL import eval_shape_schema
+from TravSHACL.TravSHACL import eval_shape_schema
 
 if __name__ == '__main__':
     """

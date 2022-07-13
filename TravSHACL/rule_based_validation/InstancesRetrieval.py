@@ -4,10 +4,10 @@ __author__ = "Monica Figuera"
 import math
 import time
 
-from travshacl.sparql.SPARQLEndpoint import SPARQLEndpoint
-from travshacl.sparql.QueryGenerator import get_target_node_statement
-from travshacl.constraints.MinOnlyConstraint import MinOnlyConstraint
-from travshacl.constraints.MaxOnlyConstraint import MaxOnlyConstraint
+from TravSHACL.sparql.SPARQLEndpoint import SPARQLEndpoint
+from TravSHACL.sparql.QueryGenerator import get_target_node_statement
+from TravSHACL.constraints.MinOnlyConstraint import MinOnlyConstraint
+from TravSHACL.constraints.MaxOnlyConstraint import MaxOnlyConstraint
 
 
 class InstancesRetrieval:

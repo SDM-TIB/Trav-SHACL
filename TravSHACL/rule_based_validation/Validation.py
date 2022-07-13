@@ -3,9 +3,9 @@ __author__ = "Monica Figuera"
 
 import time
 
-from travshacl.rule_based_validation.InstancesRetrieval import InstancesRetrieval
-from travshacl.utils import fileManagement
-from travshacl.utils.ValidationStats import ValidationStats
+from TravSHACL.rule_based_validation.InstancesRetrieval import InstancesRetrieval
+from TravSHACL.utils import fileManagement
+from TravSHACL.utils.ValidationStats import ValidationStats
 
 
 class Validation:

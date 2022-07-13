@@ -3,8 +3,8 @@ __author__ = "Philipp D. Rohde"
 
 import os
 
-from travshacl.core.GraphTraversal import GraphTraversal
-from travshacl.core.ShapeSchema import ShapeSchema
+from TravSHACL.core.GraphTraversal import GraphTraversal
+from TravSHACL.core.ShapeSchema import ShapeSchema
 
 
 def create_output_dir(output_dir):

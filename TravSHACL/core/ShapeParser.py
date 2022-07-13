@@ -10,11 +10,11 @@ import rdflib.term
 from rdflib import Graph
 from itertools import islice
 
-from travshacl.core.Shape import Shape
-from travshacl.utils.VariableGenerator import VariableGenerator
-from travshacl.constraints.MaxOnlyConstraint import MaxOnlyConstraint
-from travshacl.constraints.MinMaxConstraint import MinMaxConstraint
-from travshacl.constraints.MinOnlyConstraint import MinOnlyConstraint
+from TravSHACL.core.Shape import Shape
+from TravSHACL.utils.VariableGenerator import VariableGenerator
+from TravSHACL.constraints.MaxOnlyConstraint import MaxOnlyConstraint
+from TravSHACL.constraints.MinMaxConstraint import MinMaxConstraint
+from TravSHACL.constraints.MinOnlyConstraint import MinOnlyConstraint
 
 
 class ShapeParser:
