@@ -1,5 +1,11 @@
 [![Tests](https://github.com/SDM-TIB/Trav-SHACL/actions/workflows/test.yml/badge.svg)](https://github.com/SDM-TIB/Trav-SHACL/actions/workflows/test.yml)
+[![Latest Release](http://img.shields.io/github/release/SDM-TIB/Trav-SHACL.svg?logo=github)](https://github.com/SDM-TIB/Trav-SHACL/releases)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
+
+[![Python Versions](https://img.shields.io/pypi/pyversions/TravSHACL)](https://pypi.org/project/TravSHACL)
+[![Package Format](https://img.shields.io/pypi/format/TravSHACL)](https://pypi.org/project/TravSHACL)
+[![Package Status](https://img.shields.io/pypi/status/TravSHACL)](https://pypi.org/project/TravSHACL)
+[![Package Version](https://img.shields.io/pypi/v/TravSHACL)](https://pypi.org/project/TravSHACL)
 
 # Trav-SHACL
 
