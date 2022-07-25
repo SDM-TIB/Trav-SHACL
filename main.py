@@ -9,7 +9,7 @@ from TravSHACL.TravSHACL import eval_shape_schema
 if __name__ == '__main__':
     """
     Used as a wrapper to start Trav-SHACL for evaluating a SHACL shape schema against a SPARQL endpoint.
-    
+
     Example how to run it:
     python3 main.py -d ./shapes/nonRec/2/ "http://dbpedia.org/sparql" ./output/ DFS --heuristics TARGET IN BIG"""
     # add the optional flag '--selective' in the command line to use configuration of more selective queries

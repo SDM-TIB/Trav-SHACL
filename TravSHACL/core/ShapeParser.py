@@ -135,15 +135,15 @@ class ShapeParser:
         # to get the target_ref and target_type
         if len(g_file.query(queries[1].format(shape=name[0]))) != 0:
             for res in g_file.query(queries[1].format(shape=name[0])):
-                 target_def = str(res[0])
-                 target_type = 'class'
-                 break
+                target_def = str(res[0])
+                target_type = 'class'
+                break
 
         elif len(g_file.query(queries[2].format(shape=name[0]))) != 0:
             for res in g_file.query(queries[2].format(shape=name[0])):
-                 target_def = str(res[0])
-                 target_type = 'node'
-                 break
+                target_def = str(res[0])
+                target_type = 'node'
+                break
 
         else:
             target_def = None
@@ -284,7 +284,6 @@ class ShapeParser:
                             dict_1 = [qv_type, ['value', str(shape_ref.asdict()['shape_ref'])]]
                         exp_dict[str(constraint_id)].append(dict_1.copy())
 
-
                 else:
                     #detail_dict = detail.asdict()
                     dict_2 = [str(detail['p']), str(detail['o'])]
@@ -405,7 +404,6 @@ class ShapeParser:
 
         if urlparse(path).netloc != '':  # if the predicate is a url, add '<>' to it
             o_path = '<' + path + '>'
-
 
         if urlparse(shape_ref).netloc != '' and shape_ref is not None:  # if the shape reference is a url, add '<>' to it
             o_shape_ref = '<' + shape_ref + '>'
