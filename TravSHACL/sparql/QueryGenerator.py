@@ -75,8 +75,8 @@ class QueryGenerator:
         :param type_: indicates the type of target query to generate
         :param ref_constraint: might hold a list of constraints that refer to this target query
         :param target_query: target query string parsed from the input file
-        :param include_prefixes: indicates whether or not prefixes should be included in the query
-        :param include_order_by: indicates whether or not the ORDER BY clause will be added
+        :param include_prefixes: indicates whether prefixes should be included in the query
+        :param include_order_by: indicates whether the ORDER BY clause will be added
         :return: generated query
         """
         if target_query is None:
@@ -92,8 +92,8 @@ class QueryGenerator:
         Generates a simple target query from the parsed target query.
 
         :param target_query: target query string parsed from the input file
-        :param include_prefixes: indicates whether or not prefixes should be included in the query
-        :param include_order_by: indicates whether or not the ORDER BY clause will be added
+        :param include_prefixes: indicates whether prefixes should be included in the query
+        :param include_order_by: indicates whether the ORDER BY clause will be added
         :return: simple target query
         """
         prefixes = self.shape.get_prefix_string() if include_prefixes else ''
@@ -139,10 +139,10 @@ class QueryGenerator:
 
         :param id_: internal query/constraint name
         :param constraints: a list of constraints that refer to this constraint query
-        :param is_selective: indicates whether or not selective queries are used
+        :param is_selective: indicates whether selective queries are used
         :param target_query: target query of the shape associated with the constraint
-        :param include_prefixes: indicates whether or not prefixes should be included in the query
-        :param include_order_by: indicates whether or not the ORDER BY clause will be added
+        :param include_prefixes: indicates whether prefixes should be included in the query
+        :param include_order_by: indicates whether the ORDER BY clause will be added
         :param subquery: might hold a sub-query to be used in the constraint query
         :return: the generated constraint query
         """
@@ -203,10 +203,10 @@ class QueryBuilder:
         :param id_: internal query name
         :param subquery: sub-query to be included, might be None
         :param projected_variables: list of variables to be projected
-        :param is_selective: indicates whether or not selective queries are used
+        :param is_selective: indicates whether selective queries are used
         :param target_query: target query of the shape associated with the constraint
         :param constraints: a list of constraints that refer to the constraint query
-        :param include_order_by: indicates whether or not the ORDER BY clause will be added
+        :param include_order_by: indicates whether the ORDER BY clause will be added
         :param prefix_string: prefix string for the queries being built
         """
         self.id = id_
@@ -238,7 +238,7 @@ class QueryBuilder:
 
         :param variable: the variable the filter should be added for
         :param datatype: the expected datatype
-        :param is_pos: indicated whether or not this is a positive constraint
+        :param is_pos: indicated whether this is a positive constraint
         """
         s = "datatype(?" + variable + ") = " + datatype
         self.filters.append(s if is_pos else "!(" + s + ")")
@@ -249,7 +249,7 @@ class QueryBuilder:
 
         :param variable: the variable the filter should be added for
         :param constant: the constant value the variable should be assigned
-        :param is_pos: indicated whether or not this is a positive constraint
+        :param is_pos: indicated whether this is a positive constraint
         """
         s = variable + " = " + constant
         self.filters.append(s if is_pos else "!(" + s + ")")
@@ -306,7 +306,7 @@ class QueryBuilder:
         """
         Internal method of the QueryBuilder to generated the SPARQL query string.
 
-        :param include_prefixes: indicates whether or not prefixes should be included in the query
+        :param include_prefixes: indicates whether prefixes should be included in the query
         :return: the SPARQL query as a string
         """
         temp_string = ''
@@ -421,7 +421,7 @@ class QueryBuilder:
         Generate a Query object based on the current state of the QueryBuilder.
 
         :param rule_pattern: the query rule pattern associated with the query
-        :param include_prefixes: indicates whether or not prefixes should be included in the query
+        :param include_prefixes: indicates whether prefixes should be included in the query
         """
         max_zero_query = False
         for c in self.constraints:

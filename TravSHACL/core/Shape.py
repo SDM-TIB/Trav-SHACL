@@ -23,10 +23,10 @@ class Shape:
         :param constraints: the constraints belonging to the shape
         :param constraints_id: the constraint ids
         :param referenced_shapes: a list of shapes that is referenced from this shape
-        :param use_selective_queries: indicates whether or not selective queries are used
+        :param use_selective_queries: indicates whether selective queries are used
         :param max_split_size: maximum number of instances per query
-        :param order_by_in_queries: indicates whether or not to use the ORDER BY clause
-        :param include_sparql_prefixes: indicates whether or not to include SPARQL prefixes in queries for the shape
+        :param order_by_in_queries: indicates whether to use the ORDER BY clause
+        :param include_sparql_prefixes: indicates whether to include SPARQL prefixes in queries for the shape
         """
         self.id = id_
         self.constraints = constraints

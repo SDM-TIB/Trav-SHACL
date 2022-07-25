@@ -12,7 +12,7 @@ class Constraint:
 
         :param id_: name of the constraint
         :param is_pos: true if it is a positive constraint, false otherwise
-        :param satisfied: indicates whether or not the constraint is satisfied, should be unknown at creation
+        :param satisfied: indicates whether the constraint is satisfied, should be unknown at creation
         :param datatype: contains the datatype the object must fulfill
         :param value: contains the value the constraint checks again, i.e., an object
         :param shape_ref: contains the name of the shape referenced by the constraint, none otherwise

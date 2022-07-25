@@ -30,9 +30,9 @@ class ShapeParser:
 
         :param path: the path to the directory that stores the shapes files
         :param shape_format: the representation format of the shape definitions
-        :param use_selective_queries: indicates whether or not selective queries are used
+        :param use_selective_queries: indicates whether selective queries are used
         :param max_split_size: maximum number of instances per query
-        :param order_by_in_queries: indicates whether or not to use the ORDER BY clause
+        :param order_by_in_queries: indicates whether to use the ORDER BY clause
         :return: list of Shapes parsed from the files
         """
         file_extension = self.get_file_extension(shape_format)
@@ -76,9 +76,9 @@ class ShapeParser:
         Parses a particular file and converts its content into the internal representation of a SHACL shape.
 
         :param path: the path to the shapes file
-        :param use_selective_queries: indicates whether or not selective queries are used
+        :param use_selective_queries: indicates whether selective queries are used
         :param max_split_size: maximum number of instances per query
-        :param order_by_in_queries: indicates whether or not to use the ORDER BY clause
+        :param order_by_in_queries: indicates whether to use the ORDER BY clause
         :return: Shape object representing the parsed SHACL shape
         """
         target_query = None

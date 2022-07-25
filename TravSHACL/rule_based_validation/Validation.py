@@ -20,10 +20,10 @@ class Validation:
         :param node_order: indicates the order in which the shapes will be evaluated
         :param shapes_dict: a Python dictionary holding all shapes of the shape schema
         :param target_shape_predicates: names of the shapes with a target definition
-        :param use_selective_queries: indicates whether or not selective queries will be used
+        :param use_selective_queries: indicates whether selective queries will be used
         :param output_dir_name: path for the output files
-        :param save_stats: indicates whether or not statistics will be saved to the output path
-        :param save_targets_to_file: indicates whether or not target classifications will be saved to the output path
+        :param save_stats: indicates whether statistics will be saved to the output path
+        :param save_targets_to_file: indicates whether target classifications will be saved to the output path
         """
         self.node_order = node_order
         self.shapes_dict = shapes_dict

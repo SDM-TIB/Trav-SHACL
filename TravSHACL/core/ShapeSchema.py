@@ -18,12 +18,12 @@ class ShapeSchema:
         :param endpoint_url: URL for the SPARQL endpoint to be evaluated against
         :param graph_traversal: graph traversal algorithm used for determining the evaluation order
         :param heuristics: Python dictionary holding the heuristics used for determining the seed shape
-        :param use_selective_queries: indicates whether or not selective queries are used
+        :param use_selective_queries: indicates whether selective queries are used
         :param max_split_size: maximum number of instances per query
         :param output_dir: output directory for log files
-        :param order_by_in_queries: indicates whether or not to use the ORDER BY clause
-        :param save_outputs: indicates whether or not target classifications will be saved to the output path
-        :param work_in_parallel: indicates whether or not parallelization will be used
+        :param order_by_in_queries: indicates whether to use the ORDER BY clause
+        :param save_outputs: indicates whether target classifications will be saved to the output path
+        :param work_in_parallel: indicates whether parallelization will be used
         """
         self.shapes = ShapeParser().parse_shapes_from_dir(schema_dir, schema_format, use_selective_queries,
                                                           max_split_size, order_by_in_queries)
