@@ -147,7 +147,7 @@ class Validation:
     def eval_shape(self, state, shape, shapes_state):
         """
         Interleaves 'shape' entities and performs a deferred saturation for entities that could not be validated during
-        the interleave because of missing information to be provided by (not yet evaluated) out-neighboring shapes.
+        the interleaving because of missing information to be provided by (not yet evaluated) out-neighboring shapes.
 
         :param state: object keeping track of the current validation state
         :param shape: focus shape to be evaluated
@@ -443,7 +443,7 @@ class Validation:
     def apply_rules(self, state, remaining_targets, rule_map, shape_name, shapes_state, preds_to_shapes):
         """
         Performs two types of inferences:
-        # case (1): If the rule map contains a rule and some of the rule bodies was inferred
+        # case (1): If the rule map contains a rule and some rule bodies were inferred
                     => head of the rule is inferred, rule dropped.
         # case (2): If the negation of any rule body was inferred
                     => the rule cannot be applied (rule head not inferred), rule dropped.

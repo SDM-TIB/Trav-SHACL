@@ -193,7 +193,7 @@ class QueryGenerator:
 
 
 class QueryBuilder:
-    """This class is responsible of actually building SPARQL queries for constraints."""
+    """This class is responsible for actually building SPARQL queries for constraints."""
 
     def __init__(self, id_, subquery, projected_variables, is_selective, target_query=None,
                  constraints=None, include_order_by: bool = False, prefix_string: str = ''):
@@ -304,7 +304,7 @@ class QueryBuilder:
 
     def __get_query(self, include_prefixes):
         """
-        Internal method of the QueryBuilder to generated the SPARQL query string.
+        Internal method of the QueryBuilder to generate the SPARQL query string.
 
         :param include_prefixes: indicates whether prefixes should be included in the query
         :return: the SPARQL query as a string

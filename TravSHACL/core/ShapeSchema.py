@@ -61,7 +61,7 @@ class ShapeSchema:
             possible_starting_points = possible_starting_points if possible_starting_points else self.shapes
             possible_starting_points = self.__indegree(possible_starting_points)
         elif self.heuristics['degree'] == 'out':
-            # priotizize outdegree
+            # prioritize outdegree
             possible_starting_points = possible_starting_points if possible_starting_points else self.shapes
             possible_starting_points = self.__outdegree(possible_starting_points)
         elif self.heuristics['degree'] == 'inout':
