@@ -7,7 +7,7 @@
 [![Package Status](https://img.shields.io/pypi/status/TravSHACL)](https://pypi.org/project/TravSHACL)
 [![Package Version](https://img.shields.io/pypi/v/TravSHACL)](https://pypi.org/project/TravSHACL)
 
-# Trav-SHACL
+# ![Logo](https://raw.githubusercontent.com/SDM-TIB/Trav-SHACL/master/images/logo.png "Logo") Trav-SHACL
 
 We present Trav-SHACL, a SHACL engine capable of planning the traversal and execution of a shape schema in a way that invalid entities are detected early and needless validations are minimized.
 Trav-SHACL reorders the shapes in a shape schema for efficient validation and rewrites target and constraint queries for fast detection of invalid entities.
