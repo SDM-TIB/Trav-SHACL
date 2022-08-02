@@ -290,7 +290,7 @@ class QueryBuilder:
                                 " WHERE {\n", target_node,
                                 ' OPTIONAL { ', self.triples[0], ' }\n} GROUP BY ?',
                                 VariableGenerator.get_focus_node_var(),
-                                ' HAVING (COUNT(?', self.triples[0].rsplit("?", 1)[1][:-1], ') > ', str(self.constraints[0].max), ')',
+                                ' HAVING (COUNT(DISTINCT ?', self.triples[0].rsplit("?", 1)[1][:-1], ') > ', str(self.constraints[0].max), ')',
                                 " ORDER BY ?" + VariableGenerator.get_focus_node_var() if self.include_ORDERBY else ''])
 
         query = ''.join([prefixes,
