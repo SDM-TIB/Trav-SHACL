@@ -391,12 +391,12 @@ class QueryBuilder:
         if isinstance(c, Constraint):
             path = c.path
 
-            if c.get_value() is not None:  # if there is an existing reference to another shape
+            if c.get_value() is not None:  # if there is fixed value for the object
                 self.add_triple(path, c.get_value())
                 return
 
             for v in variables:
-                if c.get_shape_ref() is not None and c.max == 0:
+                if c.get_shape_ref() is not None:  # if there is an existing reference to another shape
                     self.inter_shape_refs[v] = c.get_shape_ref()
                     self.triples.append("\n$inter_shape_type_to_add$")
 
