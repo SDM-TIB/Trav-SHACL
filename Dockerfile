@@ -1,4 +1,4 @@
-FROM python:3.9.10-slim-buster
+FROM python:3.9.13-slim-buster
 MAINTAINER Philipp D. Rohde <philipp.rohde@tib.eu>
 
 # install dependencies
