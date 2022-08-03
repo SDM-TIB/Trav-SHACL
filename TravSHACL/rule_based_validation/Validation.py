@@ -189,6 +189,7 @@ class Validation:
                     self.register_target(head, "valid", shape_name, shapes_state)
                     to_remove.append(head)
                     shapes_state[shape_name]['remaining_targets_count'] -= 1
+                    shapes_state[shape_name]['inferred'].add(head)
             for head in to_remove:
                 remaining_targets.discard(head)
 
