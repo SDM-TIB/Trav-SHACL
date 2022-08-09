@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__author__ = "Philipp D. Rohde and Monica Figuera"
+__author__ = 'Philipp D. Rohde and Monica Figuera'
 
 from TravSHACL.core.ShapeParser import ShapeParser
 from TravSHACL.rule_based_validation.Validation import Validation

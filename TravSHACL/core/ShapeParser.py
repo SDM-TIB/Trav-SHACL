@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__author__ = "Monica Figuera and Philipp D. Rohde"
+__author__ = 'Monica Figuera and Philipp D. Rohde'
 
 import json
 import os
@@ -45,9 +45,9 @@ class ShapeParser:
                     files_abs_paths.append(os.path.join(r, file))
 
         if not files_abs_paths:
-            raise FileNotFoundError(path + " does not contain any shapes of the format " + shape_format)
+            raise FileNotFoundError(path + ' does not contain any shapes of the format ' + shape_format)
 
-        if shape_format == "JSON":
+        if shape_format == 'JSON':
             return [self.parse_json(
                 path=p,
                 use_selective_queries=use_selective_queries,
@@ -62,14 +62,14 @@ class ShapeParser:
                 max_split_size=max_split_size,
                 order_by_in_queries=order_by_in_queries
             ) for p in files_abs_paths]
-            # print("Unexpected format: " + shape_format)
+            # print('Unexpected format: ' + shape_format)
 
     @staticmethod
     def get_file_extension(shape_format):
-        if shape_format == "SHACL":
-            return ".ttl"
+        if shape_format == 'SHACL':
+            return '.ttl'
         else:
-            return ".json"  # dot added for convenience
+            return '.json'  # dot added for convenience
 
     def parse_json(self, path, use_selective_queries, max_split_size, order_by_in_queries):
         """
@@ -84,24 +84,24 @@ class ShapeParser:
         target_query = None
         target_type = None
 
-        file = open(path, "r")
+        file = open(path, 'r')
         obj = json.load(file)
-        target_def = obj.get("targetDef")
-        name = obj["name"]
-        id_ = name + "_d1"  # str(i + 1) but there is only one set of conjunctions
-        constraints = self.parse_constraints(obj["constraintDef"]["conjunctions"], target_def, id_)
+        target_def = obj.get('targetDef')
+        name = obj['name']
+        id_ = name + '_d1'  # str(i + 1) but there is only one set of conjunctions
+        constraints = self.parse_constraints(obj['constraintDef']['conjunctions'], target_def, id_)
 
         include_sparql_prefixes = self.abbreviated_syntax_used(constraints)
         prefixes = None
-        if "prefix" in obj.keys():
-            prefixes = obj["prefix"]
-        referenced_shapes = self.shape_references(obj["constraintDef"]["conjunctions"][0])
+        if 'prefix' in obj.keys():
+            prefixes = obj['prefix']
+        referenced_shapes = self.shape_references(obj['constraintDef']['conjunctions'][0])
 
         if target_def is not None:
-            target_query = target_def["query"]
+            target_query = target_def['query']
 
             target_def_copy = target_def.copy()
-            del target_def_copy["query"]
+            del target_def_copy['query']
             target_type = list(target_def_copy.keys())[0]
 
             if urlparse(target_def[target_type]).netloc != '':  # if the target node is a url, add '<>' to it
@@ -130,7 +130,7 @@ class ShapeParser:
 
         name = [str(row[0]) for row in g_file.query(queries[0])]
         #name = self.get_sname(g_file)
-        id_ = name[0] + "_d1"  # str(i + 1) but there is only one set of conjunctions
+        id_ = name[0] + '_d1'  # str(i + 1) but there is only one set of conjunctions
 
         # to get the target_ref and target_type
         if len(g_file.query(queries[1].format(shape=name[0]))) != 0:
@@ -186,7 +186,7 @@ class ShapeParser:
         :return: True if prefix notation is used, False otherwise
         """
         for c in constraints:
-            if c.path.startswith("<") and c.path.endswith(">"):
+            if c.path.startswith('<') and c.path.endswith('>'):
                 return False
         return True
 
@@ -199,7 +199,7 @@ class ShapeParser:
         :return: Python dictionary with the referenced shapes and the path referencing the shape
         """
 
-        return {c.get("shape"): c.get("path") for c in constraints if c.get("shape") is not None}
+        return {c.get('shape'): c.get('path') for c in constraints if c.get('shape') is not None}
 
     @staticmethod
     def chunks(datei, SIZE):
@@ -217,42 +217,42 @@ class ShapeParser:
     @staticmethod
     def get_QUERY():
 
-        QUERY_SHAPES = """SELECT DISTINCT ?shape WHERE {
+        QUERY_SHAPES = '''SELECT DISTINCT ?shape WHERE {
             ?shape a <http://www.w3.org/ns/shacl#NodeShape> .
-            }"""
+            }'''
 
-        QUERY_TARGET_1 = """SELECT ?target WHERE {{
+        QUERY_TARGET_1 = '''SELECT ?target WHERE {{
             <{shape}> a <http://www.w3.org/ns/shacl#NodeShape> .
             <{shape}> <http://www.w3.org/ns/shacl#targetClass> ?target .
         }}
-        """
+        '''
 
-        QUERY_TARGET_2 = """SELECT ?target WHERE {{
+        QUERY_TARGET_2 = '''SELECT ?target WHERE {{
                     <{shape}> a <http://www.w3.org/ns/shacl#NodeShape> .
                     <{shape}> <http://www.w3.org/ns/shacl#targetNode> ?target .
                 }}
-                """
+                '''
 
-        QUERY_CONSTRAINTS = """SELECT ?constraint WHERE {{
+        QUERY_CONSTRAINTS = '''SELECT ?constraint WHERE {{
           <{shape}> a <http://www.w3.org/ns/shacl#NodeShape> .
           <{shape}> <http://www.w3.org/ns/shacl#property> ?constraint .
         }}
-        """
+        '''
 
-        QUERY_CONSTRAINT_DETAILS = """SELECT ?p ?o WHERE {{
+        QUERY_CONSTRAINT_DETAILS = '''SELECT ?p ?o WHERE {{
           ?s ?p ?o .
           FILTER( str(?s) = "{constraint}" )
-        }}"""
+        }}'''
 
-        QUERY_QVS_REF_1 = """SELECT ?shape_ref WHERE {{
+        QUERY_QVS_REF_1 = '''SELECT ?shape_ref WHERE {{
               ?s <http://www.w3.org/ns/shacl#node> ?shape_ref .
               FILTER ( str(?s) = "{qvs}" )
-            }}"""
+            }}'''
 
-        QUERY_QVS_REF_2 = """SELECT ?shape_ref WHERE {{
+        QUERY_QVS_REF_2 = '''SELECT ?shape_ref WHERE {{
                   ?s <http://www.w3.org/ns/shacl#value> ?shape_ref .
                   FILTER ( str(?s) = "{qvs}" )
-                }}"""
+                }}'''
 
         return QUERY_SHAPES, QUERY_TARGET_1, QUERY_TARGET_2, QUERY_CONSTRAINTS, QUERY_CONSTRAINT_DETAILS, QUERY_QVS_REF_1, QUERY_QVS_REF_2
 
@@ -359,7 +359,7 @@ class ShapeParser:
         :return: list of constraints in internal constraint representation
         """
         var_generator = VariableGenerator()
-        return [self.parse_constraint(var_generator, array[0][i], constraints_id + "_c" + str(i + 1), target_def)
+        return [self.parse_constraint(var_generator, array[0][i], constraints_id + '_c' + str(i + 1), target_def)
                 for i in range(len(array[0]))]
 
     def parse_constraints_ttl(self, array, target_def, constraints_id):
@@ -372,7 +372,7 @@ class ShapeParser:
         :return: list of constraints in internal constraint representation
         """
         var_generator = VariableGenerator()
-        return [self.parse_constraint(var_generator, array[i], constraints_id + "_c" + str(i + 1), target_def)
+        return [self.parse_constraint(var_generator, array[i], constraints_id + '_c' + str(i + 1), target_def)
                 for i in range(len(array))]
 
     @staticmethod
@@ -386,13 +386,13 @@ class ShapeParser:
         :param target_def: the target definition of the associated shape
         :return: constraint in internal representation
         """
-        min_ = obj.get("min")
-        max_ = obj.get("max")
-        shape_ref = obj.get("shape")
-        datatype = obj.get("datatype")
-        value = obj.get("value")
-        path = obj.get("path")
-        negated = obj.get("negated")
+        min_ = obj.get('min')
+        max_ = obj.get('max')
+        shape_ref = obj.get('shape')
+        datatype = obj.get('datatype')
+        value = obj.get('value')
+        path = obj.get('path')
+        negated = obj.get('negated')
 
         o_min = None if (min_ is None) else int(min_)
         o_max = None if (max_ is None) else int(max_)

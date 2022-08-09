@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__author__ = "Philipp D. Rohde"
+__author__ = 'Philipp D. Rohde'
 
 import os
 
@@ -56,9 +56,9 @@ def eval_shape_schema(args):
     create_output_dir(args.outputDir)
     shape_schema = ShapeSchema(
         schema_dir=args.d,
-        schema_format="JSON" if args.json else "SHACL",
+        schema_format='JSON' if args.json else 'SHACL',
         endpoint_url=args.endpoint,
-        graph_traversal=GraphTraversal.BFS if args.graphTraversal == "BFS" else GraphTraversal.DFS,
+        graph_traversal=GraphTraversal.BFS if args.graphTraversal == 'BFS' else GraphTraversal.DFS,
         heuristics=parse_heuristics(args.heuristics),
         use_selective_queries=args.selective,
         max_split_size=args.m,
@@ -68,4 +68,4 @@ def eval_shape_schema(args):
     )
 
     report = shape_schema.validate()  # run the evaluation of the SHACL constraints over the specified endpoint
-    print("Report:", report)
+    print('Report:', report)

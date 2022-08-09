@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__author__ = "Monica Figuera and Philipp D. Rohde"
+__author__ = 'Monica Figuera and Philipp D. Rohde'
 
 from TravSHACL.utils.VariableGenerator import VariableType
 from TravSHACL.constraints.Constraint import Constraint

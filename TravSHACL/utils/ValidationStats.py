@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__author__ = "Monica Figuera"
+__author__ = 'Monica Figuera'
 
 
 class ValidationStats:
@@ -32,21 +32,21 @@ class ValidationStats:
 
         :param output_file: the file to be used for writing the statistics
         """
-        output_file.write("all targets:\n" + str(self.targets))
-        output_file.write("\nvalid targets:\n" + str(self.valid))
-        output_file.write("\ninvalid targets:\n" + str(self.invalid))
-        output_file.write("\nmax number of solution mappings for a query:\n" + str(self.max_sol_mappings))
-        output_file.write("\ntotal number of solution mappings:\n" + str(self.total_sol_mappings))
-        output_file.write("\nmax number of rules in memory:\n" + str(self.max_rules))
-        output_file.write("\ntotal number of rules:\n" + str(self.total_rules))
-        output_file.write("\nnumber of queries:\n" + str(self.number_of_queries))
-        output_file.write("\nmax exec time for a query:\n" + str(self.max_query_exec_time))
-        output_file.write("\ntotal query exec time:\n" + str(self.total_query_exec_time))
-        output_file.write("\nmax interleaving (+ query exec) time for a query:\n" + str(self.max_interleaving_time))
-        output_file.write("\ntotal interleaving (+ query exec) time:\n" + str(self.total_interleaving_time))
-        output_file.write("\nmax (deferred) saturation time:\n" + str(self.max_saturation_time))
-        output_file.write("\ntotal (deferred) saturation time:\n" + str(self.total_saturation_time))
-        output_file.write("\ntotal time:\n" + str(self.totalTime) + "\n")
+        output_file.write('all targets:\n' + str(self.targets))
+        output_file.write('\nvalid targets:\n' + str(self.valid))
+        output_file.write('\ninvalid targets:\n' + str(self.invalid))
+        output_file.write('\nmax number of solution mappings for a query:\n' + str(self.max_sol_mappings))
+        output_file.write('\ntotal number of solution mappings:\n' + str(self.total_sol_mappings))
+        output_file.write('\nmax number of rules in memory:\n' + str(self.max_rules))
+        output_file.write('\ntotal number of rules:\n' + str(self.total_rules))
+        output_file.write('\nnumber of queries:\n' + str(self.number_of_queries))
+        output_file.write('\nmax exec time for a query:\n' + str(self.max_query_exec_time))
+        output_file.write('\ntotal query exec time:\n' + str(self.total_query_exec_time))
+        output_file.write('\nmax interleaving (+ query exec) time for a query:\n' + str(self.max_interleaving_time))
+        output_file.write('\ntotal interleaving (+ query exec) time:\n' + str(self.total_interleaving_time))
+        output_file.write('\nmax (deferred) saturation time:\n' + str(self.max_saturation_time))
+        output_file.write('\ntotal (deferred) saturation time:\n' + str(self.total_saturation_time))
+        output_file.write('\ntotal time:\n' + str(self.totalTime) + '\n')
 
     def record_number_of_targets(self, valid_count, invalid_count):
         """
