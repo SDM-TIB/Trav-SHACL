@@ -83,9 +83,9 @@ class InstancesRetrieval:
         inv_targets = set()
 
         self.stats.update_log(''.join(['\n', 'instances retrieval ', shape.get_id(),
-                                       ": [out-neighbor's (", filtering_shape.get_id(), ')']))
+                              ": [out-neighbor's (", filtering_shape.get_id(), ')']))
         self.stats.update_log(''.join([' instances: ', str(len(prev_val_list)), ' valid ',
-                                       str(len(prev_inv_list)), ' invalid]']))
+                              str(len(prev_inv_list)), ' invalid]']))
 
         max_split_number = 256
         max_instances_per_query = 115
@@ -179,9 +179,10 @@ class InstancesRetrieval:
                         focus_var = c.varGenerator.get_focus_node_var()
                         inter_shape_triples += '?' + focus_var + ' ' + c.path + obj_var + '.\n'
 
-            return [query_template.replace('$filter_clause_to_add$',
-                                           values_clauses.replace('$instances$', sublist) + inter_shape_triples)
-                    for sublist in split_instances]
+            return [query_template.replace(
+                        '$filter_clause_to_add$',
+                        values_clauses.replace('$instances$', sublist) + inter_shape_triples
+                    ) for sublist in split_instances]
 
         return [query_template.replace('$filter_clause_to_add$', '')]
 

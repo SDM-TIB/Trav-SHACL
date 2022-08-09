@@ -108,11 +108,12 @@ class Shape:
     def __compute_target_queries(self):
         """Internal method to compute the target query of the shape."""
         self.targetQuery = self.QueryGenerator.generate_target_query(
-                                        'plain_target',
-                                        None,
-                                        self.targetQueryNoPref,
-                                        self.includePrefixes,
-                                        self.ORDERBYinQueries)
+            'plain_target',
+            None,
+            self.targetQueryNoPref,
+            self.includePrefixes,
+            self.ORDERBYinQueries
+        )
 
         self.queriesFilters = {}
         for ref in self.referencedShapes.keys():
@@ -137,13 +138,13 @@ class Shape:
         min_id = self.constraintsId + '_pos'
         if len(min_constraints) > 0:
             self.minQuery = self.QueryGenerator.generate_query(
-                    min_id,
-                    [c for c in min_constraints if c.get_shape_ref() is not None],
-                    self.useSelectiveQueries,
-                    self.targetQueryNoPref,
-                    self.includePrefixes,
-                    self.ORDERBYinQueries,
-                    subquery
+                min_id,
+                [c for c in min_constraints if c.get_shape_ref() is not None],
+                self.useSelectiveQueries,
+                self.targetQueryNoPref,
+                self.includePrefixes,
+                self.ORDERBYinQueries,
+                subquery
             )
 
         # Build one set of triples (+ filter) for each max constraint (only one max constraint per query is allowed)
@@ -153,13 +154,13 @@ class Shape:
 
         i = itertools.count()
         self.maxQueries = [self.QueryGenerator.generate_query(
-                                        max_ids[next(i)],
-                                        [c],
-                                        self.useSelectiveQueries,
-                                        self.targetQueryNoPref,
-                                        self.includePrefixes,
-                                        self.ORDERBYinQueries,
-                                        subquery) for c in max_constraints]
+                                max_ids[next(i)],
+                                [c],
+                                self.useSelectiveQueries,
+                                self.targetQueryNoPref,
+                                self.includePrefixes,
+                                self.ORDERBYinQueries,
+                                subquery) for c in max_constraints]
 
         self.predicates = self.__compute_predicate_set(min_id, max_ids)
         self.__compute_max_queries_to_skip()

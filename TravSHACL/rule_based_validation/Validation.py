@@ -510,8 +510,8 @@ class Validation:
         self.shapes_dict[t[0]].targets[t_type].add(instance)
         shapes_state[invalidating_shape_name]['registered_targets'][t_type].add(t)
         self.traces.add(''.join([t_type, ', ',
-                                 str(len(self.traces)), ', ',
-                                 str(round(time.time() * 1000.0 - self.start_of_verification)), '\n']))
+                        str(len(self.traces)), ', ',
+                        str(round(time.time() * 1000.0 - self.start_of_verification)), '\n']))
 
     @staticmethod
     def write_targets_to_file(output_dir_name, all_valid_targets, all_invalid_targets):
