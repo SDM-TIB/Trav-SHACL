@@ -579,6 +579,7 @@ class Validation:
         output["unbound"] = {"valid_instances": self.valid_targets_after_termination}
 
         # setting the output
+        prefix = '@prefix sh: <http://www.w3.org/ns/shacl#> . \n'
         output_print = ' :report a sh:ValidationReport ;\n' + '   sh:conforms false ;\n' + '   sh:result'
         output_print_1 = ' :report a sh:ValidationReport ;\n' + '   sh:conforms false ;\n' + '   sh:result'
         j = 0
@@ -601,7 +602,7 @@ class Validation:
         if output_print == output_print_1:
             output_print = ' :report a sh:ValidationReport ;\n' + '   sh:conforms true '
 
-        output_print = output_print + '.'
+        output_print = prefix + output_print + '.'
 
         # add validation report to output file
         with open(self.output_dir_name + 'validationReport.ttl', "w") as file_:
