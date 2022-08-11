@@ -579,7 +579,7 @@ class Validation:
         output["unbound"] = {"valid_instances": self.valid_targets_after_termination}
 
         # setting the output
-        prefix = '@prefix sh: <http://www.w3.org/ns/shacl#> . \n'
+        prefix = '@prefix sh: <http://www.w3.org/ns/shacl#> . \n\n'
         output_print = ' :report a sh:ValidationReport ;\n' + '   sh:conforms false ;\n' + '   sh:result'
         output_print_1 = ' :report a sh:ValidationReport ;\n' + '   sh:conforms false ;\n' + '   sh:result'
         j = 0
