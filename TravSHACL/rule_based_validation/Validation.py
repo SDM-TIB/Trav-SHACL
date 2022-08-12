@@ -605,9 +605,10 @@ class Validation:
         output_print = prefix + output_print + '.'
 
         # add validation report to output file
-        with open(self.output_dir_name + 'validationReport.ttl', "w") as file_:
-            file_.write(output_print)
-            file_.close()
+        if self.save_stats:
+            validation_report = fileManagement.open_file(self.output_dir_name, 'validationReport.ttl')
+            validation_report.write(output_print)
+            fileManagement.close_file(validation_report)
 
         return output
 
