@@ -576,7 +576,40 @@ class Validation:
             fileManagement.close_file(traces)
 
         # add to output all targets that could not be (in)validated by any shape
-        output['unbound'] = {'valid_instances': self.valid_targets_after_termination}
+        output["unbound"] = {'valid_instances': self.valid_targets_after_termination}
+
+        # setting the output
+        prefix = '@prefix sh: <http://www.w3.org/ns/shacl#> . \n\n'
+        output_print = ' :report a sh:ValidationReport ;\n' + '   sh:conforms false ;\n' + '   sh:result'
+        output_print_1 = ' :report a sh:ValidationReport ;\n' + '   sh:conforms false ;\n' + '   sh:result'
+        j = 0
+
+        for key_, value_ in output.items():
+            for dkey_, dvalue_ in value_.items():
+                if dkey_ == 'invalid_instances':
+                    for i in dvalue_:
+                        if j != 0:
+                            output_print = output_print + ','
+
+                        result_ = ('\n\t[ a\t\t\tsh:ValidationResult ;\n'
+                                   + '\t  sh:resultSeverity     sh:Violation ;\n'
+                                   + '\t  sh:focusNode\t\t' + list(i)[1] + ';\n'
+                                   + '\t  sh:sourceShape\t' + list(i)[0] + ' ]')
+                        j += 1
+                        output_print = output_print + result_
+
+        # for a data graph that conforms
+        if output_print == output_print_1:
+            output_print = ' :report a sh:ValidationReport ;\n' + '   sh:conforms true '
+
+        output_print = prefix + output_print + '.'
+
+        # add validation report to output file
+        if self.save_stats:
+            validation_report = fileManagement.open_file(self.output_dir_name, 'validationReport.ttl')
+            validation_report.write(output_print)
+            fileManagement.close_file(validation_report)
+
         return output
 
 
