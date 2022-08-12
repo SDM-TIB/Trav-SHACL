@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
 
-__author__ = "Monica Figuera"
+__author__ = 'Monica Figuera and Philipp D. Rohde'
 
 from typing import TYPE_CHECKING
 
@@ -22,8 +22,8 @@ def get_target_node_statement(target_query):
     :param target_query: complete SPARQL query
     :return: query body of the given SPARQL query
     """
-    start = target_query.index("{") + len("{")
-    end = target_query.rfind("}")
+    start = target_query.index('{') + len('{')
+    end = target_query.rfind('}')
     return target_query[start:end]
 
 
@@ -81,9 +81,9 @@ class QueryGenerator:
         """
         if target_query is None:
             return None
-        if type_ == "plain_target":
+        if type_ == 'plain_target':
             return self._plain_target_query(target_query, include_prefixes, include_order_by)
-        elif type_ == "template_FILTER":
+        elif type_ == 'template_FILTER':
             return self._target_query_filter(ref_constraint, target_query, include_prefixes, include_order_by, True), \
                    self._target_query_filter(ref_constraint, target_query, include_prefixes, include_order_by, False)
 
@@ -100,7 +100,7 @@ class QueryGenerator:
         focus_var = VariableGenerator.get_focus_node_var()
         return ''.join([prefixes,
                         target_query,
-                        " ORDER BY ?" + focus_var if include_order_by else ''])
+                        ' ORDER BY ?' + focus_var if include_order_by else ''])
 
     def _target_query_filter(self, constraint, target_query, include_prefixes, include_order_by, filter_by_valid=True):
         """
@@ -117,16 +117,16 @@ class QueryGenerator:
         ref_path = constraint[0].path
         focus_var = VariableGenerator.get_focus_node_var()
         target_node = get_target_node_statement(target_query)
-        count = "(COUNT(DISTINCT ?inst) AS ?cnt)" if filter_by_valid else "((COUNT(DISTINCT ?inst2) - COUNT(DISTINCT ?inst)) AS ?cnt)"
-        additional_triple_pattern = "  OPTIONAL { ?" + focus_var + " " + ref_path + " ?inst2 . }\n" if not filter_by_valid else ""
+        count = '(COUNT(DISTINCT ?inst) AS ?cnt)' if filter_by_valid else '((COUNT(DISTINCT ?inst2) - COUNT(DISTINCT ?inst)) AS ?cnt)'
+        additional_triple_pattern = '  OPTIONAL { ?' + focus_var + ' ' + ref_path + ' ?inst2 . }\n' if not filter_by_valid else ''
         query = ''.join([
             prefixes,
-            "SELECT DISTINCT ?" + focus_var + " " + count + " WHERE {\n ",
-            target_node + "\n",
+            'SELECT DISTINCT ?' + focus_var + ' ' + count + ' WHERE {\n ',
+            target_node + '\n',
             additional_triple_pattern,
-            "  OPTIONAL {\n", "    VALUES ?inst { $instances_to_add$ }. \n",
-            "    ?" + focus_var + " " + ref_path + " ?inst .\n  }\n",
-            "}\n", " ORDER BY ?" + focus_var if include_order_by else ''
+            '  OPTIONAL {\n', '    VALUES ?inst { $instances_to_add$ }. \n',
+            '    ?' + focus_var + ' ' + ref_path + ' ?inst .\n  }\n',
+            '}\n', ' ORDER BY ?' + focus_var if include_order_by else ''
         ])
         return Query(None, None, query)
 
@@ -184,7 +184,7 @@ class QueryGenerator:
         if len(local_pos_constraints) == 0:
             return None  # optional empty
 
-        builder = QueryBuilder("tmp", None, VariableGenerator.get_focus_node_var(), False)
+        builder = QueryBuilder('tmp', None, VariableGenerator.get_focus_node_var(), False)
 
         for c in local_pos_constraints:
             builder.build_clause(c)
@@ -230,7 +230,7 @@ class QueryBuilder:
         :param path: predicate of the triple pattern
         :param obj: object of the triple pattern
         """
-        self.triples.append("?" + VariableGenerator.get_focus_node_var() + " " + path + " " + obj + ".")
+        self.triples.append('?' + VariableGenerator.get_focus_node_var() + ' ' + path + ' ' + obj + '.')
 
     def add_datatype_filter(self, variable, datatype, is_pos):
         """
@@ -240,8 +240,8 @@ class QueryBuilder:
         :param datatype: the expected datatype
         :param is_pos: indicated whether this is a positive constraint
         """
-        s = "datatype(?" + variable + ") = " + datatype
-        self.filters.append(s if is_pos else "!(" + s + ")")
+        s = 'datatype(?' + variable + ') = ' + datatype
+        self.filters.append(s if is_pos else '!(' + s + ')')
 
     def add_constant_filter(self, variable, constant, is_pos):
         """
@@ -251,8 +251,8 @@ class QueryBuilder:
         :param constant: the constant value the variable should be assigned
         :param is_pos: indicated whether this is a positive constraint
         """
-        s = variable + " = " + constant
-        self.filters.append(s if is_pos else "!(" + s + ")")
+        s = variable + ' = ' + constant
+        self.filters.append(s if is_pos else '!(' + s + ')')
 
     def get_sparql(self, include_prefixes, is_subquery):
         """
@@ -266,32 +266,32 @@ class QueryBuilder:
             return self.__get_query(False)  # create subquery
 
         prefixes = self.prefix_string if include_prefixes else ''
-        outer_query_closing_braces = ''.join(["}\n" if self.subquery is not None else '',
-                                              "}" if self.get_triple_patterns() != '' and self.subquery is not None else '',
-                                              "}" if self.get_triple_patterns() != '' else ''])
-        selective_closing_braces = "}}" if self.include_selectivity and self.target_query is not None else ''
+        outer_query_closing_braces = ''.join(['}\n' if self.subquery is not None else '',
+                                              '}' if self.get_triple_patterns() != '' and self.subquery is not None else '',
+                                              '}' if self.get_triple_patterns() != '' else ''])
+        selective_closing_braces = '}}' if self.include_selectivity and self.target_query is not None else ''
 
         if len(self.constraints) == 1 and isinstance(self.constraints[0], MaxOnlyConstraint) and self.constraints[0].get_shape_ref() is None:
             target_node = ''
             if self.include_selectivity and self.target_query is not None:
-                target_node = get_target_node_statement(self.target_query) + ".\n"
+                target_node = get_target_node_statement(self.target_query) + '.\n'
 
             if self.constraints[0].get_value() is not None:
                 pred = self.constraints[0].path
                 obj = self.constraints[0].get_value()
                 return ''.join([prefixes,
                                 self.__get_projection_string(),
-                                " WHERE {\n", target_node,
-                                "?", VariableGenerator.get_focus_node_var(), " ", pred, " ", obj, ".\n}",
-                                " ORDER BY ?" + VariableGenerator.get_focus_node_var() if self.include_ORDERBY else ''])
+                                ' WHERE {\n', target_node,
+                                '?', VariableGenerator.get_focus_node_var(), ' ', pred, ' ', obj, '.\n}',
+                                ' ORDER BY ?' + VariableGenerator.get_focus_node_var() if self.include_ORDERBY else ''])
             else:
                 return ''.join([prefixes,
                                 self.__get_projection_string(),
-                                " WHERE {\n", target_node,
+                                ' WHERE {\n', target_node,
                                 ' OPTIONAL { ', self.triples[0], ' }\n} GROUP BY ?',
                                 VariableGenerator.get_focus_node_var(),
-                                ' HAVING (COUNT(DISTINCT ?', self.triples[0].rsplit("?", 1)[1][:-1], ') > ', str(self.constraints[0].max), ')',
-                                " ORDER BY ?" + VariableGenerator.get_focus_node_var() if self.include_ORDERBY else ''])
+                                ' HAVING (COUNT(DISTINCT ?', self.triples[0].rsplit('?', 1)[1][:-1], ') > ', str(self.constraints[0].max), ')',
+                                ' ORDER BY ?' + VariableGenerator.get_focus_node_var() if self.include_ORDERBY else ''])
 
         query = ''.join([prefixes,
                         self.__get_selective(),
@@ -299,7 +299,7 @@ class QueryBuilder:
                         self.subquery if self.subquery is not None else '',
                         outer_query_closing_braces,
                         selective_closing_braces,
-                        " ORDER BY ?" + VariableGenerator.get_focus_node_var() if self.include_ORDERBY else ''])
+                        ' ORDER BY ?' + VariableGenerator.get_focus_node_var() if self.include_ORDERBY else ''])
         return query
 
     def __get_query(self, include_prefixes):
@@ -311,17 +311,17 @@ class QueryBuilder:
         """
         temp_string = ''
         if include_prefixes:
-            if "_pos" in self.id or "_max_" in self.id:
+            if '_pos' in self.id or '_max_' in self.id:
                 # add VALUES clause to external query
-                temp_string = "$filter_clause_to_add$"
+                temp_string = '$filter_clause_to_add$'
 
         triple_patterns = self.get_triple_patterns()
         if triple_patterns != '':
             return ''.join([self.__get_projection_string(),
-                            " WHERE {\n",
+                            ' WHERE {\n',
                             temp_string,
                             triple_patterns,
-                            "\n", "{\n" if self.subquery is not None else ''])
+                            '\n', '{\n' if self.subquery is not None else ''])
         else:
             return ''
 
@@ -334,8 +334,8 @@ class QueryBuilder:
         if self.include_selectivity and self.target_query is not None:
             target_node = get_target_node_statement(self.target_query)
             return ''.join([self.__get_projection_string(),
-                            " WHERE {\n",
-                            target_node + ". {\n"])
+                            ' WHERE {\n',
+                            target_node + '. {\n'])
         return ''
 
     def __get_projection_string(self):
@@ -344,7 +344,7 @@ class QueryBuilder:
 
         :return: the SELECT clause of the query to be built
         """
-        return "SELECT DISTINCT " + " ".join(["?" + v for v in self.projected_variables])
+        return 'SELECT DISTINCT ' + ' '.join(['?' + v for v in self.projected_variables])
 
     def get_triple_patterns(self):
         """
@@ -352,7 +352,7 @@ class QueryBuilder:
 
         :return: all triple patterns of the query
         """
-        triple_string = "\n".join(self.triples)
+        triple_string = '\n'.join(self.triples)
 
         if len(self.filters) == 0:
             return triple_string
@@ -366,9 +366,9 @@ class QueryBuilder:
         :return: a string for the filters to be applied
         """
         if len(self.filters) == 0:
-            return ""
+            return ''
 
-        return "\nFILTER(\n" + (self.filters[0] if len(self.filters) == 1 else " &&\n".join(self.filters)) + ")"
+        return '\nFILTER(\n' + (self.filters[0] if len(self.filters) == 1 else ' &&\n'.join(self.filters)) + ')'
 
     def add_cardinality_filter(self, variables):
         """
@@ -378,7 +378,7 @@ class QueryBuilder:
         """
         for i in range(0, len(variables)):
             for j in range(i + 1, len(variables)):
-                self.filters.append("?" + variables[i] + " != ?" + variables[j])
+                self.filters.append('?' + variables[i] + ' != ?' + variables[j])
 
     def build_clause(self, c):
         """
@@ -398,9 +398,9 @@ class QueryBuilder:
             for v in variables:
                 if c.get_shape_ref() is not None:  # if there is an existing reference to another shape
                     self.inter_shape_refs[v] = c.get_shape_ref()
-                    self.triples.append("\n$inter_shape_type_to_add$")
+                    self.triples.append('\n$inter_shape_type_to_add$')
 
-                self.add_triple(path, "?" + v)
+                self.add_triple(path, '?' + v)
 
         if c.get_value() is not None:
             self.add_constant_filter(

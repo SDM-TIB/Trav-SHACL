@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 from setuptools import setup
 
-with open("VERSION", "r", encoding="utf-8") as ver:
+with open('VERSION', 'r', encoding='utf-8') as ver:
     version = ver.read()
 
-with open("README.md", "r", encoding="utf-8") as fh:
+with open('README.md', 'r', encoding='utf-8') as fh:
     long_description = fh.read()
 
 setup(
@@ -18,7 +18,7 @@ setup(
     download_url='https://github.com/SDM-TIB/Trav-SHACL/archive/refs/tags/v' + version + '.tar.gz',
     description='A SHACL validator capable of planning the traversal and execution of the validation of a shape schema to detect violations early.',
     long_description=long_description,
-    long_description_content_type="text/markdown",
+    long_description_content_type='text/markdown',
     install_requires=['SPARQLWrapper==2.0.0'],
     python_requires='>=3.7',
     classifiers=[

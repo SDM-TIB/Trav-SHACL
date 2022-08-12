@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__author__ = "Philipp D. Rohde"
+__author__ = 'Philipp D. Rohde'
 
 import os
 
@@ -15,7 +15,7 @@ def open_file(path, filename):
     """
     if not os.path.exists(path):
         os.makedirs(path, exist_ok=True)
-    return open(path + filename, "w", encoding="utf8")
+    return open(path + filename, 'w', encoding='utf8')
 
 
 def close_file(file):

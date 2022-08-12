@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__author__ = "Monica Figuera and Philipp D. Rohde"
+__author__ = 'Monica Figuera and Philipp D. Rohde'
 
 import itertools
 
@@ -50,7 +50,7 @@ class Shape:
         self.referencedShapes = referenced_shapes
         self.parentShapes = set()
         self.queriesFilters = {}
-        self.targets = {"valid": set(), "violated": set()}
+        self.targets = {'valid': set(), 'violated': set()}
 
         self.useSelectiveQueries = use_selective_queries
         self.querySplitThreshold = max_split_size
@@ -74,7 +74,7 @@ class Shape:
 
     def __compute_predicate_set(self, min_query_id, max_queries_ids):
         """ Returns the ids of the queries for this shape """
-        return [self.id] + [self.id + "_d1"] + [min_query_id] + [q for q in max_queries_ids]
+        return [self.id] + [self.id + '_d1'] + [min_query_id] + [q for q in max_queries_ids]
 
     def get_target_query(self):
         return self.targetQuery
@@ -108,21 +108,22 @@ class Shape:
     def __compute_target_queries(self):
         """Internal method to compute the target query of the shape."""
         self.targetQuery = self.QueryGenerator.generate_target_query(
-                                        "plain_target",
-                                        None,
-                                        self.targetQueryNoPref,
-                                        self.includePrefixes,
-                                        self.ORDERBYinQueries)
+            'plain_target',
+            None,
+            self.targetQueryNoPref,
+            self.includePrefixes,
+            self.ORDERBYinQueries
+        )
 
         self.queriesFilters = {}
         for ref in self.referencedShapes.keys():
             for c in self.constraints:
                 if c.path == self.referencedShapes[ref]:
-                    query_valid, query_invalid = self.QueryGenerator.generate_target_query("template_FILTER", [c], self.targetQueryNoPref, self.includePrefixes, self.ORDERBYinQueries)
+                    query_valid, query_invalid = self.QueryGenerator.generate_target_query('template_FILTER', [c], self.targetQueryNoPref, self.includePrefixes, self.ORDERBYinQueries)
                     ref_dict = {
-                        "query_valid": query_valid,
-                        "query_invalid": query_invalid,
-                        "constraint": c
+                        'query_valid': query_valid,
+                        'query_invalid': query_invalid,
+                        'constraint': c
                     }
                     self.queriesFilters[ref] = ref_dict
 
@@ -134,32 +135,32 @@ class Shape:
         subquery = self.QueryGenerator.generate_local_subquery(min_constraints)
 
         # Build a unique set of triples (+ filter) for all min constraints
-        min_id = self.constraintsId + "_pos"
+        min_id = self.constraintsId + '_pos'
         if len(min_constraints) > 0:
             self.minQuery = self.QueryGenerator.generate_query(
-                    min_id,
-                    [c for c in min_constraints if c.get_shape_ref() is not None],
-                    self.useSelectiveQueries,
-                    self.targetQueryNoPref,
-                    self.includePrefixes,
-                    self.ORDERBYinQueries,
-                    subquery
+                min_id,
+                [c for c in min_constraints if c.get_shape_ref() is not None],
+                self.useSelectiveQueries,
+                self.targetQueryNoPref,
+                self.includePrefixes,
+                self.ORDERBYinQueries,
+                subquery
             )
 
         # Build one set of triples (+ filter) for each max constraint (only one max constraint per query is allowed)
-        max_ids = [self.constraintsId + "_max_" + str(i) for i in range(1, len(max_constraints) + 1)]
+        max_ids = [self.constraintsId + '_max_' + str(i) for i in range(1, len(max_constraints) + 1)]
         for i, max_c in enumerate(max_constraints):
-            self.maxConstrId[max_c] = self.constraintsId + "_max_" + str(i+1)
+            self.maxConstrId[max_c] = self.constraintsId + '_max_' + str(i+1)
 
         i = itertools.count()
         self.maxQueries = [self.QueryGenerator.generate_query(
-                                        max_ids[next(i)],
-                                        [c],
-                                        self.useSelectiveQueries,
-                                        self.targetQueryNoPref,
-                                        self.includePrefixes,
-                                        self.ORDERBYinQueries,
-                                        subquery) for c in max_constraints]
+                                max_ids[next(i)],
+                                [c],
+                                self.useSelectiveQueries,
+                                self.targetQueryNoPref,
+                                self.includePrefixes,
+                                self.ORDERBYinQueries,
+                                subquery) for c in max_constraints]
 
         self.predicates = self.__compute_predicate_set(min_id, max_ids)
         self.__compute_max_queries_to_skip()
@@ -187,10 +188,10 @@ class Shape:
         return self.parentShapes
 
     def get_valid_targets(self):
-        return self.targets["valid"]
+        return self.targets['valid']
 
     def get_invalid_targets(self):
-        return self.targets["violated"]
+        return self.targets['violated']
 
     def __compute_max_queries_to_skip(self):
         """
@@ -214,4 +215,4 @@ class Shape:
         return self.maxValidRefs
 
     def get_prefix_string(self):
-        return "\n".join(["".join("PREFIX " + key + ": " + value) for (key, value) in self.prefixes.items()]) + "\n"
+        return '\n'.join([''.join('PREFIX ' + key + ': ' + value) for (key, value) in self.prefixes.items()]) + '\n'

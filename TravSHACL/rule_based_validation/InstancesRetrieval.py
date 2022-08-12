@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__author__ = "Monica Figuera"
+__author__ = 'Monica Figuera'
 
 import math
 import time
@@ -34,39 +34,39 @@ class InstancesRetrieval:
         :param query_str: possibly rewritten query string, e.g., a partition of the original query
         :return: answer set bindings for the constraint query
         """
-        self.stats.update_log(''.join(["\n\nEvaluating query ", q.get_id(), ":\n", query_str]))
+        self.stats.update_log(''.join(['\n\nEvaluating query ', q.get_id(), ':\n', query_str]))
 
         start = time.time()*1000.0
-        bindings = self.endpoint.run_query(query_str)["results"]["bindings"]
+        bindings = self.endpoint.run_query(query_str)['results']['bindings']
         end = time.time()*1000.0
 
-        self.stats.update_log(''.join(["\nelapsed: ", str(end - start), " ms\n"]))
+        self.stats.update_log(''.join(['\nelapsed: ', str(end - start), ' ms\n']))
         self.stats.record_query_exec_time(end - start)
         self.stats.record_query()
-        self.stats.update_log(''.join(["\nNumber of solution mappings: ", str(len(bindings)), "\n"]))
+        self.stats.update_log(''.join(['\nNumber of solution mappings: ', str(len(bindings)), '\n']))
         self.stats.record_number_of_sol_mappings(len(bindings))
         return bindings
 
     def extract_targets(self, shape):
         """
         Retrieves answers from the SPARQL endpoint.
-        When a network of shapes has only "some" targets, a shape without a target class returns no new bindings
+        When a network of shapes has only 'some' targets, a shape without a target class returns no new bindings
 
         :param shape: focus shape being evaluated
         :return: set containing target literals (stored in the form of built-in python tuples)
         """
         query = shape.get_target_query()  # targetQuery is set in shape's definition file (json file)
-        self.stats.update_log(''.join(["\nEvaluating target query for ", shape.id, ":\n", query]))
+        self.stats.update_log(''.join(['\nEvaluating target query for ', shape.id, ':\n', query]))
 
         start = time.time() * 1000.0
-        bindings = self.endpoint.run_query(query)["results"]["bindings"]
+        bindings = self.endpoint.run_query(query)['results']['bindings']
         end = time.time() * 1000.0
 
-        self.stats.update_log("\nelapsed: " + str(end - start) + " ms\n")
+        self.stats.update_log('\nelapsed: ' + str(end - start) + ' ms\n')
         self.stats.record_query_exec_time(end - start)
         self.stats.record_query()
-        self.stats.update_log("\nNumber of targets retrieved: " + str(len(bindings)))
-        return {(shape.id, b["x"]["value"], True) for b in bindings}
+        self.stats.update_log('\nNumber of targets retrieved: ' + str(len(bindings)))
+        return {(shape.id, b['x']['value'], True) for b in bindings}
 
     def extract_targets_with_filter(self, shape, filtering_shape):
         """
@@ -82,10 +82,10 @@ class InstancesRetrieval:
         pending_targets = set()
         inv_targets = set()
 
-        self.stats.update_log(''.join(["\n", "instances retrieval ", shape.get_id(),
-                                       ": [out-neighbor's (", filtering_shape.get_id(), ")"]))
-        self.stats.update_log(''.join([" instances: ", str(len(prev_val_list)), " valid ",
-                                       str(len(prev_inv_list)), " invalid]"]))
+        self.stats.update_log(''.join(['\n', 'instances retrieval ', shape.get_id(),
+                              ": [out-neighbor's (", filtering_shape.get_id(), ')']))
+        self.stats.update_log(''.join([' instances: ', str(len(prev_val_list)), ' valid ',
+                              str(len(prev_inv_list)), ' invalid]']))
 
         max_split_number = 256
         max_instances_per_query = 115
@@ -98,17 +98,17 @@ class InstancesRetrieval:
             return pending_targets, inv_targets
 
         query_template = shape.queriesFilters[filtering_shape.get_id()]
-        constraint = query_template["constraint"]
-        query_template = query_template["query_valid"].get_sparql() if shortest_inst_list == prev_val_list else query_template["query_invalid"].get_sparql()
-        separator = " "
+        constraint = query_template['constraint']
+        query_template = query_template['query_valid'].get_sparql() if shortest_inst_list == prev_val_list else query_template['query_invalid'].get_sparql()
+        separator = ' '
 
         split_instances = self.__get_formatted_instances(shortest_inst_list, separator, max_instances_per_query)
-        query = [query_template.replace("$instances_to_add$", sublist) for sublist in split_instances]
+        query = [query_template.replace('$instances_to_add$', sublist) for sublist in split_instances]
 
         start = time.time() * 1000.0
         for q in query:
-            self.stats.update_log("\nEvaluating target query for " + shape.id + ":\n" + q)
-            bindings = self.endpoint.run_query(q)["results"]["bindings"]
+            self.stats.update_log('\nEvaluating target query for ' + shape.id + ':\n' + q)
+            bindings = self.endpoint.run_query(q)['results']['bindings']
             for b in bindings:
                 instance = b['x']['value']
                 cardinality = int(b['cnt']['value'])
@@ -126,9 +126,9 @@ class InstancesRetrieval:
         end = time.time() * 1000.0
         self.stats.record_query_exec_time(end - start)
         self.stats.record_query()
-        self.stats.update_log("\nelapsed: " + str(end - start) + " ms\n")
-        self.stats.update_log("\nNumber of pending targets: " + str(len(pending_targets)))
-        self.stats.update_log("\nNumber of invalid targets: " + str(len(inv_targets)))
+        self.stats.update_log('\nelapsed: ' + str(end - start) + ' ms\n')
+        self.stats.update_log('\nNumber of pending targets: ' + str(len(pending_targets)))
+        self.stats.update_log('\nNumber of invalid targets: ' + str(len(inv_targets)))
         return pending_targets, inv_targets
 
     def rewrite_constraint_query(self, shape, q, filtering_shape, q_type, use_selective_queries):
@@ -151,7 +151,7 @@ class InstancesRetrieval:
         prev_inv_list = set() if filtering_shape is None else filtering_shape.get_invalid_targets()
         query_template = q.get_sparql()
 
-        if use_selective_queries and "$inter_shape_type_to_add$" in query_template:
+        if use_selective_queries and '$inter_shape_type_to_add$' in query_template:
             for var, inter_shape_name in q.get_inter_shape_refs_names().items():
                 inter_shape = self.shapes_dict[inter_shape_name]
                 inter_shape_triple = ''
@@ -159,31 +159,32 @@ class InstancesRetrieval:
                     inter_shape_triple = get_target_node_statement(inter_shape.targetQueryNoPref).replace('?x', '?' + var)
                     if inter_shape_triple[-1] != '}':
                         inter_shape_triple += '.'
-                query_template = query_template.replace("$inter_shape_type_to_add$", inter_shape_triple)
+                query_template = query_template.replace('$inter_shape_type_to_add$', inter_shape_triple)
         else:
-            query_template = query_template.replace("$inter_shape_type_to_add$", "")
+            query_template = query_template.replace('$inter_shape_type_to_add$', '')
 
         if use_selective_queries and \
                 filtering_shape is not None and \
                 len(prev_val_list) > 0 and len(prev_inv_list) > 0 and \
                 len(prev_val_list) <= max_split_number:
-            values_clauses = ""
-            inter_shape_triples = "\n"
-            separator = ""
+            values_clauses = ''
+            inter_shape_triples = '\n'
+            separator = ''
             split_instances = self.__get_formatted_instances(prev_val_list, separator, max_instances_per_query)
             for c in shape.constraints:
                 if c.shapeRef == filtering_shape.get_id() and c.min == 1:
-                    obj_var = " ?" + c.variables[0]
-                    values_clauses += "VALUES" + obj_var + " {$instances$}\n"
-                    if q_type == "max":
+                    obj_var = ' ?' + c.variables[0]
+                    values_clauses += 'VALUES' + obj_var + ' {$instances$}\n'
+                    if q_type == 'max':
                         focus_var = c.varGenerator.get_focus_node_var()
-                        inter_shape_triples += "?" + focus_var + " " + c.path + obj_var + ".\n"
+                        inter_shape_triples += '?' + focus_var + ' ' + c.path + obj_var + '.\n'
 
-            return [query_template.replace("$filter_clause_to_add$",
-                                           values_clauses.replace("$instances$", sublist) + inter_shape_triples)
-                    for sublist in split_instances]
+            return [query_template.replace(
+                        '$filter_clause_to_add$',
+                        values_clauses.replace('$instances$', sublist) + inter_shape_triples
+                    ) for sublist in split_instances]
 
-        return [query_template.replace("$filter_clause_to_add$", "")]
+        return [query_template.replace('$filter_clause_to_add$', '')]
 
     @staticmethod
     def __get_formatted_instances(instances, separator, max_list_len):

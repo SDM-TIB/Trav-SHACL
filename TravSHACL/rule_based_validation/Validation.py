@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__author__ = "Monica Figuera"
+__author__ = 'Monica Figuera'
 
 import time
 
@@ -36,7 +36,7 @@ class Validation:
         self.stats = ValidationStats()
         self.traces = set()
 
-        self.stats.update_log("Node order: " + str(self.node_order) + '\n')
+        self.stats.update_log('Node order: ' + str(self.node_order) + '\n')
         self.InstRetrieval = InstancesRetrieval(endpoint_url, shapes_dict, self.stats)
         self.valid_targets_after_termination = set()
         self.start_of_verification = time.time() * 1000.0
@@ -54,10 +54,10 @@ class Validation:
         finish = time.time() * 1000.0
         elapsed = round(finish - start)
         self.stats.record_total_time(elapsed)
-        print("Total execution time: ", str(elapsed), " ms")
+        print('Total execution time: ', str(elapsed), ' ms')
         self.stats.record_total_rules(state.total_rule_number)
-        self.stats.update_log("\n\nMaximal number or rules in memory: " + str(self.stats.max_rules))
-        self.stats.update_log("\nTotal number of rules: " + str(state.total_rule_number))
+        self.stats.update_log('\n\nMaximal number or rules in memory: ' + str(self.stats.max_rules))
+        self.stats.update_log('\nTotal number of rules: ' + str(state.total_rule_number))
         return self.validation_output(state.shapes_state)
 
     def validate(self, state, focus_shape):
@@ -71,7 +71,7 @@ class Validation:
             self.valid_targets_after_termination.update(state.remaining_targets)
             return
 
-        self.stats.update_log("\n\n>>>>> Starting validation of shape: " + focus_shape.get_id())
+        self.stats.update_log('\n\n>>>>> Starting validation of shape: ' + focus_shape.get_id())
         state.evaluated_predicates.add(focus_shape.get_id())
         self.eval_shape(state, focus_shape, state.shapes_state)
 
@@ -93,7 +93,7 @@ class Validation:
         :param shapes_state: dictionary storing validation's state of each shape
         :return: all pending targets for the upcoming focus shape
         """
-        self.stats.update_log("\n\n>>>>>\nRetrieving (next) targets ...")
+        self.stats.update_log('\n\n>>>>>\nRetrieving (next) targets ...')
         if next_focus_shape.get_target_query() is None:
             return set()
 
@@ -105,7 +105,7 @@ class Validation:
             # A query can filter its answers with (in)validated targets given by an evaluated out-neighboring shape
             pending, invalid = self.InstRetrieval.extract_targets_with_filter(next_focus_shape, filtering_shape)
             for target in invalid:
-                self.register_target(target, "violated", next_focus_shape_name, shapes_state)
+                self.register_target(target, 'violated', next_focus_shape_name, shapes_state)
                 shapes_state[next_focus_shape_name]['inferred'].add((target[0], target[1], not target[2]))
                 shapes_state[next_focus_shape_name]['remaining_targets_count'] -= 1
         else:
@@ -157,16 +157,16 @@ class Validation:
 
         self.eval_constraints_queries(state, shape, shapes_state[shape_name]['filtering_shape'])  # interleave
 
-        self.stats.update_log("\nStarting saturation ...")
+        self.stats.update_log('\nStarting saturation ...')
         start = time.time() * 1000.0
         self.saturate_remaining(state, shape_name, shapes_state)
         end = time.time() * 1000.0
 
         self.stats.record_saturation_time(end - start)
-        self.stats.update_log("\nsaturation ...\nelapsed: " + str(end - start) + " ms")
+        self.stats.update_log('\nsaturation ...\nelapsed: ' + str(end - start) + ' ms')
 
         state.visited_shapes.add(shape)
-        self.stats.update_log("\nRemaining targets: " + str(len(state.remaining_targets)))
+        self.stats.update_log('\nRemaining targets: ' + str(len(state.remaining_targets)))
 
     def eval_constraints_queries(self, state, shape, filtering_shape):
         """
@@ -186,7 +186,7 @@ class Validation:
             to_remove = []
             for head in remaining_targets:
                 if head[0] == shape_name:
-                    self.register_target(head, "valid", shape_name, shapes_state)
+                    self.register_target(head, 'valid', shape_name, shapes_state)
                     to_remove.append(head)
                     shapes_state[shape_name]['remaining_targets_count'] -= 1
                     shapes_state[shape_name]['inferred'].add(head)
@@ -195,11 +195,11 @@ class Validation:
 
         if shape.minQuery is not None:
             min_query_rp = shape.minQuery.get_rule_pattern()
-            self.interleave(state, shape, shape.minQuery, filtering_shape, min_query_rp, shape_rp, "min")
+            self.interleave(state, shape, shape.minQuery, filtering_shape, min_query_rp, shape_rp, 'min')
 
         for q in shape.maxQueries:
             max_query_rp = q.get_rule_pattern()
-            self.interleave(state, shape, q, filtering_shape, max_query_rp, shape_rp, "max")
+            self.interleave(state, shape, q, filtering_shape, max_query_rp, shape_rp, 'max')
             # after running the max constraints, rules need to be added for the instances that were not
             # in the query result since they will still be valid and may need to be checked further
             for head in remaining_targets:
@@ -239,7 +239,7 @@ class Validation:
         :param filtering_shape: shape (referenced by focus 'shape') providing filtering instances
         :param q_rule_pattern: query rule pattern
         :param s_rule_pattern: shape rule pattern
-        :param q_type: query type ("min" or "max")
+        :param q_type: query type ('min' or 'max')
         """
         shapes_state = state.shapes_state
         preds_to_shapes = state.preds_to_shapes
@@ -262,8 +262,8 @@ class Validation:
         for query_str in self.InstRetrieval.rewrite_constraint_query(shape, q, filtering_shape, q_type, self.selectivity_enabled):
             start = time.time() * 1000.0
             for b in self.InstRetrieval.run_constraint_query(q, query_str):
-                q_head = (query_rp_head[0], b[query_rp_head[1]]["value"], query_rp_head[2])
-                s_head = (shape_rp_head[0], b[shape_rp_head[1]]["value"], shape_rp_head[2])
+                q_head = (query_rp_head[0], b[query_rp_head[1]]['value'], query_rp_head[2])
+                s_head = (shape_rp_head[0], b[shape_rp_head[1]]['value'], shape_rp_head[2])
 
                 body = set()
                 is_body_inferred = True
@@ -271,7 +271,7 @@ class Validation:
                 negated_body = False
                 for i, atom_pattern in enumerate(query_rp_body):
                     a_state = shapes_state[q_body_ref_shapes[i]]  # body atom's shape state
-                    a = (atom_pattern[0], b[atom_pattern[1]]["value"], atom_pattern[2])
+                    a = (atom_pattern[0], b[atom_pattern[1]]['value'], atom_pattern[2])
                     body.add(a)
                     if a[0] in state.evaluated_predicates:  # exclude not yet evaluated atom's query
                         if state.rule_map.get((a[0], a[1], True)) is None:
@@ -287,7 +287,7 @@ class Validation:
 
                         # if interleaving min-query with an upper bound <> None -> verify upper bound violations
                         if a in a_state['inferred'] \
-                                and q_type == "min" \
+                                and q_type == 'min' \
                                 and shape_max_refs.get(q_body_ref_shapes[i]) is not None:
                             if inter_constr_count.get(s_head) is None:
                                 inter_constr_count[s_head] = {inter_constraint: set() for inter_constraint in shape_max_refs}
@@ -301,7 +301,7 @@ class Validation:
                     # case (2) - infer negation of rule head (given negated body atom)
                     t_state['inferred'].add((q_head[0], q_head[1], False))
                     if s_head[2] and s_head in state.remaining_targets:
-                        self.register_target(s_head, "violated", shape_name, shapes_state)
+                        self.register_target(s_head, 'violated', shape_name, shapes_state)
                         state.remaining_targets.discard(s_head)
                         t_state['remaining_targets_count'] -= 1
                     continue
@@ -328,7 +328,7 @@ class Validation:
                 negated_body = False
                 for i, atom_pattern in enumerate(shape_rp_body):
                     a_state = shapes_state[s_body_ref_shapes[i]]
-                    a = (atom_pattern[0], b[atom_pattern[1]]["value"], atom_pattern[2])
+                    a = (atom_pattern[0], b[atom_pattern[1]]['value'], atom_pattern[2])
                     body.add(a)
                     if a not in a_state['inferred']:
                         if (a[0], a[1], not a[2]) not in a_state['inferred']:
@@ -346,7 +346,7 @@ class Validation:
                     # case (2) - infer negation of rule head (negated body atom)
                     t_state['inferred'].add((s_head[0], s_head[1], False))
                     if s_head[2] and s_head in state.remaining_targets:
-                        self.register_target(s_head, "violated", shape_name, shapes_state)
+                        self.register_target(s_head, 'violated', shape_name, shapes_state)
                         state.remaining_targets.discard(s_head)
                         t_state['remaining_targets_count'] -= 1
                     continue
@@ -369,12 +369,12 @@ class Validation:
                         for a in body:
                             t_state['inferred'].discard(a)  # de-allocating memory
 
-                        self.register_target(s_head, "valid", shape_name, shapes_state)
+                        self.register_target(s_head, 'valid', shape_name, shapes_state)
                         state.remaining_targets.discard(s_head)
                         t_state['remaining_targets_count'] -= 1
                     rules_directly_inferred += 1
 
-            self.stats.update_log("\nGrounded rules. \n")
+            self.stats.update_log('\nGrounded rules. \n')
             end = time.time()*1000.0
             self.stats.record_interleaving_time(end - start)
             state.evaluated_predicates.add(query_rp_head[0])
@@ -382,7 +382,7 @@ class Validation:
         all_current_rules = new_rules_count + rules_directly_inferred
         state.rule_number += new_rules_count
         state.total_rule_number += all_current_rules
-        self.stats.update_log("\n\nNumber of rules: " + str(all_current_rules))
+        self.stats.update_log('\n\nNumber of rules: ' + str(all_current_rules))
         self.stats.record_current_number_of_rules(all_current_rules)
 
     def saturate_remaining(self, state, shape_name, shapes_state):
@@ -393,7 +393,7 @@ class Validation:
         Repeat 1 and 2 until no further changes are made (i.e., no new inferences found)
 
         :param state: current state of the validation
-        :param shape_name: name of focus shape or its "parents" (after recursion)
+        :param shape_name: name of focus shape or its 'parents' (after recursion)
         :param shapes_state: dictionary storing validation's state of each shape
         """
         rule_map = state.rule_map
@@ -433,7 +433,7 @@ class Validation:
             if a[0] in evaluated_predicates \
                     and rule_map.get((a[0], a[1], True)) is None \
                     and a not in t_state['inferred']:  # if atom 'a' is not satisfied
-                self.register_target(a, "violated", shape_name, shapes_state)
+                self.register_target(a, 'violated', shape_name, shapes_state)
                 t_state['inferred'].add((a[0], a[1], not a[2]))
                 t_state['remaining_targets_count'] -= 1
             else:
@@ -463,9 +463,9 @@ class Validation:
             head_shape_name = preds_to_shapes[head[0]]
             inferred_bodies = set()
             for body in bodies:
-                inferred_atoms = {"F_atom" if (a[0], a[1], not a[2]) in shapes_state[preds_to_shapes[a[0]]]['inferred']
-                                  else ("T_atom" if a in shapes_state[preds_to_shapes[a[0]]]['inferred']
-                                        else "P_atom") for a in body}
+                inferred_atoms = {'F_atom' if (a[0], a[1], not a[2]) in shapes_state[preds_to_shapes[a[0]]]['inferred']
+                                  else ('T_atom' if a in shapes_state[preds_to_shapes[a[0]]]['inferred']
+                                        else 'P_atom') for a in body}
                 if 'T_atom' in inferred_atoms and len(inferred_atoms) == 1:
                     inferred_bodies.add('T')
                 elif 'F_atom' in inferred_atoms:
@@ -476,7 +476,7 @@ class Validation:
             if 'T' in inferred_bodies:  # case (1)
                 fresh_literals = True
                 if head in remaining_targets:
-                    self.register_target(head, "valid", shape_name, shapes_state)
+                    self.register_target(head, 'valid', shape_name, shapes_state)
                     remaining_targets.discard(head)
                     shapes_state[head_shape_name]['remaining_targets_count'] -= 1
                 shapes_state[head_shape_name]['inferred'].add(head)
@@ -485,7 +485,7 @@ class Validation:
             elif 'F' in inferred_bodies and 'P' not in inferred_bodies:  # case (2)
                 fresh_literals = True
                 if head in remaining_targets:
-                    self.register_target(head, "violated", shape_name, shapes_state)
+                    self.register_target(head, 'violated', shape_name, shapes_state)
                     remaining_targets.discard(head)
                     shapes_state[head_shape_name]['remaining_targets_count'] -= 1
                 shapes_state[head_shape_name]['inferred'].add((head[0], head[1], not head[2]))
@@ -494,7 +494,7 @@ class Validation:
 
         if not fresh_literals:
             return False
-        self.stats.update_log("\nRemaining targets: " + str(len(remaining_targets)))
+        self.stats.update_log('\nRemaining targets: ' + str(len(remaining_targets)))
         return True
 
     def register_target(self, t, t_type, invalidating_shape_name, shapes_state):
@@ -506,12 +506,12 @@ class Validation:
         :param invalidating_shape_name: string name of the shape that (in)validates target 't'
         :param shapes_state: dictionary storing validation's state of each shape
         """
-        instance = "<" + t[1] + ">"
+        instance = '<' + t[1] + '>'
         self.shapes_dict[t[0]].targets[t_type].add(instance)
         shapes_state[invalidating_shape_name]['registered_targets'][t_type].add(t)
-        self.traces.add(''.join([t_type, ", ",
-                                 str(len(self.traces)), ", ",
-                                 str(round(time.time() * 1000.0 - self.start_of_verification)), "\n"]))
+        self.traces.add(''.join([t_type, ', ',
+                        str(len(self.traces)), ', ',
+                        str(round(time.time() * 1000.0 - self.start_of_verification)), '\n']))
 
     @staticmethod
     def write_targets_to_file(output_dir_name, all_valid_targets, all_invalid_targets):
@@ -519,15 +519,15 @@ class Validation:
         def write_list_to_file(list_, file_):
             """Helper function to write a list to file."""
             for elem in list_:
-                lit_sign_str = "" if elem[2] else "!"
-                lit_str = lit_sign_str + elem[0] + "(" + elem[1] + ")"  # get string representation of tuple
-                file_.write(lit_str + ",\n")
+                lit_sign_str = '' if elem[2] else '!'
+                lit_str = lit_sign_str + elem[0] + '(' + elem[1] + ')'  # get string representation of tuple
+                file_.write(lit_str + ',\n')
 
-        valid_targets_file = fileManagement.open_file(output_dir_name, "targets_valid.log")
+        valid_targets_file = fileManagement.open_file(output_dir_name, 'targets_valid.log')
         write_list_to_file(all_valid_targets, valid_targets_file)
         fileManagement.close_file(valid_targets_file)
 
-        violated_targets_file = fileManagement.open_file(output_dir_name, "targets_violated.log")
+        violated_targets_file = fileManagement.open_file(output_dir_name, 'targets_violated.log')
         write_list_to_file(all_invalid_targets, violated_targets_file)
         fileManagement.close_file(violated_targets_file)
 
@@ -546,8 +546,8 @@ class Validation:
             invalidated_targets = shapes_state[shape_name]['registered_targets']['violated']
 
             output[shape_name] = {
-                "valid_instances": validated_targets,
-                "invalid_instances": invalidated_targets,
+                'valid_instances': validated_targets,
+                'invalid_instances': invalidated_targets,
             }
             all_valid_targets.update(validated_targets)
             all_invalid_targets.update(invalidated_targets)
@@ -557,26 +557,26 @@ class Validation:
             self.write_targets_to_file(self.output_dir_name, all_valid_targets, all_invalid_targets)
 
         if self.save_stats:
-            validation_log = fileManagement.open_file(self.output_dir_name, "validation.log")
-            stats = fileManagement.open_file(self.output_dir_name, "stats.txt")
-            traces = fileManagement.open_file(self.output_dir_name, "traces.csv")
+            validation_log = fileManagement.open_file(self.output_dir_name, 'validation.log')
+            stats = fileManagement.open_file(self.output_dir_name, 'stats.txt')
+            traces = fileManagement.open_file(self.output_dir_name, 'traces.csv')
 
             self.stats.record_number_of_targets(len(all_valid_targets), len(all_invalid_targets))
             self.stats.write_all_stats(stats)
             fileManagement.close_file(stats)
 
             self.stats.write_validation_log(validation_log)
-            validation_log.write("\nValid targets: " + str(len(all_valid_targets)))
-            validation_log.write("\nInvalid targets: " + str(len(all_invalid_targets)))
+            validation_log.write('\nValid targets: ' + str(len(all_valid_targets)))
+            validation_log.write('\nInvalid targets: ' + str(len(all_invalid_targets)))
             fileManagement.close_file(validation_log)
 
-            traces.write("Target, #TripleInThatNode, TimeSinceStartOfVerification(ms)\n")
+            traces.write('Target, #TripleInThatNode, TimeSinceStartOfVerification(ms)\n')
             for trace in self.traces:
                 traces.write(trace)
             fileManagement.close_file(traces)
 
         # add to output all targets that could not be (in)validated by any shape
-        output["unbound"] = {"valid_instances": self.valid_targets_after_termination}
+        output["unbound"] = {'valid_instances': self.valid_targets_after_termination}
 
         # setting the output
         prefix = '@prefix sh: <http://www.w3.org/ns/shacl#> . \n\n'
@@ -627,10 +627,10 @@ class ValidationState:
 
         for shape_name in shapes_dict.keys():
             self.shapes_state[shape_name] = {
-                "filtering_shape": None,
-                "inferred": set(),
-                "remaining_targets_count": 0,
-                "registered_targets": {"valid": set(), "violated": set()}
+                'filtering_shape': None,
+                'inferred': set(),
+                'remaining_targets_count': 0,
+                'registered_targets': {'valid': set(), 'violated': set()}
             }
             for pred in shapes_dict[shape_name].predicates:
                 self.preds_to_shapes[pred] = shape_name
