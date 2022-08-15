@@ -544,7 +544,6 @@ class Validation:
         for shape_name in self.shapes_dict.keys():
             validated_targets = shapes_state[shape_name]['registered_targets']['valid']
             invalidated_targets = shapes_state[shape_name]['registered_targets']['violated']
-
             output[shape_name] = {
                 'valid_instances': validated_targets,
                 'invalid_instances': invalidated_targets,
@@ -578,36 +577,24 @@ class Validation:
         # add to output all targets that could not be (in)validated by any shape
         output["unbound"] = {'valid_instances': self.valid_targets_after_termination}
 
-        # setting the output
-        prefix = '@prefix sh: <http://www.w3.org/ns/shacl#> . \n\n'
-        output_print = ' :report a sh:ValidationReport ;\n' + '   sh:conforms false ;\n' + '   sh:result'
-        output_print_1 = ' :report a sh:ValidationReport ;\n' + '   sh:conforms false ;\n' + '   sh:result'
-        j = 0
-
-        for key_, value_ in output.items():
-            for dkey_, dvalue_ in value_.items():
-                if dkey_ == 'invalid_instances':
-                    for i in dvalue_:
-                        if j != 0:
-                            output_print = output_print + ','
-
-                        result_ = ('\n\t[ a\t\t\tsh:ValidationResult ;\n'
-                                   + '\t  sh:resultSeverity     sh:Violation ;\n'
-                                   + '\t  sh:focusNode\t\t' + list(i)[1] + ';\n'
-                                   + '\t  sh:sourceShape\t' + list(i)[0] + ' ]')
-                        j += 1
-                        output_print = output_print + result_
-
-        # for a data graph that conforms
-        if output_print == output_print_1:
-            output_print = ' :report a sh:ValidationReport ;\n' + '   sh:conforms true '
-
-        output_print = prefix + output_print + '.'
-
-        # add validation report to output file
+        # TTL validation report
         if self.save_stats:
+            if len(all_invalid_targets) == 0:
+                output_ttl = ':report a sh:ValidationReport ;\n' + '  sh:conforms true '
+            else:
+                output_ttl = ':report a sh:ValidationReport ;\n' + '  sh:conforms false ;\n' + '  sh:result'
+                for i, violation in enumerate(all_invalid_targets):
+                    if i != 0:
+                        output_ttl += ' ,'
+                    output_ttl += '\n    [ a  sh:ValidationResult ;\n' +\
+                                  '      sh:resultSeverity  sh:Violation ;\n' +\
+                                  '      sh:focusNode  <' + violation[1] + '> ;\n' +\
+                                  '      sh:sourceShape  ' + violation[0] + ' ]'
+
+            output_ttl = '@prefix sh: <http://www.w3.org/ns/shacl#> . \n\n' + output_ttl + ' .'
+
             validation_report = fileManagement.open_file(self.output_dir_name, 'validationReport.ttl')
-            validation_report.write(output_print)
+            validation_report.write(output_ttl)
             fileManagement.close_file(validation_report)
 
         return output
