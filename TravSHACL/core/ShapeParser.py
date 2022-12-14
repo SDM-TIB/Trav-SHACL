@@ -122,7 +122,7 @@ class ShapeParser:
         :param order_by_in_queries: indicates whether to use the ORDER BY clause
         :return: Shape object representing the parsed SHACL shape
         """
-
+        # TODO: This needs to handle more than one shape per file!
         g_file = Graph()  # create graph instance
         g_file.parse(filename)
 
@@ -198,7 +198,6 @@ class ShapeParser:
         :param constraints: the constraints to get the referenced shapes for
         :return: Python dictionary with the referenced shapes and the path referencing the shape
         """
-
         return {c.get('shape'): c.get('path') for c in constraints if c.get('shape') is not None}
 
     @staticmethod
@@ -216,7 +215,6 @@ class ShapeParser:
 
     @staticmethod
     def get_QUERY():
-
         QUERY_SHAPES = '''SELECT DISTINCT ?shape WHERE {
             ?shape a <http://www.w3.org/ns/shacl#NodeShape> .
             }'''
@@ -264,7 +262,6 @@ class ShapeParser:
         :param filename: shape file in ttl format
         :return: valid response from query execution
         """
-
         exp_dict = collections.defaultdict(list)
         for constraint in filename.query(query[3].format(shape=name)):
             constraint_id = constraint[0]
@@ -301,7 +298,6 @@ class ShapeParser:
         :param filename: file path
         :return: all constraints belonging to the shape
         """
-
         cons_dict = self.get_res(filename, name, query)
         trav_dict = {}
         exp_dict = {}
@@ -359,8 +355,9 @@ class ShapeParser:
         :return: list of constraints in internal constraint representation
         """
         var_generator = VariableGenerator()
-        return [self.parse_constraint(var_generator, array[0][i], constraints_id + '_c' + str(i + 1), target_def)
-                for i in range(len(array[0]))]
+        constraints = []
+        [constraints.extend(self.parse_constraint(var_generator, array[0][i], constraints_id + '_c' + str(i + 1), target_def)) for i in range(len(array[0]))]
+        return constraints
 
     def parse_constraints_ttl(self, array, target_def, constraints_id):
         """
@@ -372,8 +369,9 @@ class ShapeParser:
         :return: list of constraints in internal constraint representation
         """
         var_generator = VariableGenerator()
-        return [self.parse_constraint(var_generator, array[i], constraints_id + '_c' + str(i + 1), target_def)
-                for i in range(len(array))]
+        constraints = []
+        [constraints.extend(self.parse_constraint(var_generator, array[i], constraints_id + '_c' + str(i + 1), target_def)) for i in range(len(array))]
+        return constraints
 
     @staticmethod
     def parse_constraint(var_generator, obj, id_, target_def):
@@ -417,10 +415,8 @@ class ShapeParser:
         if o_path is not None:
             if o_min is not None:
                 if o_max is not None:
-                    return MinMaxConstraint(var_generator, id_, o_path, o_min, o_max, o_neg, o_datatype, o_value,
-                                            o_shape_ref, target_def)
-                return MinOnlyConstraint(var_generator, id_, o_path, o_min, o_neg, o_datatype, o_value, o_shape_ref,
-                                         target_def)
+                    #return MinMaxConstraint(var_generator, id_, o_path, o_min, o_max, o_neg, o_datatype, o_value, o_shape_ref, target_def)
+                    return [MinOnlyConstraint(var_generator, id_, o_path, o_min, o_neg, o_datatype, o_value, o_shape_ref, target_def), MaxOnlyConstraint(var_generator, id_, o_path, o_max, o_neg, o_datatype, o_value, o_shape_ref, target_def)]
+                return [MinOnlyConstraint(var_generator, id_, o_path, o_min, o_neg, o_datatype, o_value, o_shape_ref, target_def)]
             if o_max is not None:
-                return MaxOnlyConstraint(var_generator, id_, o_path, o_max, o_neg, o_datatype, o_value, o_shape_ref,
-                                         target_def)
+                return [MaxOnlyConstraint(var_generator, id_, o_path, o_max, o_neg, o_datatype, o_value, o_shape_ref, target_def)]
