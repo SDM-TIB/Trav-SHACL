@@ -1,1 +1,2 @@
 SPARQLWrapper==2.0.0
+Flask==2.2.2

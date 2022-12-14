@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Trav-SHACL Interface</title>
+    <style>
+        h1, div { text-align: center }
+    </style>
+</head>
+<body>
+    <h1>Validate a Shape Schema with Trav-SHACL</h1>
+    <div>
+        <form method="post">
+            <label for="schemaDir"> Validate integrity constraints in:   </label><input id="schemaDir" name="schemaDir" type="text" value="{{ schema_path }}"><br><br>
+            <label for="external_endpoint"> Endpoint: </label><input id="external_endpoint" name="external_endpoint" type="text" value="{{ endpoint }}">
+            <br><br>
+            <input type="submit" value="Validate">
+        </form>
+    </div>
+</body>
+</html>

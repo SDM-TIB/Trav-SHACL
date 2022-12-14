@@ -11,4 +11,8 @@ COPY . /TravSHACL
 WORKDIR /TravSHACL
 
 # Trav-SHACL is no servie; so make the container stay active
-CMD ["tail", "-f", "/dev/null"]
+ENV FLASK_APP=TravSHACL/app/__init__.py
+ENV PYTHONUNBUFFERED=1
+ENV FLASK_RUN_HOST=0.0.0.0
+ENV FLASK_RUN_PORT=5000
+CMD ["flask", "run"]
