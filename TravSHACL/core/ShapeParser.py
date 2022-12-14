@@ -54,15 +54,17 @@ class ShapeParser:
                 max_split_size=max_split_size,
                 order_by_in_queries=order_by_in_queries
             ) for p in files_abs_paths]
-
-        else:  # TODO: implement parsing of TTL format
-            return [self.parse_ttl(
+        if shape_format == 'SHACL':
+            shapes = []
+            [shapes.extend(self.parse_ttl(
                 filename=p,
                 use_selective_queries=use_selective_queries,
                 max_split_size=max_split_size,
                 order_by_in_queries=order_by_in_queries
-            ) for p in files_abs_paths]
-            # print('Unexpected format: ' + shape_format)
+            )) for p in files_abs_paths]
+            return shapes
+        else:
+            print('Unexpected format: ' + shape_format)
 
     @staticmethod
     def get_file_extension(shape_format):
@@ -127,55 +129,58 @@ class ShapeParser:
         g_file.parse(filename)
 
         queries = self.get_QUERY()
+        shapes = []
 
-        name = [str(row[0]) for row in g_file.query(queries[0])]
-        #name = self.get_sname(g_file)
-        id_ = name[0] + '_d1'  # str(i + 1) but there is only one set of conjunctions
+        names = [str(row[0]) for row in g_file.query(queries[0])]
 
-        # to get the target_ref and target_type
-        if len(g_file.query(queries[1].format(shape=name[0]))) != 0:
-            for res in g_file.query(queries[1].format(shape=name[0])):
-                target_def = str(res[0])
-                target_type = 'class'
-                break
+        for name in names:
+            id_ = name + '_d1'  # str(i + 1) but there is only one set of conjunctions
 
-        elif len(g_file.query(queries[2].format(shape=name[0]))) != 0:
-            for res in g_file.query(queries[2].format(shape=name[0])):
-                target_def = str(res[0])
-                target_type = 'node'
-                break
-
-        else:
+            # to get the target_ref and target_type
             target_def = None
             target_type = None
+            if len(g_file.query(queries[1].format(shape=name))) != 0:
+                for res in g_file.query(queries[1].format(shape=name)):
+                    target_def = str(res[0])
+                    target_type = 'class'
+                    break
+            elif len(g_file.query(queries[2].format(shape=name))) != 0:
+                for res in g_file.query(queries[2].format(shape=name)):
+                    target_def = str(res[0])
+                    target_type = 'node'
+                    break
 
-        if target_def is not None:
-            target_query = 'SELECT ?x WHERE { ?x a <' + target_def + '> }'  # come up with a query for this
-            if urlparse(target_def).netloc != '':  # if the target node is a url, add '<>' to it
-                target_def = '<' + target_def + '>'
+            if target_def is not None:
+                target_query = 'SELECT ?x WHERE { ?x a <' + target_def + '> }'  # come up with a query for this
+                if urlparse(target_def).netloc != '':  # if the target node is a url, add '<>' to it
+                    target_def = '<' + target_def + '>'
+            else:
+                target_query = None
 
-        cons_dict = self.parse_all_const(g_file, name=name[0], target_def=target_def, target_type=target_type, query=queries)
+            cons_dict = self.parse_all_const(g_file, name=name, target_def=target_def, target_type=target_type, query=queries)
 
-        const_array = list(cons_dict.values())  # change the format to an array
-        constraints = self.parse_constraints_ttl(const_array, target_def, id_)
+            const_array = list(cons_dict.values())  # change the format to an array
+            constraints = self.parse_constraints_ttl(const_array, target_def, id_)
 
-        include_sparql_prefixes = self.abbreviated_syntax_used(constraints)
-        prefixes = None
-        referenced_shapes = self.shape_references(const_array)
+            include_sparql_prefixes = self.abbreviated_syntax_used(constraints)
+            prefixes = None
+            referenced_shapes = self.shape_references(const_array)
 
-        # helps to navigate the shape.__compute_target_queries function
-        referenced_shape = {'<' + key + '>': '<' + referenced_shapes[key] + '>'
-                            for key in referenced_shapes.keys()
-                            if urlparse(referenced_shapes[key]).netloc != ''}
+            # helps to navigate the shape.__compute_target_queries function
+            referenced_shape = {'<' + key + '>': '<' + referenced_shapes[key] + '>'
+                                for key in referenced_shapes.keys()
+                                if urlparse(referenced_shapes[key]).netloc != ''}
 
-        # to helps to navigate the ShapeSchema.compute_edges function
-        if urlparse(name[0]).netloc != '':
-            name_ = '<' + name[0] + '>'
-        else:
-            name_ = name[0]
+            # to helps to navigate the ShapeSchema.compute_edges function
+            if urlparse(name).netloc != '':
+                name_ = '<' + name + '>'
+            else:
+                name_ = name
 
-        return Shape(name_, target_def, target_type, target_query, constraints, id_, referenced_shape,
-                     use_selective_queries, max_split_size, order_by_in_queries, include_sparql_prefixes, prefixes)
+            shapes.append(Shape(name_, target_def, target_type, target_query, constraints, id_, referenced_shape,
+                     use_selective_queries, max_split_size, order_by_in_queries, include_sparql_prefixes, prefixes))
+
+        return shapes
 
     @staticmethod
     def abbreviated_syntax_used(constraints):
@@ -274,13 +279,11 @@ class ShapeParser:
                     if len(filename.query(query[5].format(qvs=qvs))) != 0:
                         for shape_ref in filename.query(query[5].format(qvs=qvs)):
                             dict_1 = [qv_type, ['shape', str(shape_ref.asdict()['shape_ref'])]]
-                        exp_dict[str(constraint_id)].append(dict_1.copy())
-
+                            exp_dict[str(constraint_id)].append(dict_1.copy())
                     else:
                         for shape_ref in filename.query(query[6].format(qvs=qvs)):
                             dict_1 = [qv_type, ['value', str(shape_ref.asdict()['shape_ref'])]]
-                        exp_dict[str(constraint_id)].append(dict_1.copy())
-
+                            exp_dict[str(constraint_id)].append(dict_1.copy())
                 else:
                     #detail_dict = detail.asdict()
                     dict_2 = [str(detail['p']), str(detail['o'])]
