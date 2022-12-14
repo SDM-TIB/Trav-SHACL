@@ -10,11 +10,18 @@ class GraphTraversal(Enum):
     DFS = 'Depth-first search'
 
     def traverse_graph(self, dependencies, reversed_dependencies, starting_point):
+        nodes = list(dependencies.keys())
         visited = []
         if self == GraphTraversal.DFS:
-            self._dfs(visited, dependencies, reversed_dependencies, starting_point)
+            while len(nodes) > 0:
+                self._dfs(visited, dependencies, reversed_dependencies, starting_point)
+                [nodes.remove(v) for v in visited if v in nodes]
+                starting_point = nodes[0] if len(nodes) > 0 else None
         elif self == GraphTraversal.BFS:
-            self._bfs(visited, dependencies, reversed_dependencies, starting_point)
+            while len(nodes) > 0:
+                self._bfs(visited, dependencies, reversed_dependencies, starting_point)
+                [nodes.remove(v) for v in visited if v in nodes]
+                starting_point = nodes[0] if len(nodes) > 0 else None
         return visited
 
     def _dfs(self, visited, dependencies, reversed_dependencies, node):
