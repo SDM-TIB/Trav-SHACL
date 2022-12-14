@@ -279,11 +279,11 @@ class ShapeParser:
                     if len(filename.query(query[5].format(qvs=qvs))) != 0:
                         for shape_ref in filename.query(query[5].format(qvs=qvs)):
                             dict_1 = [qv_type, ['shape', str(shape_ref.asdict()['shape_ref'])]]
-                            exp_dict[str(constraint_id)].append(dict_1.copy())
+                        exp_dict[str(constraint_id)].append(dict_1.copy())
                     else:
                         for shape_ref in filename.query(query[6].format(qvs=qvs)):
                             dict_1 = [qv_type, ['value', str(shape_ref.asdict()['shape_ref'])]]
-                            exp_dict[str(constraint_id)].append(dict_1.copy())
+                        exp_dict[str(constraint_id)].append(dict_1.copy())
                 else:
                     #detail_dict = detail.asdict()
                     dict_2 = [str(detail['p']), str(detail['o'])]
@@ -335,11 +335,11 @@ class ShapeParser:
                             trav_dict['datatype'] = str(i[1])
 
                         if 'valueshape' in str(i[0]).lower():
-                            if 'value' in str(i[1][0]).lower():
-                                trav_dict['value'] = str(i[1][1])
-
-                            if 'shape' in str(i[1][0]).lower():
-                                trav_dict['shape'] = str(i[1][1])
+                            trav_dict['shape'] = str(i[1])
+#                            if 'value' in str(i[1][0]).lower():
+#                                trav_dict['value'] = str(i[1][1])
+#                            if 'shape' in str(i[1][0]).lower():
+#                                trav_dict['shape'] = str(i[1][1])
 
                         if 'not' in str(i[0]).lower():
                             trav_dict['negated'] = str(i[1])
