@@ -5,6 +5,7 @@ from flask import Flask, request, render_template
 
 from TravSHACL.core.GraphTraversal import GraphTraversal
 from TravSHACL.core.ShapeSchema import ShapeSchema
+from TravSHACL.sparql.SPARQLEndpoint import SPARQLEndpoint
 
 app = Flask(__name__)
 app.config['SCHEMA_PATH'] = os.environ.get('SCHEMA_PATH', '/path/to/your/shacl')
@@ -20,6 +21,7 @@ HEURISTICS = {
 def validation():
     if request.method == 'GET':
         return render_template('validate.html', schema_path=app.config['SCHEMA_PATH'], endpoint=app.config['ENDPOINT'])
+    SPARQLEndpoint.instance = None  # Needs to be reset since it is a singleton and won't change otherwise
     schema_path = request.form.get('schemaDir', None)
     endpoint = request.form.get('external_endpoint', None)
 
