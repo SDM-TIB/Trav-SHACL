@@ -68,4 +68,5 @@ def eval_shape_schema(args):
     )
 
     report = shape_schema.validate()  # run the evaluation of the SHACL constraints over the specified endpoint
-    print('Report:', report)
+    if not args.outputs:
+        print('Report:', report)
