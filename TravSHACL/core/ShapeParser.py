@@ -278,7 +278,8 @@ class ShapeParser:
                     qvs = detail.asdict()['o']
                     if len(filename.query(query[5].format(qvs=qvs))) != 0:
                         for shape_ref in filename.query(query[5].format(qvs=qvs)):
-                            dict_1 = [qv_type, ['shape', str(shape_ref.asdict()['shape_ref'])]]
+                            # dict_1 = [qv_type, ['shape', str(shape_ref.asdict()['shape_ref'])]]
+                            dict_1 = [qv_type, str(shape_ref.asdict()['shape_ref'])]
                         exp_dict[str(constraint_id)].append(dict_1.copy())
                     else:
                         for shape_ref in filename.query(query[6].format(qvs=qvs)):
