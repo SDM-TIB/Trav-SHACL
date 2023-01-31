@@ -16,6 +16,10 @@ from TravSHACL.constraints.MaxOnlyConstraint import MaxOnlyConstraint
 from TravSHACL.constraints.MinMaxConstraint import MinMaxConstraint
 from TravSHACL.constraints.MinOnlyConstraint import MinOnlyConstraint
 
+QUERY_TARGET_QUERY = '''SELECT ?query WHERE {{
+  <{shape}> a <http://www.w3.org/ns/shacl#NodeShape> ;
+      <http://www.w3.org/ns/shacl#targetQuery> ?query .
+}}'''
 
 class ShapeParser:
     """Used for parsing shape definitions from files to the internal representation."""
@@ -150,12 +154,14 @@ class ShapeParser:
                     target_type = 'node'
                     break
 
-            if target_def is not None:
-                target_query = 'SELECT ?x WHERE { ?x a <' + target_def + '> }'  # come up with a query for this
-                if urlparse(target_def).netloc != '':  # if the target node is a url, add '<>' to it
-                    target_def = '<' + target_def + '>'
-            else:
-                target_query = None
+            target_query = None
+            if target_def is not None and target_type == 'class':
+                for res in g_file.query(QUERY_TARGET_QUERY.format(shape=name)):
+                    target_query = str(res[0])
+                if target_query is None:
+                    target_query = 'SELECT ?x WHERE { ?x a <' + target_def + '> }'  # come up with a query for this
+                    if urlparse(target_def).netloc != '':  # if the target node is a url, add '<>' to it
+                        target_def = '<' + target_def + '>'
 
             cons_dict = self.parse_all_const(g_file, name=name, target_def=target_def, target_type=target_type, query=queries)
 
