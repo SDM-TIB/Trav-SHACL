@@ -1,0 +1,46 @@
+@prefix ub: <http://swat.cse.lehigh.edu/onto/univ-bench.owl#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix : <http://example.org/> .
+
+:GraduateStudentShape a sh:NodeShape;
+    sh:targetClass ub:GraduateStudent ;
+    sh:property [
+        sh:path ub:advisor ;
+        sh:minCount 1 ;
+        sh:maxCount 1
+    ] ;
+    sh:property [
+        sh:path ub:emailAddress ;
+        sh:minCount 1
+    ] ;
+    sh:property [
+        sh:path ub:memberOf;
+        sh:qualifiedValueShape [
+            sh:node :DepartmentShape
+        ] ;
+        sh:qualifiedMinCount 1
+    ] ;
+    sh:property [
+        sh:path ub:name ;
+        sh:minCount 1 ;
+        sh:maxCount 1
+    ] ;
+    sh:property [
+        sh:path ub:takesCourse;
+        sh:qualifiedValueShape [
+            sh:node :GraduateCourseShape
+        ] ;
+        sh:qualifiedMinCount 1 ;
+        sh:qualifiedMaxCount 3
+    ] ;
+    sh:property [
+        sh:path ub:telephone;
+        sh:minCount 1
+    ] ;
+    sh:property [
+        sh:path ub:undergraduateDegreeFrom;
+        sh:qualifiedValueShape [
+            sh:node :UniversityShape
+        ] ;
+        sh:qualifiedMinCount 1
+    ]  .

@@ -14,8 +14,7 @@ services:
 
   example_engine:
     container_name: travshacl_example_engine
-    build: ../
-    image: sdmtib/travshacl:edge
+    image: sdmtib/travshacl:latest
     volumes:
       - ./shapes:/shapes
       - ./output:/output

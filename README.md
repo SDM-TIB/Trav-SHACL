@@ -22,7 +22,7 @@ We will add this feature in the future.
 
 ### Prerequisites
 The following guides assume:
-* Your shape schema is placed in `./shapes` and is specified in `JSON` (see the `eval-www2021` branch for an example)
+* Your shape schema is placed in `./shapes`
 * There is a SPARQL endpoint running that you can connect to, in this example it is `http://localhost:14000/sparql`
   * The endpoint is running in Docker
   * It is connected to the Docker network `semantic-web`
@@ -53,13 +53,13 @@ docker build -t travshacl .
 docker run --name trav-shacl -v $(pwd)/shapes:/shapes -v $(pwd)/results:/results --network=semantic-web -d travshacl
 
 # Run the Validation
-docker exec -it trav-shacl bash -c "python3 main.py -d /shapes http://endpoint1:8890/sparql /results/ DFS --heuristics TARGET IN BIG --orderby --selective --outputs --json"
+docker exec -it trav-shacl bash -c "python3 main.py -d /shapes http://endpoint1:8890/sparql /results/ DFS --heuristics TARGET IN BIG --orderby --selective --outputs"
 ```
 
 ### Run with Python3
 ```bash
 pip3 install -r requirements.txt
-python3 main.py -d ./shapes http://localhost:14000/sparql ./results/ DFS --heuristics TARGET IN BIG --orderby --selective --outputs --json
+python3 main.py -d ./shapes http://localhost:14000/sparql ./results/ DFS --heuristics TARGET IN BIG --orderby --selective --outputs
 ```
 
 ## How to run the Test Suite?
