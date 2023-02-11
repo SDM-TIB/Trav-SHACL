@@ -10,6 +10,7 @@ import rdflib.term
 from rdflib import Graph
 from itertools import islice
 
+from TravSHACL.constraints.SPARQLConstraint import SPARQLConstraint
 from TravSHACL.core.Shape import Shape
 from TravSHACL.utils.VariableGenerator import VariableGenerator
 from TravSHACL.constraints.MaxOnlyConstraint import MaxOnlyConstraint
@@ -197,7 +198,7 @@ class ShapeParser:
         :return: True if prefix notation is used, False otherwise
         """
         for c in constraints:
-            if c.path.startswith('<') and c.path.endswith('>'):
+            if c.path is not None and (c.path.startswith('<') and c.path.endswith('>')):
                 return False
         return True
 
@@ -263,7 +264,13 @@ class ShapeParser:
                   FILTER ( str(?s) = "{qvs}" )
                 }}'''
 
-        return QUERY_SHAPES, QUERY_TARGET_1, QUERY_TARGET_2, QUERY_CONSTRAINTS, QUERY_CONSTRAINT_DETAILS, QUERY_QVS_REF_1, QUERY_QVS_REF_2
+        QUERY_SPARQL_CONSTRAINTS = '''SELECT ?constraint ?query WHERE {{
+          <{shape}> a <http://www.w3.org/ns/shacl#NodeShape> .
+          <{shape}> <http://www.w3.org/ns/shacl#sparql> ?constraint .
+          ?constraint <http://www.w3.org/ns/shacl#select> ?query .
+        }}
+        '''
+        return QUERY_SHAPES, QUERY_TARGET_1, QUERY_TARGET_2, QUERY_CONSTRAINTS, QUERY_CONSTRAINT_DETAILS, QUERY_QVS_REF_1, QUERY_QVS_REF_2, QUERY_SPARQL_CONSTRAINTS
 
     def get_res(self, filename, name, query):
         """
@@ -315,6 +322,11 @@ class ShapeParser:
         trav_dict['name'] = name
         trav_dict['target_def'] = target_def
         trav_dict['target_type'] = target_type
+
+        # SPARQL constraints first
+        for result in filename.query(query[7].format(shape=name)):
+            trav_dict['sparql'] = result['query'].toPython()
+            exp_dict[str(result['constraint'].toPython())] = trav_dict.copy()
 
         for item in self.chunks({i: j for i, j in cons_dict.items()}, 1):
             for dk, dv in item.items():
@@ -401,6 +413,7 @@ class ShapeParser:
         value = obj.get('value')
         path = obj.get('path')
         negated = obj.get('negated')
+        query = obj.get('sparql')
 
         o_min = None if (min_ is None) else int(min_)
         o_max = None if (max_ is None) else int(max_)
@@ -409,8 +422,9 @@ class ShapeParser:
         o_value = None if (value is None) else str(value)
         o_path = None if (path is None) else str(path)
         o_neg = True if (negated is None) else not negated  # True means it is a positive constraint
+        o_query = None if (query is None) else str(query)
 
-        if urlparse(path).netloc != '':  # if the predicate is a url, add '<>' to it
+        if path is not None and urlparse(path).netloc != '':  # if the predicate is a url, add '<>' to it
             o_path = '<' + path + '>'
 
         if urlparse(shape_ref).netloc != '' and shape_ref is not None:  # if the shape reference is a url, add '<>' to it
@@ -430,3 +444,5 @@ class ShapeParser:
                 return [MinOnlyConstraint(var_generator, id_, o_path, o_min, o_neg, o_datatype, o_value, o_shape_ref, target_def)]
             if o_max is not None:
                 return [MaxOnlyConstraint(var_generator, id_, o_path, o_max, o_neg, o_datatype, o_value, o_shape_ref, target_def)]
+        elif o_query is not None:
+            return [SPARQLConstraint(id_, o_neg, o_query)]

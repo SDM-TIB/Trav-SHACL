@@ -3,6 +3,7 @@ __author__ = 'Monica Figuera and Philipp D. Rohde'
 
 import itertools
 
+from TravSHACL.constraints.SPARQLConstraint import SPARQLConstraint
 from TravSHACL.utils.VariableGenerator import VariableGenerator
 from TravSHACL.core.RulePattern import RulePattern
 from TravSHACL.sparql.QueryGenerator import QueryGenerator
@@ -85,6 +86,10 @@ class Shape:
     def get_number_constraints(self):
         """ Gets the number of constraints belonging to this shape """
         return len(self.constraints)
+
+    def get_sparql_constraints(self):
+        """ Get all SPARQL constraints of the shape """
+        return [c for c in self.constraints if type(c) == SPARQLConstraint]
 
     def get_shape_refs(self):
         return [c.get_shape_ref() for c in self.constraints if c.get_shape_ref() is not None]

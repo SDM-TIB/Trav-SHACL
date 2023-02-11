@@ -111,6 +111,22 @@ class Validation:
         else:
             pending = self.InstRetrieval.extract_targets(next_focus_shape)
 
+        # check the SPARQL constraints
+        sparql_constraints = next_focus_shape.get_sparql_constraints()
+        if len(sparql_constraints) > 0:
+            for constraint in sparql_constraints:
+                violations = self.InstRetrieval.execute_sparql_constraint(
+                    constraint_id=constraint.id,
+                    query_str=constraint.query,
+                    instance_list=[p[1] for p in pending]
+                )
+                pending = {target for target in pending if target[1] not in violations}
+                for invalid in violations:
+                    target = (next_focus_shape_name, invalid, False)
+                    self.register_target(target, 'violated', next_focus_shape_name, shapes_state)
+                    shapes_state[next_focus_shape_name]['inferred'].add((target[0], target[1], not target[2]))
+                    shapes_state[next_focus_shape_name]['remaining_targets_count'] -= 1
+
         shapes_state[next_focus_shape_name]['remaining_targets_count'] = len(pending)
         return pending
 

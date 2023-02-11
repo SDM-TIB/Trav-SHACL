@@ -47,6 +47,33 @@ class InstancesRetrieval:
         self.stats.record_number_of_sol_mappings(len(bindings))
         return bindings
 
+    def execute_sparql_constraint(self, constraint_id, query_str, instance_list):
+        """
+        Retrieves all the violations of a SPARQL constraint from the endpoint.
+
+        :param constraint_id: the ID of the SPARQL constraint
+        :param query_str: the SPARQL query belonging to the constraint represented as a string
+        :param instance_list: a list with the instances for which the constraint needs to be checked
+        :return: list of all instances violating the constraint, i.e., the SPARQL query result is not empty
+        """
+        self.stats.update_log(''.join(['\n\nEvaluating query for ', constraint_id, ':\n', query_str]))
+
+        violations = []
+        start = time.time() * 1000.0
+        for instance in instance_list:
+            query = query_str.replace('$this', '<' + instance + '>')
+            if len(self.endpoint.run_query(query)['results']['bindings']) > 0:
+                violations.append(instance)
+        end = time.time() * 1000.0
+
+        self.stats.update_log(''.join(['\nelapsed: ', str(end - start), ' ms\n']))
+        self.stats.record_query_exec_time(end - start)
+        self.stats.record_query()
+        self.stats.update_log(''.join(['\nNumber of solution mappings: ', str(len(violations)), '\n']))
+        self.stats.record_number_of_sol_mappings(len(violations))
+
+        return violations
+
     def extract_targets(self, shape):
         """
         Retrieves answers from the SPARQL endpoint.
