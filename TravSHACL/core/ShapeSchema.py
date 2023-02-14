@@ -8,14 +8,14 @@ from TravSHACL.rule_based_validation.Validation import Validation
 class ShapeSchema:
     """This class represents a SHACL shape schema."""
 
-    def __init__(self, schema_dir, schema_format, endpoint_url, graph_traversal, heuristics, use_selective_queries,
+    def __init__(self, schema_dir, schema_format, endpoint, graph_traversal, heuristics, use_selective_queries,
                  max_split_size, output_dir, order_by_in_queries, save_outputs, work_in_parallel=False):
         """
         Creates a new shape schema instance.
 
         :param schema_dir: path of the files including the shape definitions
         :param schema_format: indicates the format used for defining the shapes
-        :param endpoint_url: URL for the SPARQL endpoint to be evaluated against
+        :param endpoint: URL for the SPARQL endpoint (or an RDFlib graph) to be evaluated against
         :param graph_traversal: graph traversal algorithm used for determining the evaluation order
         :param heuristics: Python dictionary holding the heuristics used for determining the seed shape
         :param use_selective_queries: indicates whether selective queries are used
@@ -28,7 +28,7 @@ class ShapeSchema:
         self.shapes = ShapeParser().parse_shapes_from_dir(schema_dir, schema_format, use_selective_queries,
                                                           max_split_size, order_by_in_queries)
         self.shapesDict = {shape.get_id(): shape for shape in self.shapes}  # TODO: use only the dict?
-        self.endpointURL = endpoint_url
+        self.endpoint = endpoint
         self.graphTraversal = graph_traversal
         self.parallel = work_in_parallel  # TODO: no parallelization implemented yet
         self.dependencies, self.reverse_dependencies = self.compute_edges()
@@ -142,7 +142,7 @@ class ShapeSchema:
         target_shape_predicates = [s.get_id() for s in target_shapes]
 
         return Validation(
-            self.endpointURL,
+            self.endpoint,
             node_order,
             self.shapesDict,
             target_shape_predicates,

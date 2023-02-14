@@ -31,7 +31,7 @@ def test_case(file, selective, graph_traversal, prio_target, prio_degree, prio_n
     shape_schema = ShapeSchema(
         schema_dir=schema_dir,
         schema_format='JSON',
-        endpoint_url=TEST_ENDPOINT,
+        endpoint=TEST_ENDPOINT,
         graph_traversal=GraphTraversal.BFS if graph_traversal == 'BFS' else GraphTraversal.DFS,
         heuristics=parse_heuristics(prio_target + ' ' + prio_degree + ' ' + prio_number),
         use_selective_queries=selective,

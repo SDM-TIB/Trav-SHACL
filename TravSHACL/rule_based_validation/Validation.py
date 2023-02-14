@@ -11,12 +11,12 @@ from TravSHACL.utils.ValidationStats import ValidationStats
 class Validation:
     """This class is responsible for managing the validation process."""
 
-    def __init__(self, endpoint_url, node_order, shapes_dict, target_shape_predicates, use_selective_queries,
+    def __init__(self, endpoint, node_order, shapes_dict, target_shape_predicates, use_selective_queries,
                  output_dir_name, save_stats, save_targets_to_file):
         """
         Creates a new instance for the validation process.
 
-        :param endpoint_url: URL of the SPARQL endpoint to evaluate
+        :param endpoint: URL of the SPARQL endpoint (or RDFlib graph) to evaluate
         :param node_order: indicates the order in which the shapes will be evaluated
         :param shapes_dict: a Python dictionary holding all shapes of the shape schema
         :param target_shape_predicates: names of the shapes with a target definition
@@ -37,7 +37,7 @@ class Validation:
         self.traces = set()
 
         self.stats.update_log('Node order: ' + str(self.node_order) + '\n')
-        self.InstRetrieval = InstancesRetrieval(endpoint_url, shapes_dict, self.stats)
+        self.InstRetrieval = InstancesRetrieval(endpoint, shapes_dict, self.stats)
         self.valid_targets_after_termination = set()
         self.start_of_verification = time.time() * 1000.0
 

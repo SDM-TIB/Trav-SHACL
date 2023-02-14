@@ -4,6 +4,8 @@ __author__ = 'Monica Figuera'
 import math
 import time
 
+from SPARQLWrapper import SPARQLWrapper
+
 from TravSHACL.sparql.SPARQLEndpoint import SPARQLEndpoint
 from TravSHACL.sparql.QueryGenerator import get_target_node_statement
 from TravSHACL.constraints.MinOnlyConstraint import MinOnlyConstraint
@@ -13,16 +15,15 @@ from TravSHACL.constraints.MaxOnlyConstraint import MaxOnlyConstraint
 class InstancesRetrieval:
     """This class is responsible for retrieving the instances from a SPARQL endpoint."""
 
-    def __init__(self, endpoint_url, shapes_dict, stats):
+    def __init__(self, endpoint, shapes_dict, stats):
         """
         Creates a new instance for the data retrieval.
 
-        :param endpoint_url: URL of the SPARQL endpoint to collect the data from
+        :param endpoint: URL of the SPARQL endpoint (or RDFlib graph) to collect the data from
         :param shapes_dict: a Python dictionary holding all shapes of the shape schema
         :param stats: instance of ValidationStats to keep the statistics up-to-date
         """
-        self.endpointURL = endpoint_url
-        self.endpoint = SPARQLEndpoint(endpoint_url)
+        self.endpoint = SPARQLEndpoint(endpoint)
         self.shapes_dict = shapes_dict
         self.stats = stats
 
@@ -103,6 +104,9 @@ class InstancesRetrieval:
         :param filtering_shape: referenced shape used to filter query, or None
         :return: two sets containing all targets of 'shape': pending targets to validate and directly invalidated targets
         """
+        if self.endpoint.get_endpoint_type() != SPARQLWrapper:
+            return self.extract_targets(shape), []  # FIXME: rdflib cannot handle unbound variables in aggregates, hence, no filtering will be applied
+
         # Valid and invalid instances of the previous evaluated shape (if any)
         prev_val_list = set() if filtering_shape is None else filtering_shape.get_valid_targets()
         prev_inv_list = set() if filtering_shape is None else filtering_shape.get_invalid_targets()

@@ -126,7 +126,7 @@ class QueryGenerator:
             additional_triple_pattern,
             '  OPTIONAL {\n', '    VALUES ?inst { $instances_to_add$ }. \n',
             '    ?' + focus_var + ' ' + ref_path + ' ?inst .\n  }\n',
-            '}\n', ' ORDER BY ?' + focus_var if include_order_by else ''
+            '}\nGROUP BY ?' + focus_var, '\nORDER BY ?' + focus_var if include_order_by else ''
         ])
         return Query(None, None, query)
 
@@ -288,9 +288,9 @@ class QueryBuilder:
                 return ''.join([prefixes,
                                 self.__get_projection_string(),
                                 ' WHERE {\n', target_node,
-                                ' OPTIONAL { ', self.triples[0], ' }\n} GROUP BY ?',
+                                self.triples[0], '\n} GROUP BY ?',
                                 VariableGenerator.get_focus_node_var(),
-                                ' HAVING (COUNT(DISTINCT ?', self.triples[0].rsplit('?', 1)[1][:-1], ') > ', str(self.constraints[0].max), ')',
+                                ' HAVING (COUNT(DISTINCT ?', self.triples[0].rsplit('?', 1)[1][:-1], ') >= ', str(self.constraints[0].max + 1), ')',
                                 ' ORDER BY ?' + VariableGenerator.get_focus_node_var() if self.include_ORDERBY else ''])
 
         query = ''.join([prefixes,
