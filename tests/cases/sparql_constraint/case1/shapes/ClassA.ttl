@@ -1,0 +1,15 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix test: <http://test.example.com/> .
+@prefix : <http://test.example.com/shapes/> .
+
+:ClassA a sh:NodeShape;
+  sh:targetClass test:ClassA ;
+  sh:sparql [
+    a sh:SPARQLConstraint ;
+    sh:select """
+      SELECT $this WHERE {
+        $this <http://test.example.com/property1> ?o
+        FILTER( ?o > 2022 )
+      }
+    """ ;
+  ] .

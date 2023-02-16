@@ -22,6 +22,9 @@ def get_all_test_cases():
 @pytest.mark.parametrize('selective', [True, False])
 @pytest.mark.parametrize('shape_format', ['JSON', 'SHACL'])
 def test_case(file, selective, graph_traversal, prio_target, prio_degree, prio_number, shape_format):
+    if 'sparql' in file and shape_format == 'JSON':
+        pytest.skip('SPARQL constraints in JSON format are not implemented.')
+
     with open(file, 'r') as f:
         test_definition = json.load(f)
 
