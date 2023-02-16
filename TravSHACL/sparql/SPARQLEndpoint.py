@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 __author__ = 'Philipp D. Rohde'
 
-import json
-
 from SPARQLWrapper import SPARQLWrapper, JSON
 from rdflib import Graph
 
@@ -30,11 +28,22 @@ class SPARQLEndpoint:
                 self.endpoint.setQuery(query_string)
                 return self.endpoint.query().convert()
             else:
-                json_str = json.loads(self.endpoint.query(query_string).serialize(format='json'))  # FIXME: Serializing the result takes a lot of time
-                if isinstance(json_str, dict):
-                    return json_str
-                else:
-                    raise TypeError('JSON was of type ' + type(json_str) + ' instead of dict.')
+                # Use own serialization for the RDFLib graph query result since their serialization is slow.
+                # Additionally, we only need the value in the binding; type and datatype are not checked.
+                result_raw = self.endpoint.query(query_string)
+                variables = result_raw.vars
+                result_dict = {
+                    'head': {
+                        'vars': [v.toPython()[1:] for v in variables]
+                    },
+                    'results': {
+                        'bindings': []
+                    }
+                }
+                for result in result_raw:
+                    result_dict['results']['bindings'].append(
+                        {var.toPython()[1:]: {'value': result[var].toPython()} for var in variables})
+                return result_dict
 
     def __new__(cls, endpoint):
         if type(endpoint) not in [str, Graph]:
