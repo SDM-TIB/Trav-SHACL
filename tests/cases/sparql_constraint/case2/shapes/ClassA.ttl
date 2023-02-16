@@ -7,7 +7,7 @@
   sh:sparql [
     a sh:SPARQLConstraint ;
     sh:select """
-      SELECT $this WHERE {
+      SELECT ($this AS ?this) WHERE {
         $this <http://test.example.com/property1> ?o
         FILTER( ?o > 2022 )
       }
@@ -16,7 +16,7 @@
   sh:sparql [
     a sh:SPARQLConstraint ;
     sh:select """
-      SELECT $this WHERE {
+      SELECT ($this AS ?this) WHERE {
         $this <http://test.example.com/toA> <http://test.example.com/ClassA_Instance0>
       }
     """ ;
