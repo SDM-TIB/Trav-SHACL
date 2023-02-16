@@ -2,12 +2,14 @@ import json
 from glob import glob
 
 import pytest
+from rdflib import Graph
 
 from TravSHACL.TravSHACL import parse_heuristics
 from TravSHACL.core.GraphTraversal import GraphTraversal
 from TravSHACL.core.ShapeSchema import ShapeSchema
 
 TEST_ENDPOINT = 'http://localhost:8899/sparql'
+TEST_GRAPH = Graph().parse('./tests/data/test.ttl')
 
 
 def get_all_test_cases():
@@ -21,7 +23,8 @@ def get_all_test_cases():
 @pytest.mark.parametrize('graph_traversal', ['DFS', 'BFS'])
 @pytest.mark.parametrize('selective', [True, False])
 @pytest.mark.parametrize('shape_format', ['JSON', 'SHACL'])
-def test_case(file, selective, graph_traversal, prio_target, prio_degree, prio_number, shape_format):
+@pytest.mark.parametrize('endpoint', [TEST_ENDPOINT, TEST_GRAPH])
+def test_case(file, selective, graph_traversal, prio_target, prio_degree, prio_number, shape_format, endpoint):
     if 'sparql' in file and shape_format == 'JSON':
         pytest.skip('SPARQL constraints in JSON format are not implemented.')
 
@@ -35,7 +38,7 @@ def test_case(file, selective, graph_traversal, prio_target, prio_degree, prio_n
     shape_schema = ShapeSchema(
         schema_dir=schema_dir,
         schema_format=shape_format,
-        endpoint=TEST_ENDPOINT,
+        endpoint=endpoint,
         graph_traversal=GraphTraversal.BFS if graph_traversal == 'BFS' else GraphTraversal.DFS,
         heuristics=parse_heuristics(prio_target + ' ' + prio_degree + ' ' + prio_number),
         use_selective_queries=selective,
