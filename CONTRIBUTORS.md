@@ -9,3 +9,5 @@ A list of all the people who contributed to the project.
 - Uzoma Nwiwu
   - ShapeParser for TTL format
   - Validation report in TTL format
+- Gabriela Ydler
+  - Logo
