@@ -20,7 +20,8 @@ def get_all_test_cases():
 @pytest.mark.parametrize('prio_target', ['TARGET', ''])
 @pytest.mark.parametrize('graph_traversal', ['DFS', 'BFS'])
 @pytest.mark.parametrize('selective', [True, False])
-def test_case(file, selective, graph_traversal, prio_target, prio_degree, prio_number):
+@pytest.mark.parametrize('shape_format', ['JSON', 'SHACL'])
+def test_case(file, selective, graph_traversal, prio_target, prio_degree, prio_number, shape_format):
     with open(file, 'r') as f:
         test_definition = json.load(f)
 
@@ -30,7 +31,7 @@ def test_case(file, selective, graph_traversal, prio_target, prio_degree, prio_n
 
     shape_schema = ShapeSchema(
         schema_dir=schema_dir,
-        schema_format='JSON',
+        schema_format=shape_format,
         endpoint=TEST_ENDPOINT,
         graph_traversal=GraphTraversal.BFS if graph_traversal == 'BFS' else GraphTraversal.DFS,
         heuristics=parse_heuristics(prio_target + ' ' + prio_degree + ' ' + prio_number),
