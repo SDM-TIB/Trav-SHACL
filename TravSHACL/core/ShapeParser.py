@@ -43,11 +43,12 @@ class ShapeParser:
         file_extension = self.get_file_extension(shape_format)
         files_abs_paths = []
 
-        # r=root, d=directories, f=files
-        for r, d, f in os.walk(path):
+        # r=root, f=files, ignoring subdirectories
+        for r, _, f in os.walk(path):
             for file in f:
-                if file_extension in file:
-                    files_abs_paths.append(os.path.join(r, file))
+                file_path = os.path.join(r, file)
+                if file_extension == os.path.splitext(file_path)[1].lower():
+                    files_abs_paths.append(file_path)
 
         if not files_abs_paths:
             raise FileNotFoundError(path + ' does not contain any shapes of the format ' + shape_format)
