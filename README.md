@@ -39,9 +39,28 @@ The following guides assume:
   * prioritize in- or outdegree of shapes, one of `[IN, OUT]` or to be omitted
   * prioritize shapes based on their number of constraints, one of `[BIG, SMALL]` or to be omitted
 * `--selective` (optional) - use more selective queries for constraint queries
+* `--orderby` (optional) - sort the results of all SPARQL queries, ensures the same order in the result logs over several runs
 * `--outputs` (optional) - creates one file each for violated and validated targets, otherwise only statistics and traces will be stored
 * `-m` (optional) - maximum number of entities in FILTER or VALUES clause of a SPARQL query, default: 256
 * `-j` / `--json` (optional) - indicates that the SHACL shape schema is expressed in JSON
+
+### Features
+The current implementation of Trav-SHACL does not cover all features of the complete SHACL language.
+The following is a list of what is supported:
+
+- simple cardinality constraints, i.e., `sh:minCount` and `sh:maxCount`)
+- relaxed shape-based constraints, i.e., `sh:qualifiedValueShape` with `sh:qualifiedMinCount` and `sh:qualifiedMaxCount`
+- simple SPARQL constraints, i.e., `sh:sparql` with `sh:select`
+  - `sh:prefixes` is currently not implemented, i.e., the query needs to use full URIs
+  - `sh:message` is ignored, i.e., the message is not included in the result
+  - only `$this` is supported as placeholder
+
+The following is a list of some of the more important features that are not yet covered:
+- `sh:or`
+- `sh:node`
+- `sh:datatype`
+- `sh:value`
+- and others
 
 ### Run with Docker
 In order to connect to the SPARQL endpoint, it must be accessible from within the Docker container.
@@ -60,6 +79,41 @@ docker exec -it trav-shacl bash -c "python3 main.py -d /shapes http://endpoint1:
 ```bash
 pip3 install -r requirements.txt
 python3 main.py -d ./shapes http://localhost:14000/sparql ./results/ DFS --heuristics TARGET IN BIG --orderby --selective --outputs
+```
+
+### Trav-SHACL as Python3 Library
+Trav-SHACL is available on PyPI, you can install it via the following command:
+```bash
+python3 -m pip install travshacl
+```
+
+After installing Trav-SHACL from PyPI you can use it like in this example:
+```python
+from TravSHACL import parse_heuristics, GraphTraversal, ShapeSchema
+
+schema_dir = './shapes'
+endpoint_url = 'http://localhost:14000/sparql'
+graph_traversal = GraphTraversal.DFS  # BFS is also available
+prio_target = 'TARGET'  # shapes with target definition are preferred, alternative value: ''
+prio_degree = 'IN'  # shapes with a higher in-degree are prioritized, alternative value 'OUT'
+prio_number = 'BIG'  # shapes with many constraints are evaluated first, alternative value 'SMALL'
+output_dir = './results/'
+
+shape_schema = ShapeSchema(
+    schema_dir=schema_dir,  # directory where the files containing the shapes definitions are stored
+    schema_format='SHACL',  # do not change this value unless you are using the legacy JSON format
+    endpoint=endpoint_url,  # the URL of the SPARQL endpoint to be evaluated, alternatively an RDFLib graph can be passed
+    graph_traversal=graph_traversal,  # graph traversal algorithm used for planning the shapes order
+    heuristics=parse_heuristics(prio_target + ' ' + prio_degree + ' ' + prio_number),  # heuristics to be used for planning the evaluation order
+    use_selective_queries=True,  # use more selective constraint queries, alternative value: False
+    max_split_size=256,  # maximum number of entities in FILTER or VALUES clause
+    output_dir=output_dir,  # directory where the output files will be stored
+    order_by_in_queries=False,  # sort the results of SPARQL queries in order to ensure the same order across several runs
+    save_outputs=True  # save outputs to output_dir, alternative value: False
+)
+
+result = shape_schema.validate()  # validate the SHACL shape schema
+print(result)
 ```
 
 ## How to run the Test Suite?
