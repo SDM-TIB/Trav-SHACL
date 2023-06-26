@@ -1,0 +1,35 @@
+.wy-nav-content {
+    max-width: 1250px !important;
+}
+.wy-side-nav-search {
+    background-color: #B22222;
+}
+.wy-menu-vertical p.caption {
+    color: #8B0000;
+}
+.sphx-glr-thumbcontainer {
+    min-height: 250px !important;
+    min-width: 270px !important;
+    margin: 50px 50px 0 !important;
+}
+.sphx-glr-thumbcontainer .figure {
+    align-self: center;
+    width: 250px !important;
+}
+.sphx-glr-thumbcontainer img {
+    height: 175px !important;
+    max-height: 175px !important;
+    width: 250px !important;
+    max-width: 250px !important;
+}
+.sphx-glr-thumbcontainer a.internal {
+    padding: 195px 10px 0 !important;
+    min-width: 270px !important;
+}
+figure.align-default {
+    text-align: center;
+}
+.std.std-ref {
+    display: inline-block;
+    text-align: center;
+}
