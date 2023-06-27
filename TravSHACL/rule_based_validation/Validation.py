@@ -54,7 +54,6 @@ class Validation:
         finish = time.time() * 1000.0
         elapsed = round(finish - start)
         self.stats.record_total_time(elapsed)
-        print('Total execution time: ', str(elapsed), ' ms')
         self.stats.record_total_rules(state.total_rule_number)
         self.stats.update_log('\n\nMaximal number or rules in memory: ' + str(self.stats.max_rules))
         self.stats.update_log('\nTotal number of rules: ' + str(state.total_rule_number))
