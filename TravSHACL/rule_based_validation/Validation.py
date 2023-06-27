@@ -620,8 +620,7 @@ class Validation:
                                   '      sh:focusNode  <' + violation[1] + '> ;\n' +\
                                   '      sh:sourceShape  ' + violation[0] + ' ]'
 
-            output_ttl = '@prefix sh: <http://www.w3.org/ns/shacl#> . \n\n' + output_ttl + ' .'
-            print(output_ttl)
+            output_ttl = '@prefix sh: <http://www.w3.org/ns/shacl#> . \n\n' + output_ttl + ' .'            
             validation_report = fileManagement.open_file(self.output_dir_name, 'validationReport.ttl')
             validation_report.write(output_ttl)
             fileManagement.close_file(validation_report)
