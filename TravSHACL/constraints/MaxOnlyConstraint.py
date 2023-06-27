@@ -8,7 +8,7 @@ from TravSHACL.constraints.Constraint import Constraint
 class MaxOnlyConstraint(Constraint):
     """This class represents max constraints, i.e., a constraint for the maximal occurrence of a path."""
 
-    def __init__(self, var_generator, id_, path, max_, is_pos, datatype=None, value=None, shape_ref=None, target_def=None):
+    def __init__(self, var_generator, id_, path, max_, is_pos, options, raw_or, datatype=None, value=None, shape_ref=None, target_def=None):
         """
         Creates a new max constraint.
 
@@ -22,7 +22,7 @@ class MaxOnlyConstraint(Constraint):
         :param shape_ref: contains the name of the shape referenced by the constraint, none otherwise
         :param target_def: contains the target definition of the shape the constraint belongs to if it has one
         """
-        super().__init__(id_, is_pos, None, datatype, value, shape_ref, target_def, path)
+        super().__init__(id_, is_pos, None, datatype, value, shape_ref, target_def, path, options, raw_or)
         self.varGenerator = var_generator
         self.min = -1
         self.max = max_
