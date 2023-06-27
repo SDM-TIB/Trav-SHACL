@@ -13,7 +13,8 @@ class Shape:
     """This class represents a SHACL shape."""
 
     def __init__(self, id_, target_def, target_type, target_query, constraints, constraints_id, referenced_shapes,
-                 use_selective_queries, max_split_size, order_by_in_queries, include_sparql_prefixes, prefixes=None):
+                 use_selective_queries, max_split_size, order_by_in_queries, include_sparql_prefixes, flag,
+                 prefixes=None):
         """
         Creates a new Shape instance representing a SHACL shape that needs to be evaluated.
 
@@ -28,19 +29,21 @@ class Shape:
         :param max_split_size: maximum number of instances per query
         :param order_by_in_queries: indicates whether to use the ORDER BY clause
         :param include_sparql_prefixes: indicates whether to include SPARQL prefixes in queries for the shape
+        :param flag: indicates if there is an 'or' operation to be executed
         """
         self.id = id_
         self.constraints = constraints
         self.constraintsId = constraints_id
         self.predicates = []
         self.targetDef = target_def
-        self.targetType = target_type          # Might be None
-        self.targetQuery = target_query        # Might be None
+        self.targetType = target_type  # Might be None
+        self.targetQuery = target_query  # Might be None
         self.targetQueryNoPref = target_query  # Might be None
         self.rulePattern = ()
         self.satisfied = None
         self.inDegree = None
         self.outDegree = None
+        self.flag = flag
 
         self.minQuery = None
         self.maxQueries = None
@@ -124,7 +127,10 @@ class Shape:
         for ref in self.referencedShapes.keys():
             for c in self.constraints:
                 if c.path == self.referencedShapes[ref]:
-                    query_valid, query_invalid = self.QueryGenerator.generate_target_query('template_FILTER', [c], self.targetQueryNoPref, self.includePrefixes, self.ORDERBYinQueries)
+                    query_valid, query_invalid = self.QueryGenerator.generate_target_query('template_FILTER', [c],
+                                                                                           self.targetQueryNoPref,
+                                                                                           self.includePrefixes,
+                                                                                           self.ORDERBYinQueries)
                     ref_dict = {
                         'query_valid': query_valid,
                         'query_invalid': query_invalid,
@@ -138,7 +144,6 @@ class Shape:
         max_constraints = [c for c in self.constraints if c.max != -1]
 
         subquery = self.QueryGenerator.generate_local_subquery(min_constraints)
-
         # Build a unique set of triples (+ filter) for all min constraints
         min_id = self.constraintsId + '_pos'
         if len(min_constraints) > 0:
@@ -155,17 +160,17 @@ class Shape:
         # Build one set of triples (+ filter) for each max constraint (only one max constraint per query is allowed)
         max_ids = [self.constraintsId + '_max_' + str(i) for i in range(1, len(max_constraints) + 1)]
         for i, max_c in enumerate(max_constraints):
-            self.maxConstrId[max_c] = self.constraintsId + '_max_' + str(i+1)
+            self.maxConstrId[max_c] = self.constraintsId + '_max_' + str(i + 1)
 
         i = itertools.count()
         self.maxQueries = [self.QueryGenerator.generate_query(
-                                max_ids[next(i)],
-                                [c],
-                                self.useSelectiveQueries,
-                                self.targetQueryNoPref,
-                                self.includePrefixes,
-                                self.ORDERBYinQueries,
-                                subquery) for c in max_constraints]
+            max_ids[next(i)],
+            [c],
+            self.useSelectiveQueries,
+            self.targetQueryNoPref,
+            self.includePrefixes,
+            self.ORDERBYinQueries,
+            subquery) for c in max_constraints]
 
         self.predicates = self.__compute_predicate_set(min_id, max_ids)
         self.__compute_max_queries_to_skip()
@@ -221,3 +226,9 @@ class Shape:
 
     def get_prefix_string(self):
         return '\n'.join([''.join('PREFIX ' + key + ': ' + value) for (key, value) in self.prefixes.items()]) + '\n'
+
+    def get_or_query(self):
+        if True in self.flag:
+            return self.QueryGenerator.options_query(self.constraints, self.targetQuery, self.includePrefixes,
+                                                     self.ORDERBYinQueries)
+        return

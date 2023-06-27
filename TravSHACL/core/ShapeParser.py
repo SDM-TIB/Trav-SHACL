@@ -22,6 +22,7 @@ QUERY_TARGET_QUERY = '''SELECT ?query WHERE {{
       <http://www.w3.org/ns/shacl#targetQuery> ?query .
 }}'''
 
+
 class ShapeParser:
     """Used for parsing shape definitions from files to the internal representation."""
 
@@ -104,6 +105,7 @@ class ShapeParser:
         if 'prefix' in obj.keys():
             prefixes = obj['prefix']
         referenced_shapes = self.shape_references(obj['constraintDef']['conjunctions'][0])
+        valid_flag = False   # for json files, the 'or' operations can be implemented starting from here
 
         if target_def is not None:
             target_query = target_def['query']
@@ -118,7 +120,8 @@ class ShapeParser:
                 target_def = target_def[target_type]
 
         return Shape(name, target_def, target_type, target_query, constraints, id_, referenced_shapes,
-                     use_selective_queries, max_split_size, order_by_in_queries, include_sparql_prefixes, prefixes)
+                     use_selective_queries, max_split_size, order_by_in_queries, include_sparql_prefixes,
+                     valid_flag, prefixes)
 
     def parse_ttl(self, filename, use_selective_queries, max_split_size, order_by_in_queries):
         """
@@ -165,11 +168,21 @@ class ShapeParser:
                     if urlparse(target_def).netloc != '':  # if the target node is a url, add '<>' to it
                         target_def = '<' + target_def + '>'
 
-            cons_dict = self.parse_all_const(g_file, name=name, target_def=target_def, target_type=target_type, query=queries)
-
+            cons_dict = self.parse_all_const(g_file, name=name, target_def=target_def, target_type=target_type,
+                                             query=queries)
             const_array = list(cons_dict.values())  # change the format to an array
-            constraints = self.parse_constraints_ttl(const_array, target_def, id_)
 
+            valid_flag = [entry['flag'] for entry in const_array]
+            if True in valid_flag:
+                var_generator = VariableGenerator()
+                valid_options = self.parse_or_constraint(var_generator, const_array, id_ + "_c",
+                                                         target_def)  # remember you removed +str(i + 1) in id_ used
+                valid_raw = self.extract_only_or(const_array)
+            else:
+                valid_options = None
+                valid_raw = None
+
+            constraints = self.parse_constraints_ttl(const_array, target_def, id_, valid_options, valid_raw)
             include_sparql_prefixes = self.abbreviated_syntax_used(constraints)
             prefixes = None
             referenced_shapes = self.shape_references(const_array)
@@ -186,7 +199,8 @@ class ShapeParser:
                 name_ = name
 
             shapes.append(Shape(name_, target_def, target_type, target_query, constraints, id_, referenced_shape,
-                     use_selective_queries, max_split_size, order_by_in_queries, include_sparql_prefixes, prefixes))
+                                use_selective_queries, max_split_size, order_by_in_queries, include_sparql_prefixes,
+                                valid_flag, prefixes))
 
         return shapes
 
@@ -271,7 +285,25 @@ class ShapeParser:
           ?constraint <http://www.w3.org/ns/shacl#select> ?query .
         }}
         '''
-        return QUERY_SHAPES, QUERY_TARGET_1, QUERY_TARGET_2, QUERY_CONSTRAINTS, QUERY_CONSTRAINT_DETAILS, QUERY_QVS_REF_1, QUERY_QVS_REF_2, QUERY_SPARQL_CONSTRAINTS
+
+        QUERY_OR = '''SELECT ?constraint WHERE {{
+                                  <{shape}> a <http://www.w3.org/ns/shacl#NodeShape> .
+                                  <{shape}> <http://www.w3.org/ns/shacl#or> ?constraint .
+                                }}
+                                '''
+        return QUERY_SHAPES, QUERY_TARGET_1, QUERY_TARGET_2, QUERY_CONSTRAINTS, QUERY_CONSTRAINT_DETAILS, \
+               QUERY_QVS_REF_1, QUERY_QVS_REF_2, QUERY_SPARQL_CONSTRAINTS, QUERY_OR
+
+    @staticmethod
+    def extract_only_or(or_constraint):
+        or_raw = []
+        for option in or_constraint:
+            keys = list(option['or'].keys())
+            grouping = []
+            for key in keys:
+                grouping.append(option['or'][key])
+            or_raw.append(grouping)
+        return or_raw
 
     def get_res(self, filename, name, query):
         """
@@ -282,27 +314,38 @@ class ShapeParser:
         :return: valid response from query execution
         """
         exp_dict = collections.defaultdict(list)
-        for constraint in filename.query(query[3].format(shape=name)):
-            constraint_id = constraint[0]
+        if filename.query(query[3].format(shape=name)):
+            for constraint in filename.query(query[3].format(shape=name)):
+                constraint_id = constraint[0]
 
-            for detail in filename.query(query[4].format(constraint=constraint_id)):
+                for detail in filename.query(query[4].format(constraint=constraint_id)):
 
-                if isinstance(detail.asdict()['o'], rdflib.term.BNode):
-                    qv_type = detail.asdict()['p']
-                    qvs = detail.asdict()['o']
-                    if len(filename.query(query[5].format(qvs=qvs))) != 0:
-                        for shape_ref in filename.query(query[5].format(qvs=qvs)):
-                            # dict_1 = [qv_type, ['shape', str(shape_ref.asdict()['shape_ref'])]]
-                            dict_1 = [qv_type, str(shape_ref.asdict()['shape_ref'])]
-                        exp_dict[str(constraint_id)].append(dict_1.copy())
+                    if isinstance(detail.asdict()['o'], rdflib.term.BNode):
+                        qv_type = detail.asdict()['p']
+                        qvs = detail.asdict()['o']
+                        if len(filename.query(query[5].format(qvs=qvs))) != 0:
+                            for shape_ref in filename.query(query[5].format(qvs=qvs)):
+                                # dict_1 = [qv_type, ['shape', str(shape_ref.asdict()['shape_ref'])]]
+                                dict_1 = [qv_type, str(shape_ref.asdict()['shape_ref'])]
+                            exp_dict[str(constraint_id)].append(dict_1.copy())
+                        else:
+                            for shape_ref in filename.query(query[6].format(qvs=qvs)):
+                                dict_1 = [qv_type, ['value', str(shape_ref.asdict()['shape_ref'])]]
+                            exp_dict[str(constraint_id)].append(dict_1.copy())
                     else:
-                        for shape_ref in filename.query(query[6].format(qvs=qvs)):
-                            dict_1 = [qv_type, ['value', str(shape_ref.asdict()['shape_ref'])]]
-                        exp_dict[str(constraint_id)].append(dict_1.copy())
-                else:
-                    #detail_dict = detail.asdict()
-                    dict_2 = [str(detail['p']), str(detail['o'])]
-                    exp_dict[str(constraint_id)].append(dict_2.copy())
+                        # detail_dict = detail.asdict()
+                        dict_2 = [str(detail['p']), str(detail['o'])]
+                        exp_dict[str(constraint_id)].append(dict_2.copy())
+
+        if filename.query(query[8].format(shape=name)):
+            for constraint in filename.query(query[8].format(shape=name)):
+                constraint_id = filename.items(constraint[0])
+                dict_or = collections.defaultdict(list)
+                for item in constraint_id:
+                    for detail in filename.query(query[4].format(constraint=item.toPython())):
+                        dict_3 = [str(detail['p']), str(detail['o'])]
+                        dict_or[str(item)].append(dict_3.copy())
+                exp_dict[str(constraint_id)].append(dict_or.copy())
 
         return exp_dict
 
@@ -340,32 +383,48 @@ class ShapeParser:
                     trav_dict['shape'] = None
                     trav_dict['datatype'] = None
                     trav_dict['negated'] = None
+                    trav_dict['or'] = {}
+                    trav_dict['flag'] = False
 
-                    for i in dv:
-                        if 'path' in str(i[0]).lower():
-                            trav_dict['path'] = str(i[1])
+                    if "Graph.items" not in dk:
+                        for i in dv:
+                            if 'path' in str(i[0]).lower():
+                                trav_dict['path'] = str(i[1])
 
-                        if 'min' in str(i[0]).lower():
-                            trav_dict['min'] = str(i[1])
+                            if 'min' in str(i[0]).lower():
+                                trav_dict['min'] = str(i[1])
 
-                        if 'max' in str(i[0]).lower():
-                            trav_dict['max'] = str(i[1])
+                            if 'max' in str(i[0]).lower():
+                                trav_dict['max'] = str(i[1])
 
-                        if 'datatype' in str(i[0]).lower():
-                            trav_dict['datatype'] = str(i[1])
+                            if 'datatype' in str(i[0]).lower():
+                                trav_dict['datatype'] = str(i[1])
 
-                        if 'valueshape' in str(i[0]).lower():
-                            trav_dict['shape'] = str(i[1])
-#                            if 'value' in str(i[1][0]).lower():
-#                                trav_dict['value'] = str(i[1][1])
-#                            if 'shape' in str(i[1][0]).lower():
-#                                trav_dict['shape'] = str(i[1][1])
+                            if 'valueshape' in str(i[0]).lower():
+                                trav_dict['shape'] = str(i[1])
+                            #                            if 'value' in str(i[1][0]).lower():
+                            #                                trav_dict['value'] = str(i[1][1])
+                            #                            if 'shape' in str(i[1][0]).lower():
+                            #                                trav_dict['shape'] = str(i[1][1])
 
-                        if 'not' in str(i[0]).lower():
-                            trav_dict['negated'] = str(i[1])
+                            if 'not' in str(i[0]).lower():
+                                trav_dict['negated'] = str(i[1])
+
+                    else:
+                        trav_dict['flag'] = True
+                        for options in dv:
+                            for i_or, j_or in options.items():
+                                trav_dict['or'][i_or] = {}
+                                for j_sub in j_or:
+                                    if 'path' in str(j_sub[0]).lower():
+                                        trav_dict['or'][i_or]['path'] = str(j_sub[1])
+                                    if 'max' in str(j_sub[0]).lower():
+                                        trav_dict['or'][i_or]['max'] = str(j_sub[1])
+                                        # trav_dict['max'] = str(sub_option[1])
+                                    if 'min' in str(j_sub[0]).lower():
+                                        trav_dict['or'][i_or]['min'] = str(j_sub[1])
 
                 exp_dict[str(dk)] = trav_dict.copy()
-
         return exp_dict
 
     def parse_constraints(self, array, target_def, constraints_id):
@@ -379,25 +438,36 @@ class ShapeParser:
         """
         var_generator = VariableGenerator()
         constraints = []
-        [constraints.extend(self.parse_constraint(var_generator, array[0][i], constraints_id + '_c' + str(i + 1), target_def)) for i in range(len(array[0]))]
+        options = None
+        [constraints.extend(self.parse_constraint(var_generator, array[0][i], constraints_id + '_c' + str(i + 1),
+                                                  target_def, options)) for i in range(len(array[0]))]
         return constraints
 
-    def parse_constraints_ttl(self, array, target_def, constraints_id):
+    def parse_constraints_ttl(self, array, target_def, constraints_id, options, raw_or):
         """
         Parses all constraints of a shape.
 
         :param array: list of constraints belonging to the shape
         :param target_def: the target definition of the shape
         :param constraints_id: suffix for the constraint IDs
+        :param options: option to be used in or_operations
+        :param raw_or: raw form for 'or' query response
         :return: list of constraints in internal constraint representation
         """
         var_generator = VariableGenerator()
         constraints = []
-        [constraints.extend(self.parse_constraint(var_generator, array[i], constraints_id + '_c' + str(i + 1), target_def)) for i in range(len(array))]
+        if not options:
+            [constraints.extend(
+                self.parse_constraint(var_generator, array[i], constraints_id + '_c' + str(i + 1), target_def
+                                      )) for i in range(len(array))]
+        else:
+            [constraints.extend(
+                self.parse_constraint(var_generator, array[i], constraints_id + '_c' + str(i + 1), target_def,
+                                      options[i], raw_or[i])) for i in range(len(array))]
         return constraints
 
     @staticmethod
-    def parse_constraint(var_generator, obj, id_, target_def):
+    def parse_constraint(var_generator, obj, id_, target_def, options=None, raw_or=None):
         """
         Parses one constraint to the internal representation.
 
@@ -405,6 +475,8 @@ class ShapeParser:
         :param obj: the constraint in its original representation
         :param id_: suffix for the constraint ID
         :param target_def: the target definition of the associated shape
+        :param options: contains Constraints for or_operation
+        :param raw_or: contains only the raw form of the options for the 'or' operation
         :return: constraint in internal representation
         """
         min_ = obj.get('min')
@@ -428,7 +500,8 @@ class ShapeParser:
         if path is not None and urlparse(path).netloc != '':  # if the predicate is a url, add '<>' to it
             o_path = '<' + path + '>'
 
-        if urlparse(shape_ref).netloc != '' and shape_ref is not None:  # if the shape reference is a url, add '<>' to it
+        if urlparse(
+                shape_ref).netloc != '' and shape_ref is not None:  # if the shape reference is a url, add '<>' to it
             o_shape_ref = '<' + shape_ref + '>'
 
         if urlparse(value).netloc != '' and value is not None:  # if the value reference is a url, add '<>' to it
@@ -437,13 +510,100 @@ class ShapeParser:
         if urlparse(datatype).netloc != '' and datatype is not None:  # if the data type is a url, add '<>' to it
             o_datatype = '<' + datatype + '>'
 
+        if o_path is None:
+            return [MinOnlyConstraint(var_generator, id_, o_path, o_min, o_neg, options, raw_or, o_datatype, o_value,
+                                      o_shape_ref, target_def)]
         if o_path is not None:
             if o_min is not None:
                 if o_max is not None:
-                    #return MinMaxConstraint(var_generator, id_, o_path, o_min, o_max, o_neg, o_datatype, o_value, o_shape_ref, target_def)
-                    return [MinOnlyConstraint(var_generator, id_, o_path, o_min, o_neg, o_datatype, o_value, o_shape_ref, target_def), MaxOnlyConstraint(var_generator, id_, o_path, o_max, o_neg, o_datatype, o_value, o_shape_ref, target_def)]
-                return [MinOnlyConstraint(var_generator, id_, o_path, o_min, o_neg, o_datatype, o_value, o_shape_ref, target_def)]
+                    # return MinMaxConstraint(var_generator, id_, o_path, o_min, o_max, o_neg, o_datatype, o_value, o_shape_ref, target_def)
+                    return [MinOnlyConstraint(var_generator, id_, o_path, o_min, o_neg, options, raw_or, o_datatype,
+                                              o_value, o_shape_ref, target_def),
+                            MaxOnlyConstraint(var_generator, id_, o_path, o_max, o_neg, options, raw_or, o_datatype,
+                                              o_value, o_shape_ref, target_def)]
+                return [MinOnlyConstraint(var_generator, id_, o_path, o_min, o_neg, options, raw_or, o_datatype,
+                                          o_value, o_shape_ref, target_def)]
             if o_max is not None:
-                return [MaxOnlyConstraint(var_generator, id_, o_path, o_max, o_neg, o_datatype, o_value, o_shape_ref, target_def)]
+                return [MaxOnlyConstraint(var_generator, id_, o_path, o_max, o_neg, options, raw_or, o_datatype,
+                                          o_value, o_shape_ref, target_def)]
         elif o_query is not None:
             return [SPARQLConstraint(id_, o_neg, o_query)]
+
+    @staticmethod
+    def parse_or_constraint(var_generator, objs, id_, target_def):
+        """
+        Parses one constraint to the internal representation.
+
+        :param var_generator: reference to the VariableGenerator instance for variable generation for SPARQL queries
+        :param objs: the constraint in its original representation
+        :param id_: suffix for the constraint ID
+        :param target_def: the target definition of the associated shape
+        :return: constraint in internal representation
+        """
+        constraint_list = []
+        options = None
+        raw_or = None
+        for obj in objs:
+            shape_ref = obj.get("shape")
+            datatype = obj.get("datatype")
+            value = obj.get("value")
+            negated = obj.get("negated")
+            query = obj.get('sparql')
+
+            keys = list(obj['or'].keys())
+            or_constraints = []
+            for key in keys:
+                min_ = None
+                max_ = None
+                path = None
+                for key_, value_ in obj['or'][key].items():
+                    if key_ == 'path':
+                        path = value_
+                    if key_ == 'max':
+                        max_ = value_
+                    if key_ == 'min':
+                        min_ = value_
+
+                o_min = None if (min_ is None) else int(min_)
+                o_max = None if (max_ is None) else int(max_)
+                o_shape_ref = None if (shape_ref is None) else str(shape_ref)
+                o_datatype = None if (datatype is None) else str(datatype)
+                o_value = None if (value is None) else str(value)
+                o_path = None if (path is None) else str(path)
+                o_neg = True if (negated is None) else not negated
+                o_query = None if (query is None) else str(query)           # not used in this implementation
+
+                if urlparse(path).netloc != '':  # if the predicate is a url, add '<>' to it
+                    o_path = '<' + path + '>'
+
+                if urlparse(
+                        shape_ref).netloc != '' and shape_ref is not None:  # if shape reference is a url, add '<>' to it
+                    o_shape_ref = '<' + shape_ref + '>'
+
+                if urlparse(
+                        value).netloc != '' and value is not None:  # if the value reference is a url, add '<>' to it
+                    o_value = '<' + value + '>'
+
+                if urlparse(
+                        datatype).netloc != '' and datatype is not None:  # if the data type is a url, add '<>' to it
+                    o_datatype = '<' + datatype + '>'
+
+                if o_path is not None:
+                    if o_min is not None:
+                        if o_max is not None:
+                            constraint = [
+                                MinOnlyConstraint(var_generator, id_, o_path, o_min, o_neg, options, raw_or, o_datatype,
+                                                  o_value, o_shape_ref, target_def),
+                                MaxOnlyConstraint(var_generator, id_, o_path, o_max, o_neg, options, raw_or, o_datatype,
+                                                  o_value, o_shape_ref, target_def)]
+                        else:
+                            constraint = MinOnlyConstraint(var_generator, id_, o_path, o_min, o_neg, options, raw_or,
+                                                           o_datatype, o_value, o_shape_ref, target_def)
+                    else:
+                        if o_max is not None:
+                            constraint = MaxOnlyConstraint(var_generator, id_, o_path, o_max, o_neg, options,  raw_or,
+                                                           o_datatype, o_value, o_shape_ref, target_def)
+
+                    or_constraints.append(constraint)
+            constraint_list.append(or_constraints.copy())
+        return constraint_list

@@ -132,6 +132,50 @@ class QueryGenerator:
 
     # CONSTRAINT QUERIES #
 
+    def options_query(self, constraint, target_query, include_prefixes, include_order_by):
+        """
+        Generates a target query including a VALUES clause to filter based on valid instances.
+
+        :param constraint: constraint that refers to this target query
+        :param target_query: target query string parsed from the input file
+        :param include_prefixes: indicates whether or not prefixes should be included in the query
+        :param include_order_by: indicates whether or not the ORDER BY clause will be added
+        :return: target query with VALUES clause
+        """
+        prefixes = self.shape.get_prefix_string() if include_prefixes else ''
+        focus_var = VariableGenerator.get_focus_node_var()
+        target_node = get_target_node_statement(target_query)
+        query_top = ''.join([prefixes,
+                             " SELECT DISTINCT ?" + focus_var + " WHERE {\n",
+                             target_node + ". \n"])
+        query_down = " ORDER BY ?" + focus_var if include_order_by else ''
+        or_union = self.get_or_query(constraint)
+        return query_top + or_union + '}' + query_down
+
+    @staticmethod
+    def get_or_query(constraints_):
+        """
+        used to generate and combine triples required for 'or' operations
+
+        :param constraints_: constraint to be evaluated as 'or'
+        :return: a set of unions that can be used in a query for initial validation
+        """
+        or_constraints = [c for c in constraints_ if c.get_shape_ref() is None]  # unsure validity with 'get_shape_ref'
+
+        builder = QueryBuilder('tmp', None, VariableGenerator.get_focus_node_var(), False)
+        or_value = 1  # used for differentiating between the constraints of different options of each or_operation
+        for c in or_constraints:
+            if c.options:
+                or_affix = 1   # not in use yet but can be used if there are more than one constraint in an or_option
+                for option in c.options:
+                    if isinstance(option, MaxOnlyConstraint):
+                        builder.build_clause(option, or_value, or_affix, True)
+                    else:
+                        builder.build_clause(option, or_value, or_affix)
+                    or_affix += 1
+                or_value += 1
+        return builder.build_union()
+
     def generate_query(self, id_, constraints, is_selective, target_query,
                        include_prefixes, include_order_by, subquery=None):
         """
@@ -188,7 +232,6 @@ class QueryGenerator:
 
         for c in local_pos_constraints:
             builder.build_clause(c)
-
         return builder.get_sparql(False, True)
 
 
@@ -214,6 +257,9 @@ class QueryBuilder:
         self.projected_variables = projected_variables
         self.filters = []
         self.triples = []
+        self.union_triples = []
+        self.max_dict = {}
+        self.or_triples = []
 
         self.include_selectivity = is_selective
         self.target_query = target_query
@@ -231,6 +277,82 @@ class QueryBuilder:
         :param obj: object of the triple pattern
         """
         self.triples.append('?' + VariableGenerator.get_focus_node_var() + ' ' + path + ' ' + obj + '.')
+
+    def add_union_triples(self, path, obj, val_1, val_2, maxonly: bool = False):
+        """
+        Adds a triple pattern to the constraint query.
+        No subject is needed as in a constraint query all triple patterns share the same subject.
+
+        :param path: predicate of the triple pattern
+        :param obj: object of the triple pattern
+        :param val_1: for union grouping(general)
+        :param val_2: for local union grouping
+        :param maxonly: tells if the constraint is maxonly
+        """
+        if maxonly:
+            self.union_triples.append(str(val_1) + '#' + str(val_2) + '#max' + '#?' +
+                                      VariableGenerator.get_focus_node_var() + ' ' + path + ' ' + obj + '.')
+        else:
+            self.union_triples.append(str(val_1) + '#' + str(val_2) + '#min' + '#?' +
+                                      VariableGenerator.get_focus_node_var() + ' ' + path + ' ' + obj + '.')
+
+    def union_with_filters(self, union_list):
+        union_list_to_keep = []
+        for filter_ in self.filters:
+            filter_union = []
+            for entry in union_list:
+                if entry.rsplit(' ', 1)[1].split('.')[0] in filter_:
+                    filter_union.append(entry)
+                else:
+                    union_list_to_keep.append(entry)
+            if filter_union:
+                union_list_to_keep.append('{' + self.__get_projection_string() + ' WHERE {\n' + '\n'.join(filter_union)
+                                          + '\nFILTER( \n' + filter_ + ') \n }}')
+        return union_list_to_keep
+
+    def build_union(self):
+        """
+        Builds a union pattern
+        No subject is needed as in a constraint query all triple patterns share the same subject.
+
+        """
+        if self.union_triples is []:
+            return
+        else:
+            grouping = []
+            for entry in self.union_triples:
+                group_number = entry.split('#', 3)[0]
+                if group_number not in grouping:
+                    grouping.append(group_number)
+
+            for group in grouping:
+                current_group = []
+                for entry in self.union_triples:
+                    if entry.split('#', 3)[0] == group:
+                        if entry.split('#', 3)[2] == 'min':
+                            current_group.append('{' + entry.split('#', 3)[3] + '}')
+                        if entry.split('#', 3)[2] == 'max':
+                            current_group.append('{' + self.max_triple(entry.split('#', 3)[3]) + '}')
+                        # self.triples.remove(entry.split('#', 2)[2])
+                    # entry.split('#', 2)[1] can be used for grouping if there are more than just the path constraint
+                # print(current_group)
+                if len(self.filters) > 0:
+                    current_group = self.union_with_filters(current_group)
+
+                self.triples.append(self.union_group(current_group))
+        return '\n'.join(self.triples)
+
+    @staticmethod
+    def union_group(triples_to_join):
+        """
+        Add a filter based on a datatype.
+
+        :param triples_to_join: list containing triples that should observe unions
+        """
+        return '\n UNION \n'.join(triples_to_join)
+
+    def max_triple(self, path):
+        return self.max_dict[path.rsplit('?', 1)[1].split('.')[0]]
 
     def add_datatype_filter(self, variable, datatype, is_pos):
         """
@@ -266,12 +388,14 @@ class QueryBuilder:
             return self.__get_query(False)  # create subquery
 
         prefixes = self.prefix_string if include_prefixes else ''
-        outer_query_closing_braces = ''.join(['}\n' if self.subquery is not None else '',
-                                              '}' if self.get_triple_patterns() != '' and self.subquery is not None else '',
+        outer_query_closing_braces = ''.join(['}\n' if self.subquery != '' else '',
+                                              '}' if self.get_triple_patterns() != '' and self.subquery != '' else '',
                                               '}' if self.get_triple_patterns() != '' else ''])
+
         selective_closing_braces = '}}' if self.include_selectivity and self.target_query is not None else ''
 
-        if len(self.constraints) == 1 and isinstance(self.constraints[0], MaxOnlyConstraint) and self.constraints[0].get_shape_ref() is None:
+        if len(self.constraints) == 1 and isinstance(self.constraints[0], MaxOnlyConstraint) and self.constraints[
+            0].get_shape_ref() is None:
             target_node = ''
             if self.include_selectivity and self.target_query is not None:
                 target_node = get_target_node_statement(self.target_query) + '.\n'
@@ -285,21 +409,22 @@ class QueryBuilder:
                                 '?', VariableGenerator.get_focus_node_var(), ' ', pred, ' ', obj, '.\n}',
                                 ' ORDER BY ?' + VariableGenerator.get_focus_node_var() if self.include_ORDERBY else ''])
             else:
-                return ''.join([prefixes,
-                                self.__get_projection_string(),
-                                ' WHERE {\n', target_node,
-                                self.triples[0], '\n} GROUP BY ?',
-                                VariableGenerator.get_focus_node_var(),
-                                ' HAVING (COUNT(DISTINCT ?', self.triples[0].rsplit('?', 1)[1][:-1], ') >= ', str(self.constraints[0].max + 1), ')',
-                                ' ORDER BY ?' + VariableGenerator.get_focus_node_var() if self.include_ORDERBY else ''])
-
+                if self.triples:
+                    return ''.join([prefixes,
+                                    self.__get_projection_string(),
+                                    ' WHERE {\n', target_node,
+                                    self.triples[0], '\n} GROUP BY ?',
+                                    VariableGenerator.get_focus_node_var(),
+                                    ' HAVING (COUNT(DISTINCT ?', self.triples[0].rsplit('?', 1)[1][:-1], ') >= ',
+                                    str(self.constraints[0].max + 1), ')',
+                                    ' ORDER BY ?' + VariableGenerator.get_focus_node_var() if self.include_ORDERBY else ''])
         query = ''.join([prefixes,
-                        self.__get_selective(),
-                        self.__get_query(include_prefixes),
-                        self.subquery if self.subquery is not None else '',
-                        outer_query_closing_braces,
-                        selective_closing_braces,
-                        ' ORDER BY ?' + VariableGenerator.get_focus_node_var() if self.include_ORDERBY else ''])
+                         self.__get_selective(),
+                         self.__get_query(include_prefixes),
+                         self.subquery if self.subquery != '' else '',
+                         outer_query_closing_braces,
+                         selective_closing_braces,
+                         ' ORDER BY ?' + VariableGenerator.get_focus_node_var() if self.include_ORDERBY else ''])
         return query
 
     def __get_query(self, include_prefixes):
@@ -380,41 +505,62 @@ class QueryBuilder:
             for j in range(i + 1, len(variables)):
                 self.filters.append('?' + variables[i] + ' != ?' + variables[j])
 
-    def build_clause(self, c):
+    def build_clause(self, c, or_value: int = 0, or_affix: int = 0, maxonly: bool = False):
         """
         Adds the necessary information to the QueryBuilder for a given constraint.
 
         :param c: the constraint to be included in the query
+        :param or_value: used in the case of multiple 'or' for triple grouping
+        :param or_affix: used in the case of more than one or triple within an option in an 'or' operation
+        :param maxonly: tells if the constraint is maxonly
         """
         variables = c.get_variables()
+        if c.raw_or:            # the use of raw_or is highly debatable. Only important with or_constraint within property in shapes_graph
+            self.or_triples = ['<' + entry['path'] + '>' for entry in c.raw_or]
+        if not maxonly:
+            if isinstance(c, Constraint):
+                path = c.path
+                if path not in self.or_triples:
+                    if c.get_value() is not None:  # if there is fixed value for the object
+                        if or_value > 0:
+                            self.add_union_triples(path, c.get_value(), or_value, or_affix)
+                        else:
+                            self.add_triple(path, c.get_value())
+                        return
 
-        if isinstance(c, Constraint):
-            path = c.path
+                    for v in variables:
+                        if c.get_shape_ref() is not None:  # if there is an existing reference to another shape
+                            self.inter_shape_refs[v] = c.get_shape_ref()
+                            self.triples.append('\n$inter_shape_type_to_add$')
+                        if or_value > 0:
+                            self.add_union_triples(path, '?' + v, or_value, or_affix)
+                        else:
+                            self.add_triple(path, '?' + v)
 
-            if c.get_value() is not None:  # if there is fixed value for the object
-                self.add_triple(path, c.get_value())
-                return
+            if c.get_value() is not None:
+                self.add_constant_filter(
+                    variables.iterator().next(),
+                    c.get_value().get(),
+                    c.get_is_pos()
+                )
 
-            for v in variables:
-                if c.get_shape_ref() is not None:  # if there is an existing reference to another shape
-                    self.inter_shape_refs[v] = c.get_shape_ref()
-                    self.triples.append('\n$inter_shape_type_to_add$')
+            if c.get_datatype() is not None:
+                for v in variables:
+                    self.add_datatype_filter(v, c.get_datatype(), c.get_is_pos())
 
-                self.add_triple(path, '?' + v)
+            if len(variables) > 1:
+                self.add_cardinality_filter(variables)
 
-        if c.get_value() is not None:
-            self.add_constant_filter(
-                variables.iterator().next(),
-                c.get_value().get(),
-                c.get_is_pos()
-            )
-
-        if c.get_datatype() is not None:
-            for v in variables:
-                self.add_datatype_filter(v, c.get_datatype(), c.get_is_pos())
-
-        if len(variables) > 1:
-            self.add_cardinality_filter(variables)
+        else:
+            if isinstance(c, Constraint):
+                path = c.path
+                v = variables[0]        # this limits the use of max_constraints
+                self.add_union_triples(path, '?' + v, or_value, or_affix, True)
+                self.max_dict[v] = ''.join([self.__get_projection_string(), ' WHERE {\n',
+                                            ' '.join(
+                                                ['?' + VariableGenerator.get_focus_node_var(), path, '?' + v, '.}\n']),
+                                            'GROUP BY ?', VariableGenerator.get_focus_node_var(), '\n',
+                                            ' HAVING (COUNT(DISTINCT ?', v, ')<=', str(c.max), ' )'])
 
     def build_query(self, rule_pattern, include_prefixes):
         """

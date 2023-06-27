@@ -96,6 +96,28 @@ class InstancesRetrieval:
         self.stats.update_log('\nNumber of targets retrieved: ' + str(len(bindings)))
         return {(shape.id, b['x']['value'], True) for b in bindings}
 
+    def extract_options(self, shape):
+        """
+        Retrieves answers from the SPARQL endpoint.
+        When a network of shapes has only 'some' targets, a shape without a target class returns no new bindings
+
+        :param shape: focus shape being evaluated
+        :return: set containing target literals (stored in the form of built-in python tuples)
+        """
+        query = shape.get_or_query()  # or_query is formed in the shape class
+        if not query:
+            return
+        self.stats.update_log(''.join(['\nEvaluating OR_options query for ', shape.id, ':\n', query]))
+        start = time.time() * 1000.0
+        bindings = self.endpoint.run_query(query)['results']['bindings']
+        end = time.time() * 1000.0
+
+        self.stats.update_log('\nelapsed: ' + str(end - start) + ' ms\n')
+        self.stats.record_query_exec_time(end - start)
+        self.stats.record_query()
+        self.stats.update_log('\nNumber of options retrieved: ' + str(len(bindings)))
+        return {(shape.id, b['x']['value'], True) for b in bindings}
+
     def extract_targets_with_filter(self, shape, filtering_shape):
         """
         Retrieves more selective query answers by separating early invalidated targets from the still pending ones.
