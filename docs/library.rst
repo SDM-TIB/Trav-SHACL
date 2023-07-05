@@ -42,3 +42,61 @@ The easiest way to install Trav-SHACL is to download the package from PyPI:
 .. code::
 
    python -m pip install TravSHACL
+
+
+Test Suit
+=========
+
+After installing Trav-SHACL as a library, you can use it as shown in the example below:
+
+.. code::
+
+    from TravSHACL import parse_heuristics, GraphTraversal, ShapeSchema
+
+    schema_dir = './shapes'  # shapes folder
+    endpoint_url = 'http://localhost:14000/sparql'  #
+    graph_traversal = GraphTraversal.DFS  # BFS is also available
+    prio_target = 'TARGET'  # shapes with target definition are preferred, alternative value: ''
+    prio_degree = 'IN'  # shapes with a higher in-degree are prioritized, alternative value 'OUT'
+    prio_number = 'BIG'  # shapes with many constraints are evaluated first, alternative value 'SMALL'
+    output_dir = './results/'
+
+    shape_schema = ShapeSchema(
+        schema_dir=schema_dir,  # directory where the files containing the shapes definitions are stored
+        schema_format='SHACL',  # do not change this value unless you are using the legacy JSON format
+        endpoint=endpoint_url,  # the URL of the SPARQL endpoint to be evaluated, alternatively an RDFLib graph can be passed
+        graph_traversal=graph_traversal,  # graph traversal algorithm used for planning the shapes order
+        heuristics=parse_heuristics(prio_target + ' ' + prio_degree + ' ' + prio_number),  # heuristics to be used for planning the evaluation order
+        use_selective_queries=True,  # use more selective constraint queries, alternative value: False
+        max_split_size=256,  # maximum number of entities in FILTER or VALUES clause
+        output_dir=output_dir,  # directory where the output files will be stored
+        order_by_in_queries=False,  # sort the results of SPARQL queries in order to ensure the same order across several runs
+        save_outputs=True  # save outputs to output_dir, alternative value: False
+        )
+
+    result = shape_schema.validate()  # validate the SHACL shape schema
+    print(result)
+
+
+Running the Test Suit
+=====================
+
+To run the test suite, install the production and development dependencies as shown.
+
+.. code::
+
+    pip3 install -r requirements.txt -r requirements-dev.txt
+
+
+Then, start the Docker container with the test data. The connection port must be same.
+
+.. code::
+
+    docker-compose -f tests/docker-compose.yml up -d
+
+Finally, run the tests by executing the following command.
+
+.. code::
+
+    pytest
+
