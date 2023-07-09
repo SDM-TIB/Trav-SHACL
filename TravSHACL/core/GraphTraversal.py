@@ -9,19 +9,25 @@ class GraphTraversal(Enum):
     BFS = 'Breadth-first search'
     DFS = 'Depth-first search'
 
-    def traverse_graph(self, dependencies, reversed_dependencies, starting_point):
+    def traverse_graph(self, dependencies, reversed_dependencies, starting_point, one_component=False):
         nodes = list(dependencies.keys())
         visited = []
         if self == GraphTraversal.DFS:
             while len(nodes) > 0:
                 self._dfs(visited, dependencies, reversed_dependencies, starting_point)
-                [nodes.remove(v) for v in visited if v in nodes]
-                starting_point = nodes[0] if len(nodes) > 0 else None
+                if one_component:  # only one connected component allowed, so drop the other nodes
+                    nodes = []
+                else:
+                    [nodes.remove(v) for v in visited if v in nodes]
+                    starting_point = nodes[0] if len(nodes) > 0 else None
         elif self == GraphTraversal.BFS:
             while len(nodes) > 0:
                 self._bfs(visited, dependencies, reversed_dependencies, starting_point)
-                [nodes.remove(v) for v in visited if v in nodes]
-                starting_point = nodes[0] if len(nodes) > 0 else None
+                if one_component:  # only one connected component allowed, so drop the other nodes
+                    nodes = []
+                else:
+                    [nodes.remove(v) for v in visited if v in nodes]
+                    starting_point = nodes[0] if len(nodes) > 0 else None
         return visited
 
     def _dfs(self, visited, dependencies, reversed_dependencies, node):
