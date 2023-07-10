@@ -388,8 +388,11 @@ class QueryBuilder:
             return self.__get_query(False)  # create subquery
 
         prefixes = self.prefix_string if include_prefixes else ''
-        outer_query_closing_braces = ''.join(['}\n' if self.subquery != '' else '',
-                                              '}' if self.get_triple_patterns() != '' and self.subquery != '' else '',
+        if isinstance(self.subquery, str):
+            if self.subquery == '':
+                self.subquery = None
+        outer_query_closing_braces = ''.join(['}\n' if self.subquery is not None else '',
+                                              '}' if self.get_triple_patterns() != '' and self.subquery is not None else '',
                                               '}' if self.get_triple_patterns() != '' else ''])
 
         selective_closing_braces = '}}' if self.include_selectivity and self.target_query is not None else ''
@@ -421,7 +424,7 @@ class QueryBuilder:
         query = ''.join([prefixes,
                          self.__get_selective(),
                          self.__get_query(include_prefixes),
-                         self.subquery if self.subquery != '' else '',
+                         self.subquery if self.subquery is not None else '',
                          outer_query_closing_braces,
                          selective_closing_braces,
                          ' ORDER BY ?' + VariableGenerator.get_focus_node_var() if self.include_ORDERBY else ''])
@@ -441,6 +444,9 @@ class QueryBuilder:
                 temp_string = '$filter_clause_to_add$'
 
         triple_patterns = self.get_triple_patterns()
+        if isinstance(self.subquery, str):
+            if self.subquery == '':
+                self.subquery = None
         if triple_patterns != '':
             return ''.join([self.__get_projection_string(),
                             ' WHERE {\n',
