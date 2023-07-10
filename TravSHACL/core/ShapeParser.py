@@ -105,7 +105,7 @@ class ShapeParser:
         if 'prefix' in obj.keys():
             prefixes = obj['prefix']
         referenced_shapes = self.shape_references(obj['constraintDef']['conjunctions'][0])
-        valid_flag = False   # for json files, the 'or' operations can be implemented starting from here
+        valid_flag = [False]   # for json files, the 'or' operations can be implemented starting from here
 
         if target_def is not None:
             target_query = target_def['query']
@@ -172,7 +172,12 @@ class ShapeParser:
                                              query=queries)
             const_array = list(cons_dict.values())  # change the format to an array
 
-            valid_flag = [entry['flag'] for entry in const_array]
+            #valid_flag = [entry['flag'] for entry in const_array if entry['flag']]
+            valid_flag = []
+            for entry in const_array:
+                if 'flag' in entry.keys():
+                    valid_flag.append(entry['flag'])
+
             if True in valid_flag:
                 var_generator = VariableGenerator()
                 valid_options = self.parse_or_constraint(var_generator, const_array, id_ + "_c",
@@ -510,9 +515,6 @@ class ShapeParser:
         if urlparse(datatype).netloc != '' and datatype is not None:  # if the data type is a url, add '<>' to it
             o_datatype = '<' + datatype + '>'
 
-        if o_path is None:
-            return [MinOnlyConstraint(var_generator, id_, o_path, o_min, o_neg, options, raw_or, o_datatype, o_value,
-                                      o_shape_ref, target_def)]
         if o_path is not None:
             if o_min is not None:
                 if o_max is not None:
@@ -528,6 +530,9 @@ class ShapeParser:
                                           o_value, o_shape_ref, target_def)]
         elif o_query is not None:
             return [SPARQLConstraint(id_, o_neg, o_query)]
+        elif o_path is None:
+            return [MinOnlyConstraint(var_generator, id_, o_path, o_min, o_neg, options, raw_or, o_datatype, o_value,
+                                      o_shape_ref, target_def)]
 
     @staticmethod
     def parse_or_constraint(var_generator, objs, id_, target_def):
