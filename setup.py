@@ -19,7 +19,7 @@ setup(
     description='A SHACL validator capable of planning the traversal and execution of the validation of a shape schema to detect violations early.',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    install_requires=['SPARQLWrapper==2.0.0', 'rdflib>=6.1.1'],
+    install_requires=['SPARQLWrapper>=2.0.0', 'rdflib>=6.1.1'],
     python_requires='>=3.7',
     classifiers=[
         'Development Status :: 5 - Production/Stable ',
