@@ -594,8 +594,16 @@ class ShapeParser:
                 o_neg = True if (negated is None) else not negated
                 o_query = None if (query is None) else str(query)           # not used in this implementation
 
+                if path is not None and str(path).startswith('^'):
+                    is_inverse_path = True
+                    path = str(path)[1:]
+                else:
+                    is_inverse_path = False
+
                 if urlparse(path).netloc != '':  # if the predicate is a url, add '<>' to it
                     o_path = '<' + path + '>'
+                if is_inverse_path:
+                    o_path = '^' + o_path
 
                 if urlparse(
                         shape_ref).netloc != '' and shape_ref is not None:  # if shape reference is a url, add '<>' to it
