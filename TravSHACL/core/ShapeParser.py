@@ -270,8 +270,16 @@ class ShapeParser:
         '''
 
         QUERY_CONSTRAINT_DETAILS = '''SELECT ?p ?o WHERE {{
-          ?s ?p ?o .
-          FILTER( str(?s) = "{constraint}" )
+            {{
+                ?s ?p ?o .
+                FILTER( str(?s) = "{constraint}" )
+                FILTER( ?p != <http://www.w3.org/ns/shacl#path> || !isBlank(?o) )
+            }} UNION {{
+                ?s <http://www.w3.org/ns/shacl#path>/<http://www.w3.org/ns/shacl#inversePath> ?o .
+                BIND(<http://www.w3.org/ns/shacl#path> AS ?p)
+                BIND(CONCAT('^', str(?o)) AS ?o)
+                FILTER( str(?s) = "{constraint}" )
+            }}
         }}'''
 
         QUERY_QVS_REF_1 = '''SELECT ?shape_ref WHERE {{
@@ -493,6 +501,12 @@ class ShapeParser:
         negated = obj.get('negated')
         query = obj.get('sparql')
 
+        if path is not None and str(path).startswith('^'):
+            is_inverse_path = True
+            path = str(path)[1:]
+        else:
+            is_inverse_path = False
+
         o_min = None if (min_ is None) else int(min_)
         o_max = None if (max_ is None) else int(max_)
         o_shape_ref = None if (shape_ref is None) else str(shape_ref)
@@ -504,6 +518,8 @@ class ShapeParser:
 
         if path is not None and urlparse(path).netloc != '':  # if the predicate is a url, add '<>' to it
             o_path = '<' + path + '>'
+        if is_inverse_path:
+            o_path = '^' + o_path
 
         if urlparse(
                 shape_ref).netloc != '' and shape_ref is not None:  # if the shape reference is a url, add '<>' to it
