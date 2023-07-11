@@ -1,0 +1,16 @@
+{
+  "schemaDir": "./tests/cases/or_constraint/case1/shapes/case1b",
+  "groundTruth": {
+    "valid": [
+      "http://test.example.com/ClassA_Instance0",
+      "http://test.example.com/ClassA_Instance3",
+      "http://test.example.com/ClassA_Instance4",
+      "http://test.example.com/ClassA_Instance5"
+    ],
+    "invalid": [
+      "http://test.example.com/ClassA_Instance1",
+      "http://test.example.com/ClassA_Instance2",
+      "http://test.example.com/ClassA_Instance6"
+    ]
+  }
+}

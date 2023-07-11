@@ -27,6 +27,8 @@ def get_all_test_cases():
 def test_case(file, selective, graph_traversal, prio_target, prio_degree, prio_number, shape_format, endpoint):
     if 'sparql' in file and shape_format == 'JSON':
         pytest.skip('SPARQL constraints in JSON format are not implemented.')
+    if 'or_constraint' in file and shape_format == 'JSON':
+        pytest.skip('OR constraints in JSON format are not implemented.')
 
     with open(file, 'r') as f:
         test_definition = json.load(f)
