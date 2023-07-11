@@ -7,7 +7,8 @@ A list of all the people who contributed to the project.
 
 ## Student Assistants (alphabetical by surname)
 - Uzoma Nwiwu
-  - ShapeParser for TTL format
+  - Shape parser for TTL format
   - Validation report in TTL format
+  - Simple OR constraint feature
 - Gabriela Ydler
   - Logo
