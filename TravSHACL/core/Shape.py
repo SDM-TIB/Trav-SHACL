@@ -140,7 +140,7 @@ class Shape:
 
     def compute_constraint_queries(self):
         """Computes all constraint queries for the shape."""
-        min_constraints = [c for c in self.constraints if c.min != -1]
+        min_constraints = [c for c in self.constraints if c.min != -1 and c.options is None]
         max_constraints = [c for c in self.constraints if c.max != -1]
 
         subquery = self.QueryGenerator.generate_local_subquery(min_constraints)

@@ -610,5 +610,5 @@ class ShapeParser:
                                                            o_datatype, o_value, o_shape_ref, target_def)
 
                     or_constraints.append(constraint)
-            constraint_list.append(or_constraints.copy())
+            constraint_list.append(or_constraints.copy() if or_constraints else None)
         return constraint_list

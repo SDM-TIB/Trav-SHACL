@@ -145,19 +145,18 @@ class QueryGenerator:
         prefixes = self.shape.get_prefix_string() if include_prefixes else ''
         focus_var = VariableGenerator.get_focus_node_var()
         target_node = get_target_node_statement(target_query)
-        query_top = ''.join([prefixes,
-                             " SELECT DISTINCT ?" + focus_var + " WHERE {\n",
-                             target_node + ". \n"])
+        query_top = ''.join([prefixes, " SELECT DISTINCT ?" + focus_var + " WHERE {\n"])
         query_down = " ORDER BY ?" + focus_var if include_order_by else ''
-        or_union = self.get_or_query(constraint)
+        or_union = self.get_or_query(constraint, target_node)
         return query_top + or_union + '}' + query_down
 
     @staticmethod
-    def get_or_query(constraints_):
+    def get_or_query(constraints_, target_node_statement):
         """
         used to generate and combine triples required for 'or' operations
 
         :param constraints_: constraint to be evaluated as 'or'
+        :param target_node_statement: statement for the target node
         :return: a set of unions that can be used in a query for initial validation
         """
         or_constraints = [c for c in constraints_ if c.get_shape_ref() is None]  # unsure validity with 'get_shape_ref'
@@ -171,10 +170,10 @@ class QueryGenerator:
                     if isinstance(option, MaxOnlyConstraint):
                         builder.build_clause(option, or_value, or_affix, True)
                     else:
-                        builder.build_clause(option, or_value, or_affix)
+                        builder.build_clause(option, or_value, or_affix, False)
                     or_affix += 1
                 or_value += 1
-        return builder.build_union()
+        return builder.build_union(target_node_statement, VariableGenerator.get_focus_node_var())
 
     def generate_query(self, id_, constraints, is_selective, target_query,
                        include_prefixes, include_order_by, subquery=None):
@@ -278,7 +277,7 @@ class QueryBuilder:
         """
         self.triples.append('?' + VariableGenerator.get_focus_node_var() + ' ' + path + ' ' + obj + '.')
 
-    def add_union_triples(self, path, obj, val_1, val_2, maxonly: bool = False):
+    def add_union_triples(self, path, obj, val_1, val_2, maxonly: bool = False, card: int = -1):
         """
         Adds a triple pattern to the constraint query.
         No subject is needed as in a constraint query all triple patterns share the same subject.
@@ -288,12 +287,13 @@ class QueryBuilder:
         :param val_1: for union grouping(general)
         :param val_2: for local union grouping
         :param maxonly: tells if the constraint is maxonly
+        :param card: cardinality restriction of the constraint to be added
         """
         if maxonly:
-            self.union_triples.append(str(val_1) + '#' + str(val_2) + '#max' + '#?' +
+            self.union_triples.append(str(val_1) + '#' + str(val_2) + '#max#' + str(card) + '#?' +
                                       VariableGenerator.get_focus_node_var() + ' ' + path + ' ' + obj + '.')
         else:
-            self.union_triples.append(str(val_1) + '#' + str(val_2) + '#min' + '#?' +
+            self.union_triples.append(str(val_1) + '#' + str(val_2) + '#min#' + str(card) + '#?' +
                                       VariableGenerator.get_focus_node_var() + ' ' + path + ' ' + obj + '.')
 
     def union_with_filters(self, union_list):
@@ -310,7 +310,7 @@ class QueryBuilder:
                                           + '\nFILTER( \n' + filter_ + ') \n }}')
         return union_list_to_keep
 
-    def build_union(self):
+    def build_union(self, target_node_statement: str, focus_node_var: str):
         """
         Builds a union pattern
         No subject is needed as in a constraint query all triple patterns share the same subject.
@@ -330,9 +330,11 @@ class QueryBuilder:
                 for entry in self.union_triples:
                     if entry.split('#', 3)[0] == group:
                         if entry.split('#', 3)[2] == 'min':
-                            current_group.append('{' + entry.split('#', 3)[3] + '}')
+                            current_group.append(self.cardinality_graph_pattern(target_node_statement, focus_node_var,
+                                                           entry.split('#', 4)[4], False, entry.split('#', 4)[3]))
                         if entry.split('#', 3)[2] == 'max':
-                            current_group.append('{' + self.max_triple(entry.split('#', 3)[3]) + '}')
+                            current_group.append(self.cardinality_graph_pattern(target_node_statement, focus_node_var,
+                                                           entry.split('#', 4)[4], True, entry.split('#', 4)[3]))
                         # self.triples.remove(entry.split('#', 2)[2])
                     # entry.split('#', 2)[1] can be used for grouping if there are more than just the path constraint
                 # print(current_group)
@@ -343,6 +345,31 @@ class QueryBuilder:
         return '\n'.join(self.triples)
 
     @staticmethod
+    def cardinality_graph_pattern(target_node_statement: str, focus_node_var: str,
+                                  triple_pattern: str, max_: bool, card: int):
+        """
+        Creates a subquery for cardinality constraints to be used in OR constraints.
+
+        :param target_node_statement: The statement for the target node of the constraint
+        :param focus_node_var: The variable for the focus node (usually x)
+        :param triple_pattern: The triple pattern of the cardinality constraint
+        :param max_: Indicates whether the constraint is a max cardinality constraint
+        :param card: The cardinality restriction of the constraint
+        """
+        cgp = '{ SELECT DISTINCT ?' + focus_node_var + ' WHERE {\n' + target_node_statement + ' .\n'
+        if max_:
+            cgp += 'OPTIONAL { ' + triple_pattern + '}'
+        else:
+            cgp += triple_pattern
+        cgp += '\n}\nGROUP BY ?' + focus_node_var + '\nHAVING (COUNT(DISTINCT ?' + triple_pattern.split('?', 2)[2][:-1] + ') '
+        if max_:
+            cgp += '<= '
+        else:
+            cgp += '>= '
+        cgp += str(card) + ') }'
+        return cgp
+
+    @staticmethod
     def union_group(triples_to_join):
         """
         Add a filter based on a datatype.
@@ -350,9 +377,6 @@ class QueryBuilder:
         :param triples_to_join: list containing triples that should observe unions
         """
         return '\n UNION \n'.join(triples_to_join)
-
-    def max_triple(self, path):
-        return self.max_dict[path.rsplit('?', 1)[1].split('.')[0]]
 
     def add_datatype_filter(self, variable, datatype, is_pos):
         """
@@ -534,13 +558,14 @@ class QueryBuilder:
                             self.add_triple(path, c.get_value())
                         return
 
-                    for v in variables:
-                        if c.get_shape_ref() is not None:  # if there is an existing reference to another shape
-                            self.inter_shape_refs[v] = c.get_shape_ref()
-                            self.triples.append('\n$inter_shape_type_to_add$')
-                        if or_value > 0:
-                            self.add_union_triples(path, '?' + v, or_value, or_affix)
-                        else:
+                    if or_value > 0:
+                        v = variables[0]
+                        self.add_union_triples(path, '?' + v, or_value, or_affix, card=c.min)
+                    else:
+                        for v in variables:
+                            if c.get_shape_ref() is not None:  # if there is an existing reference to another shape
+                                self.inter_shape_refs[v] = c.get_shape_ref()
+                                self.triples.append('\n$inter_shape_type_to_add$')
                             self.add_triple(path, '?' + v)
 
             if c.get_value() is not None:
@@ -554,19 +579,14 @@ class QueryBuilder:
                 for v in variables:
                     self.add_datatype_filter(v, c.get_datatype(), c.get_is_pos())
 
-            if len(variables) > 1:
+            if len(variables) > 1 and or_value == 0:
                 self.add_cardinality_filter(variables)
 
         else:
             if isinstance(c, Constraint):
                 path = c.path
                 v = variables[0]        # this limits the use of max_constraints
-                self.add_union_triples(path, '?' + v, or_value, or_affix, True)
-                self.max_dict[v] = ''.join([self.__get_projection_string(), ' WHERE {\n',
-                                            ' '.join(
-                                                ['?' + VariableGenerator.get_focus_node_var(), path, '?' + v, '.}\n']),
-                                            'GROUP BY ?', VariableGenerator.get_focus_node_var(), '\n',
-                                            ' HAVING (COUNT(DISTINCT ?', v, ')<=', str(c.max), ' )'])
+                self.add_union_triples(path, '?' + v, or_value, or_affix, True, card=c.max)
 
     def build_query(self, rule_pattern, include_prefixes):
         """
