@@ -1,0 +1,20 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix test: <http://test.example.com/> .
+@prefix : <http://test.example.com/shapes/> .
+
+:ClassA a sh:NodeShape;
+  sh:targetClass test:ClassA ;
+  sh:or (
+    [
+      sh:path test:property0 ;
+      sh:minCount 1
+    ]
+    [
+      sh:path test:property1 ;
+      sh:minCount 3
+    ]
+    [
+      sh:path test:property2 ;
+      sh:maxCount 0
+    ]
+  ) .
