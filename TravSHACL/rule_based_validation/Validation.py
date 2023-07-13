@@ -109,21 +109,20 @@ class Validation:
                 shapes_state[next_focus_shape_name]['remaining_targets_count'] -= 1
         else:
             pending = self.InstRetrieval.extract_targets(next_focus_shape)
-            # checking for 'or' constraint
+
+        # checking for 'or' constraint
+        if next_focus_shape.flag:
             invalid_pending = []
+            pending_val = self.InstRetrieval.extract_options(next_focus_shape)
+            for target in pending:
+                if pending_val:
+                    if target not in pending_val:
+                        invalid_pending.append(target)
+                        self.register_target(target, "violated", next_focus_shape_name, shapes_state)
+                        shapes_state[next_focus_shape_name]['inferred'].add((target[0], target[1], not target[2]))
+                        shapes_state[next_focus_shape_name]['remaining_targets_count'] -= 1
 
-            if next_focus_shape.flag:
-                pending_val = self.InstRetrieval.extract_options(next_focus_shape)
-                for target in pending:
-                    if pending_val:
-                        if target not in pending_val:
-                            invalid_pending.append(target)
-                            self.register_target(target, "violated", next_focus_shape_name, shapes_state)
-                            shapes_state[next_focus_shape_name]['inferred'].add((target[0], target[1], not target[2]))
-                            shapes_state[next_focus_shape_name]['remaining_targets_count'] -= 1
-
-                for invalid_target in invalid_pending:
-                    pending.remove(invalid_target)
+            pending = [target for target in pending if target not in invalid_pending]
 
         # check the SPARQL constraints
         sparql_constraints = next_focus_shape.get_sparql_constraints()
