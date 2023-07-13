@@ -87,6 +87,7 @@ test:ClassB_Instance5  a  test:ClassB ;
   test:toC        test:ClassC_Instance3 .
 
 test:ClassB_Instance6  a  test:ClassB ;
+  test:property1  2023 ;
   test:toC        test:ClassC_Instance0 ,
                   test:ClassC_Instance1 ,
                   test:ClassC_Instance2 .
