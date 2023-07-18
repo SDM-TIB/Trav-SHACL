@@ -6,7 +6,7 @@ class Constraint:
     """Base class for all constraints."""
 
     def __init__(self, id_=None, is_pos=None, satisfied=None, datatype=None, value=None,
-                 shape_ref=None, target_def=None, path=None, options=None, raw_or=None):
+                 shape_ref=None, target_def=None, path=None, options=None):
         """
         Base constructor for all constraints.
 
@@ -19,13 +19,11 @@ class Constraint:
         :param target_def: contains the target definition of the shape the constraint belongs to if it has one
         :param path: the path associated with this constraint, e.g., a predicate
         :param options: gets the options to be used in or_operation
-        :param raw_or: contains the specific constraints for or in the shapes graph
         """
         self.id = id_
         self.isPos = is_pos
         self.satisfied = satisfied
         self.options = options
-        self.raw_or = raw_or
         self.datatype = datatype
         self.value = value
         self.shapeRef = shape_ref

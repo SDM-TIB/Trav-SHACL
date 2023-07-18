@@ -258,7 +258,6 @@ class QueryBuilder:
         self.triples = []
         self.union_triples = []
         self.max_dict = {}
-        self.or_triples = []
 
         self.include_selectivity = is_selective
         self.target_query = target_query
@@ -545,28 +544,25 @@ class QueryBuilder:
         :param maxonly: tells if the constraint is maxonly
         """
         variables = c.get_variables()
-        if c.raw_or:            # the use of raw_or is highly debatable. Only important with or_constraint within property in shapes_graph
-            self.or_triples = ['<' + entry['path'] + '>' for entry in c.raw_or]
         if not maxonly:
             if isinstance(c, Constraint):
                 path = c.path
-                if path not in self.or_triples:
-                    if c.get_value() is not None:  # if there is fixed value for the object
-                        if or_value > 0:
-                            self.add_union_triples(path, c.get_value(), or_value, or_affix)
-                        else:
-                            self.add_triple(path, c.get_value())
-                        return
-
+                if c.get_value() is not None:  # if there is fixed value for the object
                     if or_value > 0:
-                        v = variables[0]
-                        self.add_union_triples(path, '?' + v, or_value, or_affix, card=c.min)
+                        self.add_union_triples(path, c.get_value(), or_value, or_affix)
                     else:
-                        for v in variables:
-                            if c.get_shape_ref() is not None:  # if there is an existing reference to another shape
-                                self.inter_shape_refs[v] = c.get_shape_ref()
-                                self.triples.append('\n$inter_shape_type_to_add$')
-                            self.add_triple(path, '?' + v)
+                        self.add_triple(path, c.get_value())
+                    return
+
+                if or_value > 0:
+                    v = variables[0]
+                    self.add_union_triples(path, '?' + v, or_value, or_affix, card=c.min)
+                else:
+                    for v in variables:
+                        if c.get_shape_ref() is not None:  # if there is an existing reference to another shape
+                            self.inter_shape_refs[v] = c.get_shape_ref()
+                            self.triples.append('\n$inter_shape_type_to_add$')
+                        self.add_triple(path, '?' + v)
 
             if c.get_value() is not None:
                 self.add_constant_filter(

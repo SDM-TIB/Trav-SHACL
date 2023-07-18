@@ -450,19 +450,17 @@ class ShapeParser:
         for i, constraint in enumerate(array):
             if constraint.get('flag'):
                 or_constraints = []
-                raw_or = []
                 for key in constraint['or'].keys():
                     sub_constraint = constraint['or'][key]
-                    raw_or.append(sub_constraint)
-                    or_constraints.extend(self.parse_constraint(var_generator, sub_constraint, constraints_id + '_c' + str(i + 1), target_def, None, []))
-                constraints.extend(self.parse_constraint(var_generator, constraint, constraints_id + '_c' + str(i + 1), target_def, or_constraints, raw_or))
+                    or_constraints.extend(self.parse_constraint(var_generator, sub_constraint, constraints_id + '_c' + str(i + 1), target_def, None))
+                constraints.extend(self.parse_constraint(var_generator, constraint, constraints_id + '_c' + str(i + 1), target_def, or_constraints))
             else:
-                constraints.extend(self.parse_constraint(var_generator, constraint, constraints_id + '_c' + str(i + 1), target_def, None, []))
+                constraints.extend(self.parse_constraint(var_generator, constraint, constraints_id + '_c' + str(i + 1), target_def, None))
 
         return constraints
 
     @staticmethod
-    def parse_constraint(var_generator, obj, id_, target_def, options=None, raw_or=None):
+    def parse_constraint(var_generator, obj, id_, target_def, options=None):
         """
         Parses one constraint to the internal representation.
 
@@ -471,7 +469,6 @@ class ShapeParser:
         :param id_: suffix for the constraint ID
         :param target_def: the target definition of the associated shape
         :param options: contains Constraints for or_operation
-        :param raw_or: contains only the raw form of the options for the 'or' operation
         :return: constraint in internal representation
         """
         min_ = obj.get('min')
@@ -516,12 +513,12 @@ class ShapeParser:
         if o_path is not None:
             if o_min is not None:
                 if o_max is not None:
-                    return [MinOnlyConstraint(var_generator, id_, o_path, o_min, o_neg, options, raw_or, o_datatype, o_value, o_shape_ref, target_def),
-                            MaxOnlyConstraint(var_generator, id_, o_path, o_max, o_neg, options, raw_or, o_datatype, o_value, o_shape_ref, target_def)]
-                return [MinOnlyConstraint(var_generator, id_, o_path, o_min, o_neg, options, raw_or, o_datatype, o_value, o_shape_ref, target_def)]
+                    return [MinOnlyConstraint(var_generator, id_, o_path, o_min, o_neg, options, o_datatype, o_value, o_shape_ref, target_def),
+                            MaxOnlyConstraint(var_generator, id_, o_path, o_max, o_neg, options, o_datatype, o_value, o_shape_ref, target_def)]
+                return [MinOnlyConstraint(var_generator, id_, o_path, o_min, o_neg, options, o_datatype, o_value, o_shape_ref, target_def)]
             if o_max is not None:
-                return [MaxOnlyConstraint(var_generator, id_, o_path, o_max, o_neg, options, raw_or, o_datatype, o_value, o_shape_ref, target_def)]
+                return [MaxOnlyConstraint(var_generator, id_, o_path, o_max, o_neg, options, o_datatype, o_value, o_shape_ref, target_def)]
         elif o_query is not None:
             return [SPARQLConstraint(id_, o_neg, o_query)]
         elif o_path is None:
-            return [MinOnlyConstraint(var_generator, id_, o_path, o_min, o_neg, options, raw_or, o_datatype, o_value, o_shape_ref, target_def)]
+            return [MinOnlyConstraint(var_generator, id_, o_path, o_min, o_neg, options, o_datatype, o_value, o_shape_ref, target_def)]

@@ -25,7 +25,7 @@ class MinMaxConstraint(Constraint):
         :param shape_ref: contains the name of the shape referenced by the constraint, none otherwise
         :param target_def: contains the target definition of the shape the constraint belongs to if it has one
         """
-        super().__init__(id_, is_pos, None, datatype, value, shape_ref, target_def, path)
+        super().__init__(id_, is_pos, None, datatype, value, shape_ref, target_def, path, None)
         self.varGenerator = var_generator
         self.min = min_
         self.max = max_
