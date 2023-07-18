@@ -229,6 +229,9 @@ class Shape:
 
     def get_or_query(self):
         if True in self.flag:
-            return self.QueryGenerator.options_query(self.constraints, self.targetQuery, self.includePrefixes,
-                                                     self.ORDERBYinQueries)
+            or_constraints = [c for c in self.constraints if c.options]
+            if len(or_constraints) == 0:
+                return
+            else:
+                return self.QueryGenerator.options_query(or_constraints, self.targetQuery, self.includePrefixes, self.ORDERBYinQueries)
         return
