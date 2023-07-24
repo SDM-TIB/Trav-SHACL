@@ -9,3 +9,4 @@ A description of what Trav-SHACL is...
 
    library
    service
+   feature
