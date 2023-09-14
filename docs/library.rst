@@ -11,7 +11,7 @@ If you want to use Trav-SHACL as a library, you can install it from its source c
 Requirements
 ============
 
-Trav-SHACL is implemented in Python3. The current version supports Python version 3.7 to 3.10.
+Trav-SHACL is implemented in Python3. The current version supports Python version 3.8 to 3.11.
 Trav-SHACL uses the ``rdflib`` library for parsing the SHACL shape schema and the ``SPARQLWrapper`` library for contacting SPARQL endpoints.
 
 Local Source Code
@@ -43,9 +43,32 @@ The easiest way to install Trav-SHACL is to download the package from PyPI:
 
    python -m pip install TravSHACL
 
+*******
+Testing
+*******
 
-Test Suit
-=========
+To run the test suite, install the production and development dependencies as shown.
+
+.. code::
+
+    pip3 install -r requirements.txt -r requirements-dev.txt
+
+
+Then, start the Docker container with the test data. The connection port must be same.
+
+.. code::
+
+    docker-compose -f tests/docker-compose.yml up -d
+
+Finally, run the tests by executing the following command.
+
+.. code::
+
+    pytest
+
+*******
+Example
+*******
 
 After installing Trav-SHACL as a library, you can use it as shown in the example below:
 
@@ -76,27 +99,3 @@ After installing Trav-SHACL as a library, you can use it as shown in the example
 
     result = shape_schema.validate()  # validate the SHACL shape schema
     print(result)
-
-
-Running the Test Suit
-=====================
-
-To run the test suite, install the production and development dependencies as shown.
-
-.. code::
-
-    pip3 install -r requirements.txt -r requirements-dev.txt
-
-
-Then, start the Docker container with the test data. The connection port must be same.
-
-.. code::
-
-    docker-compose -f tests/docker-compose.yml up -d
-
-Finally, run the tests by executing the following command.
-
-.. code::
-
-    pytest
-

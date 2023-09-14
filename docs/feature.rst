@@ -2,15 +2,6 @@
 Features of Trav-SHACL
 #######################
 
-************
-Overview
-************
-
-Trav-SHACL is a SHACL engine capable of planning the traversal and execution of a shape schema in a way that invalid
-entities are detected early and needless validations are minimized. Trav-SHACL reorders the shapes in a shape schema
-for efficient validation and rewrites target and constraint queries for fast detection of invalid entities. The shape
-schema is validated against an RDF graph accessible via a SPARQL endpoint.
-
 Prerequisites
 =============
 
@@ -56,9 +47,10 @@ list of what is supported:
         +   ``sh:message`` is ignored, i.e., the message is not included in the result
         +   only ``$this`` is supported as placeholder
 *   simple logical constraints, i.e., ``sh:or``
+
 The following is a list of some of the more important features that are not yet covered:
 
 *   ``sh:node``
 *   ``sh:datatype``
-*   ``sh:value``
+*   ``sh:hasValue``
 *   and others

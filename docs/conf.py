@@ -36,7 +36,13 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
     'sphinx_rtd_theme',
+    'sphinxcontrib.bibtex',
 ]
+
+# bibtex configuration
+bibtex_bibfiles = ['refs.bib']
+bibtex_default_style = 'unsrt'
+numfig = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
