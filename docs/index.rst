@@ -1,11 +1,16 @@
 .. |tests| image:: https://github.com/SDM-TIB/Trav-SHACL/actions/workflows/test.yml/badge.svg
+   :target: https://github.com/SDM-TIB/Trav-SHACL/actions/workflows/test.yml
 .. |release| image:: http://img.shields.io/github/release/SDM-TIB/Trav-SHACL.svg?logo=github
+   :target: https://github.com/SDM-TIB/Trav-SHACL/releases
 .. |docker| image:: https://img.shields.io/badge/Docker%20Image-sdmtib/travshacl-blue?logo=Docker
+   :target: https://hub.docker.com/r/sdmtib/travshacl
 .. |license| image:: https://img.shields.io/badge/License-GPLv3-blue.svg
+   :target: https://github.com/SDM-TIB/Trav-SHACL/blob/master/LICENSE
 .. |python| image:: https://img.shields.io/pypi/pyversions/TravSHACL
 .. |format| image:: https://img.shields.io/pypi/format/TravSHACL
 .. |status| image:: https://img.shields.io/pypi/status/TravSHACL
 .. |version| image:: https://img.shields.io/pypi/v/TravSHACL
+   :target: https://pypi.org/project/TravSHACL
 
 |tests| |release| |docker| |license| |python| |format| |status| |version|
 
