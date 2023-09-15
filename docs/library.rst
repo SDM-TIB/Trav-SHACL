@@ -11,7 +11,10 @@ If you want to use Trav-SHACL as a library, you can install it from its source c
 Requirements
 ============
 
-Trav-SHACL is implemented in Python3. The current version supports Python version 3.8 to 3.11.
+.. |python| image:: https://img.shields.io/pypi/pyversions/TravSHACL
+
+Trav-SHACL is implemented in Python3.
+The current version supports |python|.
 Trav-SHACL uses the ``rdflib`` library for parsing the SHACL shape schema and the ``SPARQLWrapper`` library for contacting SPARQL endpoints.
 
 Local Source Code
@@ -73,6 +76,7 @@ Finally, run the tests by executing the following command.
 Example
 *******
 
+# TODO: Include how to start the example data container, explain the code and options!
 After installing Trav-SHACL as a library, you can use it as shown in the example below:
 
 .. code:: python3
