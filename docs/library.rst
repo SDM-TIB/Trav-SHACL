@@ -47,14 +47,17 @@ The easiest way to install Trav-SHACL is to download the package from PyPI:
 Testing
 *******
 
-To run the test suite, install the production and development dependencies as shown.
+In order to run the test suite, clone the Trav-SHACL repository from GitHub as explained above (see `Local Source Code`_).
+Install the production and development dependencies as shown below.
 
 .. code::
 
     pip3 install -r requirements.txt -r requirements-dev.txt
 
 
-Then, start the Docker container with the test data. The connection port must be same.
+Then, start the Docker container with the test data.
+If you are changing the host port of the test data container, make sure to also change the port in ``test_cases.py``.
+Otherwise, Trav-SHACL cannot connect to the SPARQL endpoint provided by the container and the test suite will fail.
 
 .. code::
 
