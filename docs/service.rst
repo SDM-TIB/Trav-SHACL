@@ -21,7 +21,7 @@ Local Source Code
 
 You can install Trav-SHACL from your local source code by performing the following steps.
 
-.. code::
+.. code:: bash
 
    git clone git@github.com:SDM-TIB/Trav-SHACL.git
    cd Trav-SHACL
@@ -32,6 +32,6 @@ DockerHub
 
 The easiest method is to download the latest Docker image from DockerHub:
 
-.. code::
+.. code:: bash
 
    docker pull sdmtib/travshacl:latest

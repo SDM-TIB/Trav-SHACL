@@ -19,7 +19,7 @@ Local Source Code
 
 You can install Trav-SHACL from your local source code by performing the following steps.
 
-.. code::
+.. code:: bash
 
    git clone git@github.com:SDM-TIB/Trav-SHACL.git
    cd Trav-SHACL
@@ -30,7 +30,7 @@ GitHub
 
 Trav-SHACL can also be installed from its source code in GitHub without explicitly cloning the repository:
 
-.. code::
+.. code:: bash
 
    python -m pip install -e 'git+https://github.com/SDM-TIB/Trav-SHACL#egg=DeTrusty'
 
@@ -39,7 +39,7 @@ PyPI
 
 The easiest way to install Trav-SHACL is to download the package from PyPI:
 
-.. code::
+.. code:: bash
 
    python -m pip install TravSHACL
 
@@ -50,7 +50,7 @@ Testing
 In order to run the test suite, clone the Trav-SHACL repository from GitHub as explained above (see `Local Source Code`_).
 Install the production and development dependencies as shown below.
 
-.. code::
+.. code:: bash
 
     pip3 install -r requirements.txt -r requirements-dev.txt
 
@@ -59,13 +59,13 @@ Then, start the Docker container with the test data.
 If you are changing the host port of the test data container, make sure to also change the port in ``test_cases.py``.
 Otherwise, Trav-SHACL cannot connect to the SPARQL endpoint provided by the container and the test suite will fail.
 
-.. code::
+.. code:: bash
 
     docker-compose -f tests/docker-compose.yml up -d
 
 Finally, run the tests by executing the following command.
 
-.. code::
+.. code:: bash
 
     pytest
 
@@ -75,7 +75,7 @@ Example
 
 After installing Trav-SHACL as a library, you can use it as shown in the example below:
 
-.. code::
+.. code:: python3
 
     from TravSHACL import parse_heuristics, GraphTraversal, ShapeSchema
 
