@@ -15,6 +15,11 @@ make docs
 This will generate the docs without any cached files. The new documentation will be available in `_build/html`.
 
 ## Publishing the Documentation
+
+> [!IMPORTANT]
+> GitHub automatically builds and deploys a new version of the documentation when a new version is released.
+> Hence, it should not be necessary to build and push the documentation manually.
+
 In order to publish a new version (and building one before), run the following command:
 ```bash
 make docs deploy
