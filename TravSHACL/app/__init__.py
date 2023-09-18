@@ -28,7 +28,7 @@ def validation():
     shape_schema = ShapeSchema(
         schema_dir=schema_path,
         schema_format='SHACL',
-        endpoint_url=endpoint,
+        endpoint=endpoint,
         graph_traversal=GraphTraversal.DFS,
         heuristics=HEURISTICS,
         use_selective_queries=True,
