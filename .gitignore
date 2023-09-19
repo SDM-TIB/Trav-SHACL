@@ -18,3 +18,5 @@ venv/
 output/
 
 example/output/
+example/data/virtuoso
+

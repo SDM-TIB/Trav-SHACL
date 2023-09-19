@@ -2,7 +2,7 @@
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix : <http://example.org/> .
 
-:UniversityShape a sh:NodeShape;
+:UniversityShape a sh:NodeShape ;
     sh:targetClass ub:University ;
     sh:property [
         sh:path ub:name ;

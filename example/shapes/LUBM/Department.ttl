@@ -2,15 +2,15 @@
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix : <http://example.org/> .
 
-:DepartmentShape a sh:NodeShape;
+:DepartmentShape a sh:NodeShape ;
     sh:targetClass ub:Department ;
     sh:property [
-        sh:path ub:name;
+        sh:path ub:name ;
         sh:minCount 1 ;
         sh:maxCount 1
     ] ;
     sh:property [
-        sh:path ub:subOrganizationOf;
+        sh:path ub:subOrganizationOf ;
         sh:qualifiedValueShape [
             sh:node :UniversityShape
         ] ;

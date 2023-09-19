@@ -3,9 +3,10 @@ version: '2'
 services:
   example_data:
     container_name: travshacl_example_data
-    image: prohde/virtuoso-opensource-7:7.2.6
+    image: prohde/virtuoso-opensource-7:7.2.10-alpine
     volumes:
-      - ./data/pre-loaded:/database
+      - ./data/raw:/database/toLoad
+      - ./data/virtuoso:/database
     mem_limit: 2g
     ports:
       - '9090:8890'
@@ -19,6 +20,8 @@ services:
       - ./shapes:/shapes
       - ./output:/output
     mem_limit: 4g
+    ports:
+      - '9091:5000'
     networks:
       - travshacl
     depends_on:

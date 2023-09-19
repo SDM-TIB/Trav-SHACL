@@ -2,7 +2,7 @@
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix : <http://example.org/> .
 
-:GraduateStudentShape a sh:NodeShape;
+:GraduateStudentShape a sh:NodeShape ;
     sh:targetClass ub:GraduateStudent ;
     sh:property [
         sh:path ub:advisor ;
@@ -14,7 +14,7 @@
         sh:minCount 1
     ] ;
     sh:property [
-        sh:path ub:memberOf;
+        sh:path ub:memberOf ;
         sh:qualifiedValueShape [
             sh:node :DepartmentShape
         ] ;
@@ -26,7 +26,7 @@
         sh:maxCount 1
     ] ;
     sh:property [
-        sh:path ub:takesCourse;
+        sh:path ub:takesCourse ;
         sh:qualifiedValueShape [
             sh:node :GraduateCourseShape
         ] ;
@@ -34,13 +34,10 @@
         sh:qualifiedMaxCount 3
     ] ;
     sh:property [
-        sh:path ub:telephone;
+        sh:path ub:telephone ;
         sh:minCount 1
     ] ;
     sh:property [
-        sh:path ub:undergraduateDegreeFrom;
-        sh:qualifiedValueShape [
-            sh:node :UniversityShape
-        ] ;
-        sh:qualifiedMinCount 1
+        sh:path ub:undergraduateDegreeFrom ;
+        sh:minCount 1
     ]  .

@@ -1,0 +1,162 @@
+@prefix ub: <http://swat.cse.lehigh.edu/onto/univ-bench.owl#> .
+
+<http://www.Department0.University0.edu/FullProfessor9> a ub:FullProfessor ;
+    ub:doctoralDegreeFrom <http://www.University730.edu> ;
+    ub:emailAddress "FullProfessor9@Department0.University0.edu" ;
+    ub:mastersDegreeFrom <http://www.University963.edu> ;
+    ub:name "FullProfessor9" ;
+    ub:researchInterest "Research5" ;
+    ub:teacherOf <http://www.Department0.University0.edu/Course13>,
+        <http://www.Department0.University0.edu/Course14>,
+        <http://www.Department0.University0.edu/GraduateCourse15>,
+        <http://www.Department0.University0.edu/GraduateCourse16> ;
+    ub:telephone "xxx-xxx-xxxx" ;
+    ub:undergraduateDegreeFrom <http://www.University688.edu> ;
+    ub:worksFor <http://www.Department0.University0.edu> .
+
+<http://www.Department0.University0.edu/GraduateCourse33> a ub:GraduateCourse ;
+    ub:name "GraduateCourse33" .
+
+<http://www.Department0.University0.edu/GraduateCourse42> a ub:GraduateCourse ;
+    ub:name "GraduateCourse42" .
+
+<http://www.Department0.University0.edu/GraduateStudent0> a ub:GraduateStudent,
+        ub:ResearchAssistant ;
+    ub:advisor <http://www.Department0.University0.edu/AssistantProfessor3> ;
+    ub:emailAddress "GraduateStudent0@Department0.University0.edu" ;
+    ub:memberOf <http://www.Department0.University0.edu> ;
+    ub:name "GraduateStudent0" ;
+    ub:takesCourse <http://www.Department0.University0.edu/GraduateCourse16>,
+        <http://www.Department0.University0.edu/GraduateCourse50>,
+        <http://www.Department0.University0.edu/GraduateCourse64> ;
+    ub:telephone "xxx-xxx-xxxx" ;
+    ub:undergraduateDegreeFrom <http://www.University358.edu> .
+
+<http://www.Department0.University0.edu/GraduateStudent91> a ub:GraduateStudent,
+        ub:ResearchAssistant ;
+    ub:advisor <http://www.Department0.University0.edu/FullProfessor6> ;
+    ub:emailAddress "GraduateStudent91@Department0.University0.edu" ;
+    ub:memberOf <http://www.Department0.University0.edu> ;
+    ub:name "GraduateStudent91" ;
+    ub:takesCourse <http://www.Department0.University0.edu/GraduateCourse3>,
+        <http://www.Department0.University0.edu/GraduateCourse49> ;
+    ub:telephone "xxx-xxx-xxxx" ;
+    ub:undergraduateDegreeFrom <http://www.University708.edu> .
+
+<http://www.Department1.University0.edu/FullProfessor0> a ub:FullProfessor ;
+    ub:doctoralDegreeFrom <http://www.University963.edu> ;
+    ub:emailAddress "FullProfessor0@Department1.University0.edu" ;
+    ub:mastersDegreeFrom <http://www.University509.edu> ;
+    ub:name "FullProfessor0" ;
+    ub:researchInterest "Research19" ;
+    ub:teacherOf <http://www.Department1.University0.edu/Course0>,
+        <http://www.Department1.University0.edu/Course1>,
+        <http://www.Department1.University0.edu/GraduateCourse0>,
+        <http://www.Department1.University0.edu/GraduateCourse1> ;
+    ub:telephone "xxx-xxx-xxxx" ;
+    ub:undergraduateDegreeFrom <http://www.University512.edu> ;
+    ub:worksFor <http://www.Department1.University0.edu> .
+
+<http://www.Department2.University0.edu/FullProfessor2> a ub:FullProfessor ;
+    ub:doctoralDegreeFrom <http://www.University415.edu> ;
+    ub:emailAddress "FullProfessor2@Department2.University0.edu" ;
+    ub:mastersDegreeFrom <http://www.University434.edu> ;
+    ub:name "FullProfessor2" ;
+    ub:researchInterest "Research11" ;
+    ub:teacherOf <http://www.Department2.University0.edu/Course3>,
+        <http://www.Department2.University0.edu/Course4>,
+        <http://www.Department2.University0.edu/GraduateCourse3> ;
+    ub:telephone "xxx-xxx-xxxx" ;
+    ub:undergraduateDegreeFrom <http://www.University605.edu> ;
+    ub:worksFor <http://www.Department2.University0.edu> .
+
+<http://www.Department2.University0.edu/GraduateStudent7> a ub:GraduateStudent,
+        ub:ResearchAssistant ;
+    ub:advisor <http://www.Department2.University0.edu/FullProfessor6> ;
+    ub:emailAddress "GraduateStudent7@Department2.University0.edu" ;
+    ub:memberOf <http://www.Department2.University0.edu> ;
+    ub:name "GraduateStudent7" ;
+    ub:takesCourse <http://www.Department2.University0.edu/GraduateCourse20> ;
+    ub:telephone "xxx-xxx-xxxx" ;
+    ub:undergraduateDegreeFrom <http://www.University377.edu> .
+
+<http://www.Department5.University0.edu/FullProfessor3> a ub:FullProfessor ;
+    ub:doctoralDegreeFrom <http://www.University33.edu> ;
+    ub:emailAddress "FullProfessor3@Department5.University0.edu" ;
+    ub:mastersDegreeFrom <http://www.University828.edu> ;
+    ub:name "FullProfessor3" ;
+    ub:researchInterest "Research22" ;
+    ub:teacherOf <http://www.Department5.University0.edu/Course5>,
+        <http://www.Department5.University0.edu/Course6>,
+        <http://www.Department5.University0.edu/GraduateCourse4> ;
+    ub:telephone "xxx-xxx-xxxx" ;
+    ub:undergraduateDegreeFrom <http://www.University958.edu> ;
+    ub:worksFor <http://www.Department5.University0.edu> .
+
+<http://www.Department9.University0.edu/FullProfessor1> a ub:FullProfessor ;
+    ub:doctoralDegreeFrom <http://www.University927.edu> ;
+    ub:emailAddress "FullProfessor1@Department9.University0.edu" ;
+    ub:mastersDegreeFrom <http://www.University995.edu> ;
+    ub:name "FullProfessor1" ;
+    ub:researchInterest "Research1" ;
+    ub:teacherOf <http://www.Department9.University0.edu/Course1>,
+        <http://www.Department9.University0.edu/Course2>,
+        <http://www.Department9.University0.edu/GraduateCourse1> ;
+    ub:telephone "xxx-xxx-xxxx" ;
+    ub:undergraduateDegreeFrom <http://www.University392.edu> ;
+    ub:worksFor <http://www.Department9.University0.edu> .
+
+<http://www.Department9.University0.edu/GraduateStudent28> a ub:GraduateStudent,
+        ub:TeachingAssistant ;
+    ub:advisor <http://www.Department9.University0.edu/AssistantProfessor10> ;
+    ub:emailAddress "GraduateStudent28@Department9.University0.edu" ;
+    ub:memberOf <http://www.Department9.University0.edu> ;
+    ub:name "GraduateStudent28" ;
+    ub:takesCourse <http://www.Department9.University0.edu/GraduateCourse1>,
+        <http://www.Department9.University0.edu/GraduateCourse21>,
+        <http://www.Department9.University0.edu/GraduateCourse38> ;
+    ub:teachingAssistantOf <http://www.Department9.University0.edu/Course27> ;
+    ub:telephone "xxx-xxx-xxxx" ;
+    ub:undergraduateDegreeFrom <http://www.University68.edu> .
+
+<http://www.Department9.University0.edu/GraduateStudent5> a ub:GraduateStudent ;
+    ub:advisor <http://www.Department9.University0.edu/AssistantProfessor8> ;
+    ub:emailAddress "GraduateStudent5@Department9.University0.edu" ;
+    ub:memberOf <http://www.Department9.University0.edu> ;
+    ub:name "GraduateStudent5" ;
+    ub:takesCourse <http://www.Department9.University0.edu/GraduateCourse12> ;
+    ub:telephone "xxx-xxx-xxxx" ;
+    ub:undergraduateDegreeFrom <http://www.University596.edu> .
+
+<http://www.University1.edu> a ub:University .
+
+<http://www.University2.edu> a ub:University .
+
+<http://www.University3.edu> a ub:University .
+
+<http://www.University4.edu> a ub:University .
+
+<http://www.Department0.University0.edu/GraduateCourse3> a ub:GraduateCourse ;
+    ub:name "GraduateCourse3" .
+
+<http://www.Department1.University0.edu> a ub:Department ;
+    ub:name "Department1" ;
+    ub:subOrganizationOf <http://www.University0.edu> .
+
+<http://www.Department0.University0.edu/GraduateCourse16> a ub:GraduateCourse ;
+    ub:name "GraduateCourse16" .
+
+<http://www.Department9.University0.edu/GraduateCourse1> a ub:GraduateCourse ;
+    ub:name "GraduateCourse1" .
+
+<http://www.Department0.University0.edu> a ub:Department ;
+    ub:name "Department0" ;
+    ub:subOrganizationOf <http://www.University0.edu> .
+
+<http://www.Department9.University0.edu> a ub:Department ;
+    ub:name "Department9" ;
+    ub:subOrganizationOf <http://www.University0.edu> .
+
+<http://www.University0.edu> a ub:University ;
+    ub:name "University0" .
+
