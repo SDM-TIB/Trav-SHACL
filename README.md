@@ -59,7 +59,7 @@ The following is a list of some of the more important features that are not yet 
 - `sh:or`
 - `sh:node`
 - `sh:datatype`
-- `sh:value`
+- `sh:hasValue`
 - and others
 
 ### Run with Docker

@@ -4,4 +4,5 @@ output/
 example/
 tests/
 requirements-dev.txt
+requirements-doc.txt
 images/
