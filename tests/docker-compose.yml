@@ -3,7 +3,7 @@ version: '2'
 services:
   test_data:
     container_name: travshacl_test_data
-    image: prohde/virtuoso-opensource-7:7.2.7
+    image: prohde/virtuoso-opensource-7:7.2.10-alpine
     volumes:
       - ./data:/database/toLoad
     mem_limit: 4g
