@@ -8,7 +8,7 @@ from TravSHACL.rule_based_validation.Validation import Validation
 class ShapeSchema:
     """This class represents a SHACL shape schema."""
 
-    def __init__(self, schema_dir, schema_format, endpoint, graph_traversal, heuristics, use_selective_queries,
+    def __init__(self, *, schema_dir, schema_format, endpoint, graph_traversal, heuristics, use_selective_queries,
                  max_split_size, output_dir, order_by_in_queries, save_outputs, work_in_parallel=False):
         """
         Creates a new shape schema instance.
