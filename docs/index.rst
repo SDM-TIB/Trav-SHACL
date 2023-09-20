@@ -14,9 +14,9 @@
 
 |tests| |release| |docker| |license| |python| |format| |status| |version|
 
-**********
+##########
 Trav-SHACL
-**********
+##########
 
 Trav-SHACL is a SHACL engine capable of planning the traversal and execution of a shape schema in a way that invalid entities are detected early and needless validations are minimized.
 Trav-SHACL reorders the shapes in a shape schema for efficient validation and rewrites target and constraint queries for fast detection of invalid entities.
@@ -80,6 +80,7 @@ This inter- and intra-shape strategy collects a total of 9,282 entities that res
 .. toctree::
    :hidden:
 
+   self
    library
    service
    feature
