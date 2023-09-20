@@ -1,9 +1,9 @@
-FROM python:3.9.13-slim-buster
+FROM python:3.11.5-slim-bookworm
 MAINTAINER Philipp D. Rohde <philipp.rohde@tib.eu>
 
 # install dependencies
 COPY requirements.txt /TravSHACL/requirements.txt
-RUN python -m pip install --upgrade --no-cache-dir pip==22.0.* && \
+RUN python -m pip install --upgrade --no-cache-dir pip==23.2.* && \
     python -m pip install --no-cache-dir -r /TravSHACL/requirements.txt
 
 # copy the source code into the container
