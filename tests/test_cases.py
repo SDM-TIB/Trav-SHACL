@@ -4,7 +4,7 @@ from glob import glob
 import pytest
 from rdflib import Graph
 
-from TravSHACL.TravSHACL import parse_heuristics
+from TravSHACL import parse_heuristics
 from TravSHACL.core.GraphTraversal import GraphTraversal
 from TravSHACL.core.ShapeSchema import ShapeSchema
 
