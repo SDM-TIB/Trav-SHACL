@@ -17,6 +17,5 @@ build/
 venv/
 output/
 
-example/output/
 example/result/
 example/data/virtuoso/
