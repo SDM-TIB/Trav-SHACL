@@ -1,29 +1,40 @@
 # -*- coding: utf-8 -*-
+from __future__ import annotations  # required for typing in older versions of Python
+from typing import TYPE_CHECKING
+
 __author__ = 'Philipp D. Rohde and Monica Figuera'
 
+from TravSHACL.core.GraphTraversal import GraphTraversal
 from TravSHACL.core.ShapeParser import ShapeParser
 from TravSHACL.rule_based_validation.Validation import Validation
+from TravSHACL.utils import parse_heuristics
 
+if TYPE_CHECKING:
+    from rdflib import Graph
 
 class ShapeSchema:
     """This class represents a SHACL shape schema."""
 
-    def __init__(self, *, schema_dir, schema_format, endpoint, graph_traversal, heuristics, use_selective_queries,
-                 max_split_size, output_dir, order_by_in_queries, save_outputs, work_in_parallel=False):
+    def __init__(self, *, schema_dir: str, schema_format: str = 'SHACL', endpoint: str | Graph,
+                 graph_traversal: GraphTraversal = GraphTraversal.DFS, heuristics: dict = parse_heuristics("TARGET IN BIG"),
+                 use_selective_queries: bool = True, max_split_size: int = 256, output_dir: str = None,
+                 order_by_in_queries: bool = False, save_outputs: bool = False, work_in_parallel: bool = False):
         """
         Creates a new shape schema instance.
 
         :param schema_dir: path of the files including the shape definitions
-        :param schema_format: indicates the format used for defining the shapes
+        :param schema_format: indicates the format used for defining the shapes, this parameter should only
+            be used if shapes defined in the legacy JSON format are used
         :param endpoint: URL for the SPARQL endpoint (or an RDFlib graph) to be evaluated against
-        :param graph_traversal: graph traversal algorithm used for determining the evaluation order
-        :param heuristics: Python dictionary holding the heuristics used for determining the seed shape
-        :param use_selective_queries: indicates whether selective queries are used
-        :param max_split_size: maximum number of instances per query
-        :param output_dir: output directory for log files
-        :param order_by_in_queries: indicates whether to use the ORDER BY clause
-        :param save_outputs: indicates whether target classifications will be saved to the output path
-        :param work_in_parallel: indicates whether parallelization will be used
+        :param graph_traversal: graph traversal algorithm used for determining the evaluation order; default: DFS
+        :param heuristics: Python dictionary holding the heuristics used for determining the seed shape;
+            default is equivalent to `TARGET IN BIG`
+        :param use_selective_queries: indicates whether selective queries are used; default: True
+        :param max_split_size: maximum number of instances per query; default: 256
+        :param output_dir: output directory for log files; default: None
+        :param order_by_in_queries: indicates whether to use the ORDER BY clause; default: False
+        :param save_outputs: indicates whether target classifications will be saved to the output path; default: False
+        :param work_in_parallel: indicates whether parallelization will be used; not yet implemented; default: False
         """
         self.shapes = ShapeParser().parse_shapes_from_dir(schema_dir, schema_format, use_selective_queries,
                                                           max_split_size, order_by_in_queries)
