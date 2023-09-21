@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trav-SHACL as a Library &mdash; Trav-SHACL 1.4.2 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Trav-SHACL as a Service" href="service.html" />
+    <link rel="prev" title="Trav-SHACL" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html">
+            <img src="_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.4.2
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Trav-SHACL</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Trav-SHACL as a Library</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#requirements">Requirements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#local-source-code">Local Source Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#github">GitHub</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pypi">PyPI</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example">Example</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#preparing-the-data">Preparing the Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#code">Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#parameters">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#results-internal-structure">Results: Internal Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#results-output-files">Results: Output Files</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="service.html">Trav-SHACL as a Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="feature.html">Features and Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Trav-SHACL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Trav-SHACL as a Library</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <p><img alt="python" src="https://img.shields.io/pypi/pyversions/TravSHACL" /> <img alt="format" src="https://img.shields.io/pypi/format/TravSHACL" /> <img alt="status" src="https://img.shields.io/pypi/status/TravSHACL" /> <a class="reference external" href="https://pypi.org/project/TravSHACL"><img alt="version" src="https://img.shields.io/pypi/v/TravSHACL" /></a></p>
+<section id="trav-shacl-as-a-library">
+<h1>Trav-SHACL as a Library<a class="headerlink" href="#trav-shacl-as-a-library" title="Permalink to this heading"></a></h1>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
+<p>If you want to use Trav-SHACL as a library, you can install it from its source code on GitHub or download the package from PyPI.</p>
+<section id="requirements">
+<h3>Requirements<a class="headerlink" href="#requirements" title="Permalink to this heading"></a></h3>
+<p>Trav-SHACL is implemented in Python3.
+The current version supports <img alt="python" src="https://img.shields.io/pypi/pyversions/TravSHACL" />.
+Trav-SHACL uses the <code class="docutils literal notranslate"><span class="pre">rdflib</span></code> library for parsing the SHACL shape schema and the <code class="docutils literal notranslate"><span class="pre">SPARQLWrapper</span></code> library for contacting SPARQL endpoints.</p>
+</section>
+<section id="local-source-code">
+<h3>Local Source Code<a class="headerlink" href="#local-source-code" title="Permalink to this heading"></a></h3>
+<p>You can install Trav-SHACL from your local source code by performing the following steps.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:SDM-TIB/Trav-SHACL.git
+<span class="nb">cd</span> Trav-SHACL
+python -m pip install -e .
+</pre></div>
+</div>
+</section>
+<section id="github">
+<h3>GitHub<a class="headerlink" href="#github" title="Permalink to this heading"></a></h3>
+<p>Trav-SHACL can also be installed from its source code in GitHub without explicitly cloning the repository:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m pip install -e <span class="s1">&#39;git+https://github.com/SDM-TIB/Trav-SHACL#egg=DeTrusty&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="pypi">
+<h3>PyPI<a class="headerlink" href="#pypi" title="Permalink to this heading"></a></h3>
+<p>The easiest way to install Trav-SHACL is to download the package from PyPI:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m pip install TravSHACL
+</pre></div>
+</div>
+</section>
+</section>
+<section id="testing">
+<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this heading"></a></h2>
+<p>In order to run the test suite, clone the Trav-SHACL repository from GitHub as explained above (see <a class="reference internal" href="#local-source-code">Local Source Code</a>).
+Install the production and development dependencies as shown below.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3 install -r requirements.txt -r requirements-dev.txt
+</pre></div>
+</div>
+<p>Then, start the Docker container with the test data.
+If you are changing the host port of the test data container, make sure to also change the port in <code class="docutils literal notranslate"><span class="pre">test_cases.py</span></code>.
+Otherwise, Trav-SHACL cannot connect to the SPARQL endpoint provided by the container and the test suite will fail.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker-compose -f tests/docker-compose.yml up -d
+</pre></div>
+</div>
+<p>Finally, run the tests by executing the following command.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest
+</pre></div>
+</div>
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this heading"></a></h2>
+<p>You can run Trav-SHACL over example data provided in the GitHub repository.
+While it is necessary to clone the repository (or download the example folder) from GitHub, you can still install Trav-SHACL from PyPI.
+Note that you might want to create a virtual environment for Trav-SHACL.
+In order to serve the example data, you need to have <a class="reference external" href="https://docs.docker.com/engine/install/">Docker</a> installed.</p>
+<section id="preparing-the-data">
+<h3>Preparing the Data<a class="headerlink" href="#preparing-the-data" title="Permalink to this heading"></a></h3>
+<p>Assuming your current working directory contains the <code class="docutils literal notranslate"><span class="pre">example</span></code> folder, you can start the Docker container serving the SPARQL endpoint with the example data as shown below:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker-compose -f ./example/docker-compose.yml up -d example_data
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The SPARQL endpoint might take a few seconds in order to be started.
+You can check its accessibility by navigating to <a class="reference external" href="http://localhost:9090/sparql">http://localhost:9090/sparql</a></p>
+</div>
+</section>
+<section id="code">
+<h3>Code<a class="headerlink" href="#code" title="Permalink to this heading"></a></h3>
+<p>Now the data is accessible and you can validate it against the provided example shapes.</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">TravSHACL</span> <span class="kn">import</span> <span class="n">parse_heuristics</span><span class="p">,</span> <span class="n">GraphTraversal</span><span class="p">,</span> <span class="n">ShapeSchema</span>
+
+<span class="n">prio_target</span> <span class="o">=</span> <span class="s1">&#39;TARGET&#39;</span>  <span class="c1"># shapes with target definition are preferred, alternative value: &#39;&#39;</span>
+<span class="n">prio_degree</span> <span class="o">=</span> <span class="s1">&#39;IN&#39;</span>  <span class="c1"># shapes with a higher in-degree are prioritized, alternative value &#39;OUT&#39;</span>
+<span class="n">prio_number</span> <span class="o">=</span> <span class="s1">&#39;BIG&#39;</span>  <span class="c1"># shapes with many constraints are evaluated first, alternative value &#39;SMALL&#39;</span>
+
+<span class="n">shape_schema</span> <span class="o">=</span> <span class="n">ShapeSchema</span><span class="p">(</span>
+    <span class="n">schema_dir</span><span class="o">=</span><span class="s1">&#39;./shapes/LUBM&#39;</span><span class="p">,</span>
+    <span class="n">endpoint</span><span class="o">=</span><span class="s1">&#39;http://localhost:9090/sparql&#39;</span><span class="p">,</span>
+    <span class="n">graph_traversal</span><span class="o">=</span><span class="n">GraphTraversal</span><span class="o">.</span><span class="n">DFS</span><span class="p">,</span>
+    <span class="n">heuristics</span><span class="o">=</span><span class="n">parse_heuristics</span><span class="p">(</span><span class="n">prio_target</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">prio_degree</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">prio_number</span><span class="p">),</span>
+    <span class="n">use_selective_queries</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">max_split_size</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span>
+    <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;./result/&#39;</span><span class="p">,</span>  <span class="c1"># directory where the output files will be stored</span>
+    <span class="n">order_by_in_queries</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># sort the results of SPARQL queries in order to ensure the same order across several runs</span>
+    <span class="n">save_outputs</span><span class="o">=</span><span class="kc">True</span>  <span class="c1"># save outputs to output_dir, alternative value: False</span>
+<span class="p">)</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">shape_schema</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>  <span class="c1"># validate the SHACL shape schema</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All parameters of <code class="docutils literal notranslate"><span class="pre">ShapeSchema</span></code> are keyword-only. The only required parameters are <code class="docutils literal notranslate"><span class="pre">schema_dir</span></code> and <code class="docutils literal notranslate"><span class="pre">endpoint</span></code>.</p>
+</div>
+</section>
+<section id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading"></a></h3>
+<p>Before executing the above script, let us have a look at the different parameters.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">schema_dir</span></code> path to the directory containing the shape files</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">endpoint</span></code> URL of the endpoint to evaluated; alternatively, an RDFLib graph can be passed</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">graph_traversal</span></code> (optional) defines the graph traversal algorithm to be used, is one of <code class="docutils literal notranslate"><span class="pre">[GraphTraversal.BFS,</span> <span class="pre">GraphTraversal.DFS]</span></code>; default: <code class="docutils literal notranslate"><span class="pre">GraphTraversal.DFS</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">heuristics</span></code> (optional) used to determine the seed shape. Use the method <code class="docutils literal notranslate"><span class="pre">parse_heuristics</span></code> with a string in order to set the desired heuristics; default: <code class="docutils literal notranslate"><span class="pre">parse_heuristics('TARGET</span> <span class="pre">IN</span> <span class="pre">BIG')</span></code>.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">TARGET</span></code> if shapes with a target definition should be prioritized, otherwise omit</p></li>
+<li><p>prioritize in- or outdegree of shapes, one of <code class="docutils literal notranslate"><span class="pre">[IN,</span> <span class="pre">OUT]</span></code> or to be omitted</p></li>
+<li><p>prioritize shapes based on their number of constraints, one of <code class="docutils literal notranslate"><span class="pre">[BIG,</span> <span class="pre">SMALL]</span></code> or to be omitted</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_selective_queries</span></code> (optional) use more selective constraint queries, is one of <code class="docutils literal notranslate"><span class="pre">[True,</span> <span class="pre">False]</span></code>; default: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_split_size</span></code> (optional) maximum number of entities in FILTER or VALUES clause of a SPARQL query; default: <code class="docutils literal notranslate"><span class="pre">256</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">output_dir</span></code> (optional) directory where the output files will be stored, has to end with <code class="docutils literal notranslate"><span class="pre">/</span></code>; default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">order_by_in_queries</span></code> (optional) sort the results of all SPARQL queries, ensures the same order in the result logs over several runs, is one of <code class="docutils literal notranslate"><span class="pre">[True,</span> <span class="pre">False]</span></code>; default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">save_outputs</span></code> (optional) creates one file each for violated and validated targets, otherwise only statistics and traces will be stored, is one of <code class="docutils literal notranslate"><span class="pre">[True,</span> <span class="pre">False]</span></code>; default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+</section>
+<section id="results-internal-structure">
+<h3>Results: Internal Structure<a class="headerlink" href="#results-internal-structure" title="Permalink to this heading"></a></h3>
+<p>Executing the above code from within the <code class="docutils literal notranslate"><span class="pre">example</span></code> folder will print the validation result using the internal representation.
+More insights can be found in the various files that are generated in <code class="docutils literal notranslate"><span class="pre">result</span></code>.
+Let us discuss the printed result first.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{
+  &#39;&lt;http://example.org/GraduateCourseShape&gt;&#39;: {
+    &#39;valid_instances&#39;: {
+      (&#39;&lt;http://example.org/FullProfessorShape&gt;&#39;, &#39;http://www.Department0.University0.edu/FullProfessor9&#39;, True),
+      (&#39;&lt;http://example.org/GraduateCourseShape&gt;&#39;, &#39;http://www.Department0.University0.edu/GraduateCourse3&#39;, True),
+      (&#39;&lt;http://example.org/GraduateCourseShape&gt;&#39;, &#39;http://www.Department0.University0.edu/GraduateCourse16&#39;, True)
+      (&#39;&lt;http://example.org/GraduateCourseShape&gt;&#39;, &#39;http://www.Department0.University0.edu/GraduateCourse33&#39;, True),
+      (&#39;&lt;http://example.org/GraduateCourseShape&gt;&#39;, &#39;http://www.Department0.University0.edu/GraduateCourse42&#39;, True),
+      (&#39;&lt;http://example.org/GraduateStudentShape&gt;&#39;, &#39;http://www.Department0.University0.edu/GraduateStudent0&#39;, True),
+      (&#39;&lt;http://example.org/GraduateStudentShape&gt;&#39;, &#39;http://www.Department0.University0.edu/GraduateStudent91&#39;, True),
+      (&#39;&lt;http://example.org/FullProfessorShape&gt;&#39;, &#39;http://www.Department9.University0.edu/FullProfessor1&#39;, True),
+      (&#39;&lt;http://example.org/GraduateCourseShape&gt;&#39;, &#39;http://www.Department9.University0.edu/GraduateCourse1&#39;, True),
+      (&#39;&lt;http://example.org/GraduateStudentShape&gt;&#39;, &#39;http://www.Department9.University0.edu/GraduateStudent28&#39;, True)
+    },
+   &#39;invalid_instances&#39;: {
+      (&#39;&lt;http://example.org/GraduateStudentShape&gt;&#39;, &#39;http://www.Department9.University0.edu/GraduateStudent5&#39;, True)
+    }
+  },
+  &#39;&lt;http://example.org/UniversityShape&gt;&#39;: {
+    &#39;valid_instances&#39;: {
+      (&#39;&lt;http://example.org/DepartmentShape&gt;&#39;, &#39;http://www.Department0.University0.edu&#39;, True),
+      (&#39;&lt;http://example.org/DepartmentShape&gt;&#39;, &#39;http://www.Department1.University0.edu&#39;, True),
+      (&#39;&lt;http://example.org/DepartmentShape&gt;&#39;, &#39;http://www.Department9.University0.edu&#39;, True),
+      (&#39;&lt;http://example.org/UniversityShape&gt;&#39;, &#39;http://www.University0.edu&#39;, True)
+    },
+    &#39;invalid_instances&#39;: {
+        (&#39;&lt;http://example.org/UniversityShape&gt;&#39;, &#39;http://www.University1.edu&#39;, True),
+        (&#39;&lt;http://example.org/UniversityShape&gt;&#39;, &#39;http://www.University2.edu&#39;, True),
+        (&#39;&lt;http://example.org/UniversityShape&gt;&#39;, &#39;http://www.University3.edu&#39;, True),
+        (&#39;&lt;http://example.org/UniversityShape&gt;&#39;, &#39;http://www.University4.edu&#39;, True)
+    }
+  },
+  &#39;&lt;http://example.org/DepartmentShape&gt;&#39;: {
+    &#39;valid_instances&#39;: set(),
+    &#39;invalid_instances&#39;: set()
+  },
+  &#39;&lt;http://example.org/GraduateStudentShape&gt;&#39;: {
+    &#39;valid_instances&#39;: set(),
+    &#39;invalid_instances&#39;: {
+      (&#39;&lt;http://example.org/GraduateStudentShape&gt;&#39;, &#39;http://www.Department2.University0.edu/GraduateStudent7&#39;, True)
+    }
+  },
+  &#39;&lt;http://example.org/FullProfessorShape&gt;&#39;: {
+    &#39;valid_instances&#39;: set(),
+    &#39;invalid_instances&#39;: {
+      (&#39;&lt;http://example.org/FullProfessorShape&gt;&#39;, &#39;http://www.Department1.University0.edu/FullProfessor0&#39;, True),
+      (&#39;&lt;http://example.org/FullProfessorShape&gt;&#39;, &#39;http://www.Department2.University0.edu/FullProfessor2&#39;, True),
+      (&#39;&lt;http://example.org/FullProfessorShape&gt;&#39;, &#39;http://www.Department5.University0.edu/FullProfessor3&#39;, True)
+    }
+  },
+  &#39;unbound&#39;: {
+    &#39;valid_instances&#39;: set()
+  }
+}
+</pre></div>
+</div>
+<p>The keys of the dictionary correspond to the names of the validated shapes.
+For each shape, Trav-SHACL records the entities that have either been validated (<code class="docutils literal notranslate"><span class="pre">valid_instances</span></code>) or violated (<code class="docutils literal notranslate"><span class="pre">invalid_instances</span></code>).
+Such a record is a tuple containing the name of the shape which the entity belongs to, the identifier of the entity itself, and <code class="docutils literal notranslate"><span class="pre">True</span></code>.
+Trav-SHACL keeps this structure since the validation result of an entity may rely on the satisfaction of an entity from another shape.
+If the other entity has not yet been validated, the validation is postponed until the needed validation result is available.
+After evaluating all shapes, entities with pending decisions are marked as valid since no violations were found.
+These entities are recorded in <code class="docutils literal notranslate"><span class="pre">unbound</span></code>.</p>
+</section>
+<section id="results-output-files">
+<h3>Results: Output Files<a class="headerlink" href="#results-output-files" title="Permalink to this heading"></a></h3>
+<p>Additionally, Trav-SHACL stores the following files:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">stats.txt</span></code> contains statistics about the validation, like</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>number of targets</p></li>
+<li><p>number of valid targets</p></li>
+<li><p>number of invalid targets</p></li>
+<li><p>number of executed queries</p></li>
+<li><p>number of generated rules</p></li>
+<li><p>maximum query execution time (in ms)</p></li>
+<li><p>total query execution time (in ms)</p></li>
+<li><p>total saturation time (in ms)</p></li>
+<li><p>total validation time (in ms)</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">targets_valid.log</span></code> contains all valid targets (one per line) in the form <cite>shape_name`(`entity</cite>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">targets_invalid.log</span></code> contains all invalid targets (one per line) in the form <cite>shape_name`(`entity</cite>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">validation.log</span></code> log file containing the node order, executed queries, etc.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">validationReport.ttl</span></code> a validation report in Turtle format that adheres to the SHACL specification</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Trav-SHACL" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="service.html" class="btn btn-neutral float-right" title="Trav-SHACL as a Service" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019-2023, Philipp D. Rohde, Mónica Figuera and Uzoma Nwiwu.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
