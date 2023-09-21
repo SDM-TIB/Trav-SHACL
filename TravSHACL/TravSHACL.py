@@ -1,20 +1,8 @@
 # -*- coding: utf-8 -*-
 __author__ = 'Philipp D. Rohde'
 
-import os
-
 from TravSHACL.core.GraphTraversal import GraphTraversal
 from TravSHACL.core.ShapeSchema import ShapeSchema
-
-
-def create_output_dir(output_dir):
-    """
-    Creates the output directory if it does not exist.
-
-    :param output_dir: the output directory to be used
-    """
-    path = os.getcwd()
-    os.makedirs(path + '/' + output_dir, exist_ok=True)
 
 
 def parse_heuristics(input_):
@@ -53,7 +41,6 @@ def eval_shape_schema(args):
 
     :param args: command line arguments passed to Trav-SHACL
     """
-    create_output_dir(args.outputDir)
     shape_schema = ShapeSchema(
         schema_dir=args.d,
         schema_format='JSON' if args.json else 'SHACL',
