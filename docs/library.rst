@@ -116,7 +116,6 @@ Now the data is accessible and you can validate it against the provided example 
 
     shape_schema = ShapeSchema(
         schema_dir='./shapes/LUBM',
-        schema_format='SHACL',  # do not change this value unless you are using the legacy JSON format
         endpoint='http://localhost:9090/sparql',
         graph_traversal=GraphTraversal.DFS,
         heuristics=parse_heuristics(prio_target + ' ' + prio_degree + ' ' + prio_number),
@@ -130,25 +129,28 @@ Now the data is accessible and you can validate it against the provided example 
     result = shape_schema.validate()  # validate the SHACL shape schema
     print(result)
 
+.. NOTE::
+
+   All parameters of ``ShapeSchema`` are keyword-only. The only required parameters are ``schema_dir`` and ``endpoint``.
+
 Parameters
 ==========
 
 Before executing the above script, let us have a look at the different parameters.
 
 * ``schema_dir`` path to the directory containing the shape files
-* ``schema_format`` specifies the format of the shapes, is one of ``['SHACL', 'JSON']``. Only use 'JSON' if you are using the legacy JSON format of Trav-SHACL
 * ``endpoint`` URL of the endpoint to evaluated; alternatively, an RDFLib graph can be passed
-* ``graph_traversal`` defines the graph traversal algorithm to be used, is one of ``[GraphTraversal.BFS, GraphTraversal.DFS]``
-* ``heuristics`` used to determine the seed shape. Use the method ``parse_heuristics`` with a string in order to set the desired heuristics:
+* ``graph_traversal`` (optional) defines the graph traversal algorithm to be used, is one of ``[GraphTraversal.BFS, GraphTraversal.DFS]``; default: ``GraphTraversal.DFS``
+* ``heuristics`` (optional) used to determine the seed shape. Use the method ``parse_heuristics`` with a string in order to set the desired heuristics; default: ``parse_heuristics('TARGET IN BIG')``.
 
    + ``TARGET`` if shapes with a target definition should be prioritized, otherwise omit
    + prioritize in- or outdegree of shapes, one of ``[IN, OUT]`` or to be omitted
    + prioritize shapes based on their number of constraints, one of ``[BIG, SMALL]`` or to be omitted
-* ``use_selective_queries`` use more selective constraint queries, is one of ``[True, False]``
-* ``max_split_size`` maximum number of entities in FILTER or VALUES clause of a SPARQL query. ``256`` is a good value.
-* ``output_dir`` directory where the output files will be stored, has to end with ``/``
-* ``order_by_in_queries`` sort the results of all SPARQL queries, ensures the same order in the result logs over several runs, is one of ``[True, False]``
-* ``save_outputs`` creates one file each for violated and validated targets, otherwise only statistics and traces will be stored, is one of ``[True, False]``
+* ``use_selective_queries`` (optional) use more selective constraint queries, is one of ``[True, False]``; default: ``True``
+* ``max_split_size`` (optional) maximum number of entities in FILTER or VALUES clause of a SPARQL query; default: ``256``
+* ``output_dir`` (optional) directory where the output files will be stored, has to end with ``/``; default: ``None``
+* ``order_by_in_queries`` (optional) sort the results of all SPARQL queries, ensures the same order in the result logs over several runs, is one of ``[True, False]``; default: ``False``
+* ``save_outputs`` (optional) creates one file each for violated and validated targets, otherwise only statistics and traces will be stored, is one of ``[True, False]``; default: ``False``
 
 Results: Internal Structure
 ===========================
