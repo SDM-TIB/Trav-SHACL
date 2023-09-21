@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Trav-SHACL as a Service &mdash; Trav-SHACL 1.4.2 documentation</title>
+  <title>Trav-SHACL as a Service &mdash; Trav-SHACL 1.5.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
@@ -34,7 +34,7 @@
             <img src="_static/logo.png" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                1.4.2
+                1.5.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -101,16 +101,16 @@ In order to run Trav-SHACL as a service, you need to have <a class="reference ex
 <section id="local-source-code">
 <h3>Local Source Code<a class="headerlink" href="#local-source-code" title="Permalink to this heading"></a></h3>
 <p>You can install Trav-SHACL from your local source code by performing the following steps.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:SDM-TIB/Trav-SHACL.git
-<span class="nb">cd</span> Trav-SHACL
-docker build . -t sdmtib/travshacl
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:SDM-TIB/Trav-SHACL.git
+<span class="nb">cd</span><span class="w"> </span>Trav-SHACL
+docker<span class="w"> </span>build<span class="w"> </span>.<span class="w"> </span>-t<span class="w"> </span>sdmtib/travshacl
 </pre></div>
 </div>
 </section>
 <section id="dockerhub">
 <h3>DockerHub<a class="headerlink" href="#dockerhub" title="Permalink to this heading"></a></h3>
 <p>The easiest method is to download the latest Docker image from DockerHub:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker pull sdmtib/travshacl:latest
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>pull<span class="w"> </span>sdmtib/travshacl:latest
 </pre></div>
 </div>
 </section>
@@ -120,7 +120,7 @@ docker build . -t sdmtib/travshacl
 <p>You can run Trav-SHACL over example data provided in the GitHub repository.
 While it is necessary to clone the repository (or download the example folder) from GitHub, you do not need to build the Docker image yourself.</p>
 <p>Assuming your current working directory contains the <code class="docutils literal notranslate"><span class="pre">example</span></code> folder, you can start the necessary Docker containers as shown below:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker-compose -f ./example/docker-compose.yml up -d
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker-compose<span class="w"> </span>-f<span class="w"> </span>./example/docker-compose.yml<span class="w"> </span>up<span class="w"> </span>-d
 </pre></div>
 </div>
 <p>This will create two Docker containers:</p>

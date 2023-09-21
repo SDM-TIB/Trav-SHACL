@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Trav-SHACL as a Library &mdash; Trav-SHACL 1.4.2 documentation</title>
+  <title>Trav-SHACL as a Library &mdash; Trav-SHACL 1.5.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
@@ -34,7 +34,7 @@
             <img src="_static/logo.png" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                1.4.2
+                1.5.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -108,23 +108,23 @@ Trav-SHACL uses the <code class="docutils literal notranslate"><span class="pre"
 <section id="local-source-code">
 <h3>Local Source Code<a class="headerlink" href="#local-source-code" title="Permalink to this heading"></a></h3>
 <p>You can install Trav-SHACL from your local source code by performing the following steps.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:SDM-TIB/Trav-SHACL.git
-<span class="nb">cd</span> Trav-SHACL
-python -m pip install -e .
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:SDM-TIB/Trav-SHACL.git
+<span class="nb">cd</span><span class="w"> </span>Trav-SHACL
+python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
 </pre></div>
 </div>
 </section>
 <section id="github">
 <h3>GitHub<a class="headerlink" href="#github" title="Permalink to this heading"></a></h3>
 <p>Trav-SHACL can also be installed from its source code in GitHub without explicitly cloning the repository:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m pip install -e <span class="s1">&#39;git+https://github.com/SDM-TIB/Trav-SHACL#egg=DeTrusty&#39;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;git+https://github.com/SDM-TIB/Trav-SHACL#egg=DeTrusty&#39;</span>
 </pre></div>
 </div>
 </section>
 <section id="pypi">
 <h3>PyPI<a class="headerlink" href="#pypi" title="Permalink to this heading"></a></h3>
 <p>The easiest way to install Trav-SHACL is to download the package from PyPI:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m pip install TravSHACL
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>TravSHACL
 </pre></div>
 </div>
 </section>
@@ -133,13 +133,13 @@ python -m pip install -e .
 <h2>Testing<a class="headerlink" href="#testing" title="Permalink to this heading"></a></h2>
 <p>In order to run the test suite, clone the Trav-SHACL repository from GitHub as explained above (see <a class="reference internal" href="#local-source-code">Local Source Code</a>).
 Install the production and development dependencies as shown below.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3 install -r requirements.txt -r requirements-dev.txt
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt<span class="w"> </span>-r<span class="w"> </span>requirements-dev.txt
 </pre></div>
 </div>
 <p>Then, start the Docker container with the test data.
 If you are changing the host port of the test data container, make sure to also change the port in <code class="docutils literal notranslate"><span class="pre">test_cases.py</span></code>.
 Otherwise, Trav-SHACL cannot connect to the SPARQL endpoint provided by the container and the test suite will fail.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker-compose -f tests/docker-compose.yml up -d
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker-compose<span class="w"> </span>-f<span class="w"> </span>tests/docker-compose.yml<span class="w"> </span>up<span class="w"> </span>-d
 </pre></div>
 </div>
 <p>Finally, run the tests by executing the following command.</p>
@@ -156,7 +156,7 @@ In order to serve the example data, you need to have <a class="reference externa
 <section id="preparing-the-data">
 <h3>Preparing the Data<a class="headerlink" href="#preparing-the-data" title="Permalink to this heading"></a></h3>
 <p>Assuming your current working directory contains the <code class="docutils literal notranslate"><span class="pre">example</span></code> folder, you can start the Docker container serving the SPARQL endpoint with the example data as shown below:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker-compose -f ./example/docker-compose.yml up -d example_data
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker-compose<span class="w"> </span>-f<span class="w"> </span>./example/docker-compose.yml<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>example_data
 </pre></div>
 </div>
 <div class="admonition note">
