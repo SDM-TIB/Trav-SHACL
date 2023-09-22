@@ -18,7 +18,7 @@
 Trav-SHACL
 ##########
 
-Trav-SHACL is a SHACL engine capable of planning the traversal and execution of a shape schema in a way that invalid entities are detected early and needless validations are minimized.
+Trav-SHACL is a SHACL :cite:p:`SHACL` engine capable of planning the traversal and execution of a shape schema in a way that invalid entities are detected early and needless validations are minimized.
 Trav-SHACL reorders the shapes in a shape schema for efficient validation and rewrites target and constraint queries for fast detection of invalid entities.
 The shape schema is validated against an RDF graph accessible via a SPARQL endpoint.
 
