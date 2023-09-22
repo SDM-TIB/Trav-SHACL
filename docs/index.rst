@@ -84,4 +84,10 @@ This inter- and intra-shape strategy collects a total of 9,282 entities that res
    library
    service
    feature
+
+.. toctree::
+   :hidden:
+   :titlesonly:
+
+   changelog
    references

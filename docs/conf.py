@@ -36,6 +36,7 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
     'sphinx_rtd_theme',
+    'sphinx_mdinclude',
     'sphinxcontrib.bibtex',
 ]
 
