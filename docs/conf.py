@@ -41,7 +41,7 @@ extensions = [
 
 # bibtex configuration
 bibtex_bibfiles = ['refs.bib']
-bibtex_default_style = 'unsrt'
+bibtex_default_style = 'plain'
 numfig = True
 
 # Add any paths that contain templates here, relative to this directory.
