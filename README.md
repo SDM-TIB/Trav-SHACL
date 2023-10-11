@@ -42,5 +42,8 @@ The documentation includes detailed examples for both scenarios.
 ## WWW 2021 Evaluation
 Trav-SHACL is presented in [1]. If you want to **reproduce the results** reported in our WWW '21 paper, checkout the [**eval-www2021**](https://github.com/SDM-TIB/Trav-SHACL/tree/eval-www2021) **branch**.
 
+## License
+Trav-SHACL is licensed under GPL-3.0.
+
 ## Publications
 1. Mónica Figuera, Philipp D. Rohde, Maria-Esther Vidal. Trav-SHACL: Efficiently Validating Networks of SHACL Constraints. In _Proceedings of the Web Conference 2021 (WWW '21), April 19-23, 2021, Ljubljana, Slovenia_. [https://doi.org/10.1145/3442381.3449877](https://doi.org/10.1145/3442381.3449877), [Experiment Scripts](https://github.com/SDM-TIB/Trav-SHACL/tree/eval-www2021), [Preprint](https://arxiv.org/abs/2101.07136)
