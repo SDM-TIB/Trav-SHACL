@@ -148,7 +148,7 @@ Before executing the above script, let us have a look at the different parameter
    + prioritize shapes based on their number of constraints, one of ``[BIG, SMALL]`` or to be omitted
 * ``use_selective_queries`` (optional) use more selective constraint queries, is one of ``[True, False]``; default: ``True``
 * ``max_split_size`` (optional) maximum number of entities in FILTER or VALUES clause of a SPARQL query; default: ``256``
-* ``output_dir`` (optional) directory where the output files will be stored, has to end with ``/``; default: ``None``
+* ``output_dir`` (optional) directory where the output files will be stored; default: ``None``
 * ``order_by_in_queries`` (optional) sort the results of all SPARQL queries, ensures the same order in the result logs over several runs, is one of ``[True, False]``; default: ``False``
 * ``save_outputs`` (optional) creates one file each for violated and validated targets, otherwise only statistics and traces will be stored, is one of ``[True, False]``; default: ``False``
 

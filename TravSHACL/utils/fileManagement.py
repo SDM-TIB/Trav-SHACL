@@ -15,7 +15,7 @@ def open_file(path, filename):
     """
     if not os.path.exists(path):
         os.makedirs(path, exist_ok=True)
-    return open(path + filename, 'w', encoding='utf8')
+    return open(os.path.join(path, filename), 'w', encoding='utf8')
 
 
 def close_file(file):
