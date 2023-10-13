@@ -39,7 +39,7 @@ class Validation:
         self.stats.update_log('Node order: ' + str(self.node_order) + '\n')
         self.InstRetrieval = InstancesRetrieval(endpoint, shapes_dict, self.stats)
         self.valid_targets_after_termination = set()
-        self.start_of_verification = time.time() * 1000.0
+        self.start_of_verification = time.time()
 
     def exec(self):
         """Executes the validation process of the entire shape schema."""
@@ -537,9 +537,9 @@ class Validation:
         instance = '<' + t[1] + '>'
         self.shapes_dict[t[0]].targets[t_type].add(instance)
         shapes_state[invalidating_shape_name]['registered_targets'][t_type].add(t)
-        self.traces.add(''.join([t_type, ', ',
-                        str(len(self.traces)), ', ',
-                        str(round(time.time() * 1000.0 - self.start_of_verification)), '\n']))
+        self.traces.add(''.join([invalidating_shape_name, ',', t_type, ',',
+                        str(len(self.traces) + 1), ',',
+                        str(time.time() - self.start_of_verification), '\n']))
 
     @staticmethod
     def write_targets_to_file(output_dir_name, all_valid_targets, all_invalid_targets):
@@ -597,7 +597,7 @@ class Validation:
             validation_log.write('\nInvalid targets: ' + str(len(all_invalid_targets)))
             fileManagement.close_file(validation_log)
 
-            traces.write('Target, #TripleInThatNode, TimeSinceStartOfVerification(ms)\n')
+            traces.write('Shape,Result,Number,Time\n')
             for trace in self.traces:
                 traces.write(trace)
             fileManagement.close_file(traces)
