@@ -1,3 +1,8 @@
+# v1.5.1 - 17 Oct 2023
+- Fix necessity of adding a slash (/) at the end of the output path
+- Update trace keeping
+- Minor updates of documentation
+
 # v1.5.0 - 21 Sep 2023
 - Fix parameter `endpoint` for Flask app
 - Reduce the number of entities in the example
