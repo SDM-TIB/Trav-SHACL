@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Trav-SHACL &mdash; Trav-SHACL 1.5.0 documentation</title>
+  <title>Trav-SHACL &mdash; Trav-SHACL 1.5.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
@@ -33,7 +33,7 @@
             <img src="_static/logo.png" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                1.5.0
+                1.5.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -48,6 +48,9 @@
 <li class="toctree-l1"><a class="reference internal" href="library.html">Trav-SHACL as a Library</a></li>
 <li class="toctree-l1"><a class="reference internal" href="service.html">Trav-SHACL as a Service</a></li>
 <li class="toctree-l1"><a class="reference internal" href="feature.html">Features and Limitations</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 </ul>
 
@@ -77,13 +80,13 @@
   <p><a class="reference external" href="https://github.com/SDM-TIB/Trav-SHACL/actions/workflows/test.yml"><img alt="tests" src="https://github.com/SDM-TIB/Trav-SHACL/actions/workflows/test.yml/badge.svg" /></a> <a class="reference external" href="https://github.com/SDM-TIB/Trav-SHACL/releases"><img alt="release" src="http://img.shields.io/github/release/SDM-TIB/Trav-SHACL.svg?logo=github" /></a> <a class="reference external" href="https://hub.docker.com/r/sdmtib/travshacl"><img alt="docker" src="https://img.shields.io/badge/Docker%20Image-sdmtib/travshacl-blue?logo=Docker" /></a> <a class="reference external" href="https://github.com/SDM-TIB/Trav-SHACL/blob/master/LICENSE"><img alt="license" src="https://img.shields.io/badge/License-GPLv3-blue.svg" /></a> <img alt="python" src="https://img.shields.io/pypi/pyversions/TravSHACL" /> <img alt="format" src="https://img.shields.io/pypi/format/TravSHACL" /> <img alt="status" src="https://img.shields.io/pypi/status/TravSHACL" /> <a class="reference external" href="https://pypi.org/project/TravSHACL"><img alt="version" src="https://img.shields.io/pypi/v/TravSHACL" /></a></p>
 <section id="trav-shacl">
 <h1>Trav-SHACL<a class="headerlink" href="#trav-shacl" title="Permalink to this heading"></a></h1>
-<p>Trav-SHACL is a SHACL engine capable of planning the traversal and execution of a shape schema in a way that invalid entities are detected early and needless validations are minimized.
+<p>Trav-SHACL is a SHACL <span id="id1">[<a class="reference internal" href="references.html#id6" title="Holger Knublauch and Dimitris Kontokostas. Shapes Constraint Language (SHACL). W3C Recommendation, July 2017. URL: https://www.w3.org/TR/2017/REC-shacl-20170720/.">5</a>]</span> engine capable of planning the traversal and execution of a shape schema in a way that invalid entities are detected early and needless validations are minimized.
 Trav-SHACL reorders the shapes in a shape schema for efficient validation and rewrites target and constraint queries for fast detection of invalid entities.
 The shape schema is validated against an RDF graph accessible via a SPARQL endpoint.</p>
-<figure class="align-center" id="id7">
+<figure class="align-center" id="id8">
 <span id="architecture"></span><img alt="Trav-SHACL Architecture" src="_images/architecture.png" />
 <figcaption>
-<p><span class="caption-number">Fig. 1 </span><span class="caption-text">The Trav-SHACL Architecture (from <span id="id1">[<a class="reference internal" href="references.html#id2" title="Mónica Figuera, Philipp D. Rohde, and Maria-Esther Vidal. Trav-SHACL: Efficiently Validating Networks of SHACL Constraints. In Proceedings of the Web Conference 2021, 3337–3348. New York, NY, USA, 2021. ACM. doi:10.1145/3442381.3449877.">1</a>]</span>)</span><a class="headerlink" href="#id7" title="Permalink to this image"></a></p>
+<p><span class="caption-number">Fig. 1 </span><span class="caption-text">The Trav-SHACL Architecture (from <span id="id2">[<a class="reference internal" href="references.html#id2" title="Mónica Figuera, Philipp D. Rohde, and Maria-Esther Vidal. Trav-SHACL: Efficiently Validating Networks of SHACL Constraints. In Proceedings of the Web Conference 2021, 3337–3348. New York, NY, USA, 2021. ACM. doi:10.1145/3442381.3449877.">3</a>]</span>)</span><a class="headerlink" href="#id8" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 <p><a class="reference internal" href="#architecture"><span class="std std-numref">Fig. 1</span></a> shows the architecture of Trav-SHACL.
@@ -97,13 +100,13 @@ The rewritten queries are executed against SPARQL endpoints.
 The answers of the target and constraint queries as well as the truth value assignments are exchanged during query rewriting and interleaved execution.
 They are utilized — in a bottom-up fashion — for constraint rule grounding and saturation.
 The intra-shape planner and execution component runs until a fixed-point in the truth value assignments is reached.</p>
-<figure class="align-center" id="id8">
+<figure class="align-center" id="id9">
 <span id="motivation"></span><img alt="Motivating Example" src="_images/motivation.png" />
 <figcaption>
-<p><span class="caption-number">Fig. 2 </span><span class="caption-text">Motivating Example (from <span id="id2">[<a class="reference internal" href="references.html#id2" title="Mónica Figuera, Philipp D. Rohde, and Maria-Esther Vidal. Trav-SHACL: Efficiently Validating Networks of SHACL Constraints. In Proceedings of the Web Conference 2021, 3337–3348. New York, NY, USA, 2021. ACM. doi:10.1145/3442381.3449877.">1</a>]</span>)</span><a class="headerlink" href="#id8" title="Permalink to this image"></a></p>
+<p><span class="caption-number">Fig. 2 </span><span class="caption-text">Motivating Example (from <span id="id3">[<a class="reference internal" href="references.html#id2" title="Mónica Figuera, Philipp D. Rohde, and Maria-Esther Vidal. Trav-SHACL: Efficiently Validating Networks of SHACL Constraints. In Proceedings of the Web Conference 2021, 3337–3348. New York, NY, USA, 2021. ACM. doi:10.1145/3442381.3449877.">3</a>]</span>)</span><a class="headerlink" href="#id9" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
-<p><a class="reference internal" href="#motivation"><span class="std std-numref">Fig. 2</span></a> presents the motivating example from the Trav-SHACL paper <span id="id3">[<a class="reference internal" href="references.html#id2" title="Mónica Figuera, Philipp D. Rohde, and Maria-Esther Vidal. Trav-SHACL: Efficiently Validating Networks of SHACL Constraints. In Proceedings of the Web Conference 2021, 3337–3348. New York, NY, USA, 2021. ACM. doi:10.1145/3442381.3449877.">1</a>]</span>.
+<p><a class="reference internal" href="#motivation"><span class="std std-numref">Fig. 2</span></a> presents the motivating example from the Trav-SHACL paper <span id="id4">[<a class="reference internal" href="references.html#id2" title="Mónica Figuera, Philipp D. Rohde, and Maria-Esther Vidal. Trav-SHACL: Efficiently Validating Networks of SHACL Constraints. In Proceedings of the Web Conference 2021, 3337–3348. New York, NY, USA, 2021. ACM. doi:10.1145/3442381.3449877.">3</a>]</span>.
 Part (a) shows a visual representation of a simple SHACL shape schema with four connected shapes.
 The parts (b) to (d) show the validation time of the shape schema in different orders.
 The order in part (b) is random.
@@ -116,18 +119,20 @@ Part (d) presents the order identified by Trav-SHACL.
 The chosen order allows Trav-SHACL to make use of the knowledge gained from previously validated shapes.
 Hence, Trav-SHACL does not need to check all constraints for all the entities.
 Following this order, the validation time is reduced to about 0.5 seconds.</p>
-<figure class="align-center" id="id9">
+<figure class="align-center" id="id10">
 <span id="example"></span><img alt="Running Example" src="_images/example.png" />
 <figcaption>
-<p><span class="caption-number">Fig. 3 </span><span class="caption-text">Running Example (from <span id="id4">[<a class="reference internal" href="references.html#id2" title="Mónica Figuera, Philipp D. Rohde, and Maria-Esther Vidal. Trav-SHACL: Efficiently Validating Networks of SHACL Constraints. In Proceedings of the Web Conference 2021, 3337–3348. New York, NY, USA, 2021. ACM. doi:10.1145/3442381.3449877.">1</a>]</span>)</span><a class="headerlink" href="#id9" title="Permalink to this image"></a></p>
+<p><span class="caption-number">Fig. 3 </span><span class="caption-text">Running Example (from <span id="id5">[<a class="reference internal" href="references.html#id2" title="Mónica Figuera, Philipp D. Rohde, and Maria-Esther Vidal. Trav-SHACL: Efficiently Validating Networks of SHACL Constraints. In Proceedings of the Web Conference 2021, 3337–3348. New York, NY, USA, 2021. ACM. doi:10.1145/3442381.3449877.">3</a>]</span>)</span><a class="headerlink" href="#id10" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
-<p><a class="reference internal" href="#example"><span class="std std-numref">Fig. 3</span></a> presents a comparison of Trav-SHACL and the state-of-the-art SHACL2SPARQL <span id="id5">[<a class="reference internal" href="references.html#id3" title="Julien Corman, Fernando Florenzano, Juan L. Reutter, and Ognjen Savković. Validating SHACL Constraints over a SPARQL Endpoint. In The Semantic Web – ISWC 2019, 145–163. Cham, 2019. Springer. doi:10.1007/978-3-030-30793-6_9.">2</a>, <a class="reference internal" href="references.html#id4" title="Julien Corman, Fernando Florenzano, Juan L. Reutter, and Ognjen Savković. SHACL2SPARQL: Validating a SPARQL Endpoint against Recursive SHACL Constraints. In Proceedings of the ISWC 2019 Satellite Tracks, 165–168. Aachen, Germany, 2019. CEUR-WS.org. URL: https://ceur-ws.org/Vol-2456/paper43.pdf.">3</a>]</span>.
+<p><a class="reference internal" href="#example"><span class="std std-numref">Fig. 3</span></a> presents a comparison of Trav-SHACL and the state-of-the-art SHACL2SPARQL <span id="id6">[<a class="reference internal" href="references.html#id4" title="Julien Corman, Fernando Florenzano, Juan L. Reutter, and Ognjen Savković. SHACL2SPARQL: Validating a SPARQL Endpoint against Recursive SHACL Constraints. In Proceedings of the ISWC 2019 Satellite Tracks, 165–168. Aachen, Germany, 2019. CEUR-WS.org. URL: https://ceur-ws.org/Vol-2456/paper43.pdf.">1</a>, <a class="reference internal" href="references.html#id3" title="Julien Corman, Fernando Florenzano, Juan L. Reutter, and Ognjen Savković. Validating SHACL Constraints over a SPARQL Endpoint. In The Semantic Web – ISWC 2019, 145–163. Cham, 2019. Springer. doi:10.1007/978-3-030-30793-6_9.">2</a>]</span>.
 The example uses the SHACL shape schema and best traversal order from <a class="reference internal" href="#motivation"><span class="std std-numref">Fig. 2</span></a>.
-The data used for the validation is based on the LUBM benchmark <span id="id6">[<a class="reference internal" href="references.html#id5" title="Yuanbo Guo, Zhengxiang Pan, and Jeff Heflin. LUBM: A Benchmark for OWL Knowledge Base Systems. Web Semantics, 3(2–3):158–182, 2005. doi:10.1016/j.websem.2005.06.005.">4</a>]</span> and models eight Universities.
+The data used for the validation is based on the LUBM benchmark <span id="id7">[<a class="reference internal" href="references.html#id5" title="Yuanbo Guo, Zhengxiang Pan, and Jeff Heflin. LUBM: A Benchmark for OWL Knowledge Base Systems. Web Semantics, 3(2–3):158–182, 2005. doi:10.1016/j.websem.2005.06.005.">4</a>]</span> and models eight Universities.
 Trav-SHACL not only validates the shapes in the selected order, but also pushes the corresponding filters into the SPARQL queries to avoid interleaving entities linked to already invalidated ones.
 The knowledge of the eight valid universities allows Trav-SHACL to rewrite the target query of Professors to filter out 1,260 invalid entities from grounding.
 This inter- and intra-shape strategy collects a total of 9,282 entities that result in grounding 16,604 rules versus 369,472 rules grounded by SHACL2SPARQL.</p>
+<div class="toctree-wrapper compound">
+</div>
 <div class="toctree-wrapper compound">
 </div>
 </section>
