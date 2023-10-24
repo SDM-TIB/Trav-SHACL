@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "If you use Trav-SHACL in your work, please cite it using the following metadata."
+authors:
+- family-names: "Figuera"
+  given-names: "Mónica"
+  orcid: "0000-0003-4417-7767"
+- family-names: "Rohde"
+  given-names: "Philipp D."
+  orcid: "https://orcid.org/0000-0002-9835-4354"
+- family-names: "Vidal"
+  given-names: "Maria-Esther"
+  orcid: "https://orcid.org/0000-0003-1160-8727"
+title: "Trav-SHACL: Efficiently Validating Networks of SHACL Constraints"
+url: "https://github.com/SDM-TIB/Trav-SHACL"
+preferred-citation:
+  type: conference-paper
+  authors:
+  - family-names: "Figuera"
+    given-names: "Mónica"
+    orcid: "0000-0003-4417-7767"
+  - family-names: "Rohde"
+    given-names: "Philipp D."
+    orcid: "https://orcid.org/0000-0002-9835-4354"
+  - family-names: "Vidal"
+    given-names: "Maria-Esther"
+    orcid: "https://orcid.org/0000-0003-1160-8727"
+  doi: "10.1145/3442381.3449877"
+  title: "Trav-SHACL: Efficiently Validating Networks of SHACL Constraints"
+  year: 2021
+  collection-title: "Proceedings of the Web Conference 2021"
+  publisher: "ACM"
