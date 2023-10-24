@@ -15,6 +15,12 @@ setup(
     author='Mónica Figuera, Philipp D. Rohde',
     author_email='philipp.rohde@tib.eu',
     url='https://github.com/SDM-TIB/Trav-SHACL',
+    project_urls={
+        'Documentation': 'https://sdm-tib.github.io/Trav-SHACL/',
+        'Changes': 'https://sdm-tib.github.io/Trav-SHACL/changelog.html',
+        'Source Code': 'https://github.com/SDM-TIB/Trav-SHACL',
+        'Issue Tracker': 'https://github.com/SDM-TIB/Trav-SHACL/issues'
+    },
     download_url='https://github.com/SDM-TIB/Trav-SHACL/archive/refs/tags/v' + version + '.tar.gz',
     description='A SHACL validator capable of planning the traversal and execution of the validation of a shape schema to detect violations early.',
     long_description=long_description,
