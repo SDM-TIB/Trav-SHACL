@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Trav-SHACL as a Library &mdash; Trav-SHACL 1.5.1 documentation</title>
+  <title>Trav-SHACL as a Library &mdash; Trav-SHACL 1.6.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
@@ -34,7 +34,7 @@
             <img src="_static/logo.png" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                1.5.1
+                1.6.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -180,6 +180,8 @@ You can check its accessibility by navigating to <a class="reference external" h
 <span class="n">shape_schema</span> <span class="o">=</span> <span class="n">ShapeSchema</span><span class="p">(</span>
     <span class="n">schema_dir</span><span class="o">=</span><span class="s1">&#39;./shapes/LUBM&#39;</span><span class="p">,</span>
     <span class="n">endpoint</span><span class="o">=</span><span class="s1">&#39;http://localhost:9090/sparql&#39;</span><span class="p">,</span>
+    <span class="n">endpoint_user</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># username if validating a private endpoint</span>
+    <span class="n">endpoint_password</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># password if validating a private endpoint</span>
     <span class="n">graph_traversal</span><span class="o">=</span><span class="n">GraphTraversal</span><span class="o">.</span><span class="n">DFS</span><span class="p">,</span>
     <span class="n">heuristics</span><span class="o">=</span><span class="n">parse_heuristics</span><span class="p">(</span><span class="n">prio_target</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">prio_degree</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">prio_number</span><span class="p">),</span>
     <span class="n">use_selective_queries</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -204,6 +206,8 @@ You can check its accessibility by navigating to <a class="reference external" h
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">schema_dir</span></code> path to the directory containing the shape files</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">endpoint</span></code> URL of the endpoint to evaluated; alternatively, an RDFLib graph can be passed</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">endpoint_user</span></code> (optional) username if validating a private endpoint; default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">endpoint_password</span></code> (optional) password if validating a private endpoint; default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">graph_traversal</span></code> (optional) defines the graph traversal algorithm to be used, is one of <code class="docutils literal notranslate"><span class="pre">[GraphTraversal.BFS,</span> <span class="pre">GraphTraversal.DFS]</span></code>; default: <code class="docutils literal notranslate"><span class="pre">GraphTraversal.DFS</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">heuristics</span></code> (optional) used to determine the seed shape. Use the method <code class="docutils literal notranslate"><span class="pre">parse_heuristics</span></code> with a string in order to set the desired heuristics; default: <code class="docutils literal notranslate"><span class="pre">parse_heuristics('TARGET</span> <span class="pre">IN</span> <span class="pre">BIG')</span></code>.</p>
 <blockquote>
