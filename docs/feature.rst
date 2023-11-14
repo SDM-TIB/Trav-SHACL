@@ -13,6 +13,11 @@ The following is a list of what is supported:
         +   ``sh:message`` is ignored, i.e., the message is not included in the result
         +   only ``$this`` is supported as placeholder
 *   simple logical constraints, i.e., ``sh:or``
+*   Trav-SHACL is capable of validating
+
+        +   public SPARQL endpoints
+        +   private SPARQL endpoints via HTTP Basic Auth (since v1.6.0)
+        +   RDFLib graphs (since v1.3.0)
 
 The following is a list of some of the more important features that are not yet covered:
 

@@ -117,6 +117,8 @@ Now the data is accessible and you can validate it against the provided example 
     shape_schema = ShapeSchema(
         schema_dir='./shapes/LUBM',
         endpoint='http://localhost:9090/sparql',
+        endpoint_user=None,  # username if validating a private endpoint
+        endpoint_password=None,  # password if validating a private endpoint
         graph_traversal=GraphTraversal.DFS,
         heuristics=parse_heuristics(prio_target + ' ' + prio_degree + ' ' + prio_number),
         use_selective_queries=True,
@@ -140,6 +142,8 @@ Before executing the above script, let us have a look at the different parameter
 
 * ``schema_dir`` path to the directory containing the shape files
 * ``endpoint`` URL of the endpoint to evaluated; alternatively, an RDFLib graph can be passed
+* ``endpoint_user`` (optional) username if validating a private endpoint; default: ``None``
+* ``endpoint_password`` (optional) password if validating a private endpoint; default: ``None``
 * ``graph_traversal`` (optional) defines the graph traversal algorithm to be used, is one of ``[GraphTraversal.BFS, GraphTraversal.DFS]``; default: ``GraphTraversal.DFS``
 * ``heuristics`` (optional) used to determine the seed shape. Use the method ``parse_heuristics`` with a string in order to set the desired heuristics; default: ``parse_heuristics('TARGET IN BIG')``.
 
