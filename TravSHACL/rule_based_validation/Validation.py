@@ -4,6 +4,7 @@ __author__ = 'Monica Figuera'
 import time
 
 from TravSHACL.rule_based_validation.InstancesRetrieval import InstancesRetrieval
+from TravSHACL.sparql.SPARQLEndpoint import SPARQLEndpoint
 from TravSHACL.utils import fileManagement
 from TravSHACL.utils.ValidationStats import ValidationStats
 
@@ -11,12 +12,12 @@ from TravSHACL.utils.ValidationStats import ValidationStats
 class Validation:
     """This class is responsible for managing the validation process."""
 
-    def __init__(self, endpoint, node_order, shapes_dict, target_shape_predicates, use_selective_queries,
-                 output_dir_name, save_stats, save_targets_to_file):
+    def __init__(self, endpoint: SPARQLEndpoint, node_order, shapes_dict, target_shape_predicates,
+                 use_selective_queries, output_dir_name, save_stats, save_targets_to_file):
         """
         Creates a new instance for the validation process.
 
-        :param endpoint: URL of the SPARQL endpoint (or RDFlib graph) to evaluate
+        :param endpoint: SPARQL endpoint which is validated
         :param node_order: indicates the order in which the shapes will be evaluated
         :param shapes_dict: a Python dictionary holding all shapes of the shape schema
         :param target_shape_predicates: names of the shapes with a target definition

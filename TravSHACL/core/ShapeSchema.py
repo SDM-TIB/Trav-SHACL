@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations  # required for typing in older versions of Python
+
 from typing import TYPE_CHECKING
 
 __author__ = 'Philipp D. Rohde and Monica Figuera'
@@ -8,6 +9,7 @@ from TravSHACL.core.GraphTraversal import GraphTraversal
 from TravSHACL.core.ShapeParser import ShapeParser
 from TravSHACL.rule_based_validation.Validation import Validation
 from TravSHACL.utils import parse_heuristics
+from TravSHACL.sparql.SPARQLEndpoint import SPARQLEndpoint
 
 if TYPE_CHECKING:
     from rdflib import Graph
@@ -16,6 +18,7 @@ class ShapeSchema:
     """This class represents a SHACL shape schema."""
 
     def __init__(self, *, schema_dir: str, schema_format: str = 'SHACL', endpoint: str | Graph,
+                 endpoint_user: str = None, endpoint_password: str = None,
                  graph_traversal: GraphTraversal = GraphTraversal.DFS, heuristics: dict = parse_heuristics("TARGET IN BIG"),
                  use_selective_queries: bool = True, max_split_size: int = 256, output_dir: str = None,
                  order_by_in_queries: bool = False, save_outputs: bool = False, work_in_parallel: bool = False):
@@ -25,7 +28,9 @@ class ShapeSchema:
         :param schema_dir: path of the files including the shape definitions
         :param schema_format: indicates the format used for defining the shapes, this parameter should only
             be used if shapes defined in the legacy JSON format are used
-        :param endpoint: URL for the SPARQL endpoint (or an RDFlib graph) to be evaluated against
+        :param endpoint: URL for the SPARQL endpoint (or an RDFLib graph) to be evaluated against
+        :param endpoint_user: username to connect to a private SPARQL endpoint; default: None
+        :param endpoint_password: password to connect to a private SPARQL endpoint; default: None
         :param graph_traversal: graph traversal algorithm used for determining the evaluation order; default: DFS
         :param heuristics: Python dictionary holding the heuristics used for determining the seed shape;
             default is equivalent to `TARGET IN BIG`
@@ -39,7 +44,7 @@ class ShapeSchema:
         self.shapes = ShapeParser().parse_shapes_from_dir(schema_dir, schema_format, use_selective_queries,
                                                           max_split_size, order_by_in_queries)
         self.shapesDict = {shape.get_id(): shape for shape in self.shapes}  # TODO: use only the dict?
-        self.endpoint = endpoint
+        self.endpoint = SPARQLEndpoint(endpoint, endpoint_user, endpoint_password)
         self.graphTraversal = graph_traversal
         self.parallel = work_in_parallel  # TODO: no parallelization implemented yet
         self.dependencies, self.reverse_dependencies = self.compute_edges()

@@ -15,15 +15,15 @@ from TravSHACL.constraints.MaxOnlyConstraint import MaxOnlyConstraint
 class InstancesRetrieval:
     """This class is responsible for retrieving the instances from a SPARQL endpoint."""
 
-    def __init__(self, endpoint, shapes_dict, stats):
+    def __init__(self, endpoint:  SPARQLEndpoint, shapes_dict, stats):
         """
         Creates a new instance for the data retrieval.
 
-        :param endpoint: URL of the SPARQL endpoint (or RDFlib graph) to collect the data from
+        :param endpoint: SPARQL endpoint to collect the data from
         :param shapes_dict: a Python dictionary holding all shapes of the shape schema
         :param stats: instance of ValidationStats to keep the statistics up-to-date
         """
-        self.endpoint = SPARQLEndpoint(endpoint)
+        self.endpoint = endpoint
         self.shapes_dict = shapes_dict
         self.stats = stats
 
