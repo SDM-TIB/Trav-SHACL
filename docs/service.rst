@@ -7,6 +7,12 @@
 Trav-SHACL as a Service
 #######################
 
+.. NOTE::
+
+   This mode of operation is under development.
+   Some features might not be available when running Trav-SHACL as a service.
+   It is recommended to use Trav-SHACL as a library.
+
 *****************
 Getting the Image
 *****************
