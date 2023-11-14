@@ -1,3 +1,8 @@
+# v1.6.0 - 14 Nov 2023
+- Add feature to validate private SPARQL endpoints via HTTP Basic Auth
+- Add Python 3.12 support
+- Minor maintenance updates
+
 # v1.5.1 - 17 Oct 2023
 - Fix necessity of adding a slash (/) at the end of the output path
 - Update trace keeping
