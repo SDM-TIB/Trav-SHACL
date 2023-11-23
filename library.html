@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Trav-SHACL as a Library &mdash; Trav-SHACL 1.6.0 documentation</title>
+  <title>Trav-SHACL as a Library &mdash; Trav-SHACL 1.7.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
@@ -34,7 +34,7 @@
             <img src="_static/logo.png" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                1.6.0
+                1.7.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -199,12 +199,43 @@ You can check its accessibility by navigating to <a class="reference external" h
 <p class="admonition-title">Note</p>
 <p>All parameters of <code class="docutils literal notranslate"><span class="pre">ShapeSchema</span></code> are keyword-only. The only required parameters are <code class="docutils literal notranslate"><span class="pre">schema_dir</span></code> and <code class="docutils literal notranslate"><span class="pre">endpoint</span></code>.</p>
 </div>
+<p>Instead of passing a directory containing the shapes, Trav-SHACL also accepts instances of <code class="docutils literal notranslate"><span class="pre">rdflib.Graph</span></code>.
+The following code executes the example from above by passing an <code class="docutils literal notranslate"><span class="pre">rdflib.Graph</span></code>.</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">Graph</span>
+<span class="kn">from</span> <span class="nn">TravSHACL</span> <span class="kn">import</span> <span class="n">parse_heuristics</span><span class="p">,</span> <span class="n">GraphTraversal</span><span class="p">,</span> <span class="n">ShapeSchema</span>
+
+<span class="n">prio_target</span> <span class="o">=</span> <span class="s1">&#39;TARGET&#39;</span>  <span class="c1"># shapes with target definition are preferred, alternative value: &#39;&#39;</span>
+<span class="n">prio_degree</span> <span class="o">=</span> <span class="s1">&#39;IN&#39;</span>  <span class="c1"># shapes with a higher in-degree are prioritized, alternative value &#39;OUT&#39;</span>
+<span class="n">prio_number</span> <span class="o">=</span> <span class="s1">&#39;BIG&#39;</span>  <span class="c1"># shapes with many constraints are evaluated first, alternative value &#39;SMALL&#39;</span>
+
+<span class="n">schema_dir</span> <span class="o">=</span> <span class="s1">&#39;./shapes/LUBM&#39;</span>
+<span class="n">shapes_graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">shape_file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">schema_dir</span><span class="p">):</span>
+    <span class="n">shapes_graph</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">schema_dir</span><span class="p">,</span> <span class="n">shape_file</span><span class="p">))</span>  <span class="c1"># reading all shape files into the shapes graph</span>
+
+<span class="n">shape_schema</span> <span class="o">=</span> <span class="n">ShapeSchema</span><span class="p">(</span>
+    <span class="n">schema_dir</span><span class="o">=</span><span class="n">shapes_graph</span><span class="p">,</span>  <span class="c1"># passing an RDFlib graph containing the shapes</span>
+    <span class="n">endpoint</span><span class="o">=</span><span class="s1">&#39;http://localhost:9090/sparql&#39;</span><span class="p">,</span>
+    <span class="n">graph_traversal</span><span class="o">=</span><span class="n">GraphTraversal</span><span class="o">.</span><span class="n">DFS</span><span class="p">,</span>
+    <span class="n">heuristics</span><span class="o">=</span><span class="n">parse_heuristics</span><span class="p">(</span><span class="n">prio_target</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">prio_degree</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">prio_number</span><span class="p">),</span>
+    <span class="n">use_selective_queries</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">max_split_size</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span>
+    <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;./result/&#39;</span><span class="p">,</span>  <span class="c1"># directory where the output files will be stored</span>
+    <span class="n">order_by_in_queries</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># sort the results of SPARQL queries in order to ensure the same order across several runs</span>
+    <span class="n">save_outputs</span><span class="o">=</span><span class="kc">True</span>  <span class="c1"># save outputs to output_dir, alternative value: False</span>
+<span class="p">)</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">shape_schema</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>  <span class="c1"># validate the SHACL shape schema</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</pre></div>
+</div>
 </section>
 <section id="parameters">
 <h3>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading"></a></h3>
 <p>Before executing the above script, let us have a look at the different parameters.</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">schema_dir</span></code> path to the directory containing the shape files</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">schema_dir</span></code> path to the directory containing the shape files (or an RDFlib graph)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">endpoint</span></code> URL of the endpoint to evaluated; alternatively, an RDFLib graph can be passed</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">endpoint_user</span></code> (optional) username if validating a private endpoint; default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">endpoint_password</span></code> (optional) password if validating a private endpoint; default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
