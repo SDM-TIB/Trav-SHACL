@@ -63,7 +63,7 @@ class ShapeParser:
         if shape_format == 'SHACL':
             shapes = []
             [shapes.extend(self.parse_ttl(
-                filename=p,
+                shapes_graph=Graph().parse(p),
                 use_selective_queries=use_selective_queries,
                 max_split_size=max_split_size,
                 order_by_in_queries=order_by_in_queries
@@ -122,24 +122,20 @@ class ShapeParser:
                      use_selective_queries, max_split_size, order_by_in_queries, include_sparql_prefixes,
                      valid_flag, prefixes)
 
-    def parse_ttl(self, filename, use_selective_queries, max_split_size, order_by_in_queries):
+    def parse_ttl(self, shapes_graph: Graph, use_selective_queries, max_split_size, order_by_in_queries):
         """
         Parses a particular file and converts its content into the internal representation of a SHACL shape.
 
-        :param filename: the path to the shapes file
+        :param shapes_graph: RDFlib graph containing the shapes
         :param use_selective_queries: indicates whether selective queries are used
         :param max_split_size: maximum number of instances per query
         :param order_by_in_queries: indicates whether to use the ORDER BY clause
         :return: Shape object representing the parsed SHACL shape
         """
-        # TODO: This needs to handle more than one shape per file!
-        g_file = Graph()  # create graph instance
-        g_file.parse(filename)
-
         queries = self.get_QUERY()
         shapes = []
 
-        names = [str(row[0]) for row in g_file.query(queries[0])]
+        names = [str(row[0]) for row in shapes_graph.query(queries[0])]
 
         for name in names:
             id_ = name + '_d1'  # str(i + 1) but there is only one set of conjunctions
@@ -147,27 +143,27 @@ class ShapeParser:
             # to get the target_ref and target_type
             target_def = None
             target_type = None
-            if len(g_file.query(queries[1].format(shape=name))) != 0:
-                for res in g_file.query(queries[1].format(shape=name)):
+            if len(shapes_graph.query(queries[1].format(shape=name))) != 0:
+                for res in shapes_graph.query(queries[1].format(shape=name)):
                     target_def = str(res[0])
                     target_type = 'class'
                     break
-            elif len(g_file.query(queries[2].format(shape=name))) != 0:
-                for res in g_file.query(queries[2].format(shape=name)):
+            elif len(shapes_graph.query(queries[2].format(shape=name))) != 0:
+                for res in shapes_graph.query(queries[2].format(shape=name)):
                     target_def = str(res[0])
                     target_type = 'node'
                     break
 
             target_query = None
             if target_def is not None and target_type == 'class':
-                for res in g_file.query(QUERY_TARGET_QUERY.format(shape=name)):
+                for res in shapes_graph.query(QUERY_TARGET_QUERY.format(shape=name)):
                     target_query = str(res[0])
                 if target_query is None:
                     target_query = 'SELECT ?x WHERE { ?x a <' + target_def + '> }'  # come up with a query for this
                     if urlparse(target_def).netloc != '':  # if the target node is a url, add '<>' to it
                         target_def = '<' + target_def + '>'
 
-            cons_dict = self.parse_all_const(g_file, name=name, target_def=target_def, target_type=target_type,
+            cons_dict = self.parse_all_const(shapes_graph, name=name, target_def=target_def, target_type=target_type,
                                              query=queries)
             const_array = list(cons_dict.values())  # change the format to an array
 
