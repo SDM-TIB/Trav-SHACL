@@ -1,3 +1,6 @@
+# v1.7.0 - 23 Nov 2023
+- Add feature to pass an `rdflib.Graph` instead of a schema directory
+
 # v1.6.0 - 14 Nov 2023
 - Add feature to validate private SPARQL endpoints via HTTP Basic Auth
 - Add Python 3.12 support
