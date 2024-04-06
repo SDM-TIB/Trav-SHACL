@@ -1,3 +1,6 @@
+# v1.7.1 - 06 Apr 2024
+- Raise `NotImplementedError` stating that an unsupported feature was used instead of `UnboundLocalError: cannot access local variable 'dict_1'`
+
 # v1.7.0 - 23 Nov 2023
 - Add feature to pass an `rdflib.Graph` instead of a schema directory
 
