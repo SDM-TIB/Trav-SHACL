@@ -312,14 +312,21 @@ class ShapeParser:
                         qv_type = detail.asdict()['p']
                         qvs = detail.asdict()['o']
                         if len(filename.query(query[5].format(qvs=qvs))) != 0:
+                            dict_1 = None
                             for shape_ref in filename.query(query[5].format(qvs=qvs)):
-                                # dict_1 = [qv_type, ['shape', str(shape_ref.asdict()['shape_ref'])]]
                                 dict_1 = [qv_type, str(shape_ref.asdict()['shape_ref'])]
-                            exp_dict[str(constraint_id)].append(dict_1.copy())
+                            if dict_1 is not None:
+                                exp_dict[str(constraint_id)].append(dict_1.copy())
+                            else:
+                                raise NotImplementedError('It seems you are using an unsupported feature. Please, check your shape schema.')
                         else:
+                            dict_1 = None
                             for shape_ref in filename.query(query[6].format(qvs=qvs)):
                                 dict_1 = [qv_type, ['value', str(shape_ref.asdict()['shape_ref'])]]
-                            exp_dict[str(constraint_id)].append(dict_1.copy())
+                            if dict_1 is not None:
+                                exp_dict[str(constraint_id)].append(dict_1.copy())
+                            else:
+                                raise NotImplementedError('It seems you are using an unsupported feature. Please, check your shape schema.')
                     else:
                         # detail_dict = detail.asdict()
                         dict_2 = [str(detail['p']), str(detail['o'])]
