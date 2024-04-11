@@ -4,6 +4,10 @@
 .wy-side-nav-search {
     background-color: #0D1117;
 }
+.wy-menu-vertical p.caption {
+    text-transform: unset !important;
+    font-size: 90% !important;
+}
 .sphx-glr-thumbcontainer {
     min-height: 250px !important;
     min-width: 270px !important;

@@ -79,8 +79,8 @@ This inter- and intra-shape strategy collects a total of 9,282 entities that res
 
 .. toctree::
    :hidden:
+   :caption: Trav-SHACL
 
-   self
    library
    service
    feature
@@ -88,6 +88,8 @@ This inter- and intra-shape strategy collects a total of 9,282 entities that res
 .. toctree::
    :hidden:
    :titlesonly:
+   :caption: Appendix
 
+   contributors
    changelog
    references
