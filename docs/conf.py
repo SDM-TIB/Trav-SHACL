@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.abspath('../'))
 
 # -- Project information -----------------------------------------------------
 project = 'Trav-SHACL'
-copyright = '2019-2023, Philipp D. Rohde, Mónica Figuera and Uzoma Nwiwu'
+copyright = '2019-2024, Philipp D. Rohde, Mónica Figuera and Uzoma Nwiwu'
 author = 'Philipp D. Rohde, Mónica Figuera and Uzoma Nwiwu'
 
 
