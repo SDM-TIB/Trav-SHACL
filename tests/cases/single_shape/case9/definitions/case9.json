@@ -1,0 +1,7 @@
+{
+  "schemaDir": "./tests/cases/single_shape/case9/shapes/",
+  "groundTruth": {
+    "valid": [],
+    "invalid": []
+  }
+}

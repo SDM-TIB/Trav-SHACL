@@ -1,0 +1,17 @@
+{
+  "name": "ClassX",
+  "targetDef": {
+    "query": "SELECT ?x WHERE { ?x a test:ClassX }",
+    "class": "test:ClassX"
+  },
+  "prefix": {
+    "test": "<http://test.example.com/>"
+  },
+  "constraintDef": {
+    "conjunctions": [
+      [
+        { "path": "test:property0", "min": 1 }
+      ]
+    ]
+  }
+}
