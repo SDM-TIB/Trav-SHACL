@@ -40,7 +40,7 @@ jobs:
       run: |
         until $(curl --output /dev/null --silent --head --fail http://localhost:8899/sparql); do printf '.'; sleep 1; done
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
