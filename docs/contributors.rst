@@ -7,4 +7,4 @@ Contributors
    :maxdepth: 0
 
 .. mdinclude:: ../CONTRIBUTORS.md
-   :start-line: 4
+   :start-line: 3
