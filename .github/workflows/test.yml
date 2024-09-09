@@ -34,7 +34,7 @@ jobs:
     - name: Start the Docker container with the test data
       run: |
         cd tests
-        docker-compose up -d
+        docker compose up -d
         cd ..
     - name: Wait for the container to be responsive
       run: |
