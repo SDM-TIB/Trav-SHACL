@@ -3,6 +3,8 @@ from __future__ import annotations  # required for typing in older versions of P
 
 __author__ = 'Philipp D. Rohde and Monica Figuera'
 
+import warnings
+
 from rdflib import Graph
 
 from TravSHACL.core.GraphTraversal import GraphTraversal
@@ -39,6 +41,11 @@ class ShapeSchema:
         :param save_outputs: indicates whether target classifications will be saved to the output path; default: False
         :param work_in_parallel: indicates whether parallelization will be used; not yet implemented; default: False
         """
+        if schema_format == 'JSON':
+            warnings.warn(
+                'The JSON format for shape schemas is deprecated and will be removed in a future version.',
+                DeprecationWarning, 2
+            )
         if isinstance(schema_dir, Graph):
             self.shapes = ShapeParser().parse_ttl(
                 schema_dir, use_selective_queries, max_split_size, order_by_in_queries
