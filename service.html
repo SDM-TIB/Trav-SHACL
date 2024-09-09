@@ -1,23 +1,24 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Trav-SHACL as a Service &mdash; Trav-SHACL 1.7.1 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+  <title>Trav-SHACL as a Service &mdash; Trav-SHACL 1.7.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=aa353e79" />
+
+  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=14e321f9"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -30,22 +31,26 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html">
-            <img src="_static/logo.png" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="index.html">
+            
+              <img src="_static/logo.png" class="logo" alt="Logo"/>
           </a>
               <div class="version">
-                1.7.1
+                1.7.2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="index.html">Trav-SHACL</a></li>
+              <p class="caption" role="heading"><span class="caption-text">Trav-SHACL</span></p>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="library.html">Trav-SHACL as a Library</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Trav-SHACL as a Service</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#getting-the-image">Getting the Image</a><ul>
@@ -59,7 +64,9 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="feature.html">Features and Limitations</a></li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 </ul>
@@ -77,8 +84,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Trav-SHACL as a Service</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Trav-SHACL as a Service</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -89,7 +96,7 @@
              
   <p><a class="reference external" href="https://hub.docker.com/r/sdmtib/travshacl"><img alt="docker" src="https://img.shields.io/badge/Docker%20Image-sdmtib/travshacl-blue?logo=Docker" /></a></p>
 <section id="trav-shacl-as-a-service">
-<h1>Trav-SHACL as a Service<a class="headerlink" href="#trav-shacl-as-a-service" title="Permalink to this heading"></a></h1>
+<h1>Trav-SHACL as a Service<a class="headerlink" href="#trav-shacl-as-a-service" title="Link to this heading"></a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This mode of operation is under development.
@@ -97,10 +104,10 @@ Some features might not be available when running Trav-SHACL as a service.
 It is recommended to use Trav-SHACL as a library.</p>
 </div>
 <section id="getting-the-image">
-<h2>Getting the Image<a class="headerlink" href="#getting-the-image" title="Permalink to this heading"></a></h2>
+<h2>Getting the Image<a class="headerlink" href="#getting-the-image" title="Link to this heading"></a></h2>
 <p>If you want to run Trav-SHACL as a service, you can build the Docker image from its source code or download the Docker image from DockerHub.</p>
 <section id="requirements">
-<h3>Requirements<a class="headerlink" href="#requirements" title="Permalink to this heading"></a></h3>
+<h3>Requirements<a class="headerlink" href="#requirements" title="Link to this heading"></a></h3>
 <p>Trav-SHACL is implemented in Python3.
 The current version supports <img alt="python" src="https://img.shields.io/pypi/pyversions/TravSHACL" />.
 Trav-SHACL uses the <code class="docutils literal notranslate"><span class="pre">rdflib</span></code> library for parsing the SHACL shape schema and the <code class="docutils literal notranslate"><span class="pre">SPARQLWrapper</span></code> library for contacting SPARQL endpoints.
@@ -108,7 +115,7 @@ The Web API is powered by <code class="docutils literal notranslate"><span class
 In order to run Trav-SHACL as a service, you need to have <a class="reference external" href="https://docs.docker.com/engine/install/">Docker</a> installed.</p>
 </section>
 <section id="local-source-code">
-<h3>Local Source Code<a class="headerlink" href="#local-source-code" title="Permalink to this heading"></a></h3>
+<h3>Local Source Code<a class="headerlink" href="#local-source-code" title="Link to this heading"></a></h3>
 <p>You can install Trav-SHACL from your local source code by performing the following steps.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:SDM-TIB/Trav-SHACL.git
 <span class="nb">cd</span><span class="w"> </span>Trav-SHACL
@@ -117,7 +124,7 @@ docker<span class="w"> </span>build<span class="w"> </span>.<span class="w"> </s
 </div>
 </section>
 <section id="dockerhub">
-<h3>DockerHub<a class="headerlink" href="#dockerhub" title="Permalink to this heading"></a></h3>
+<h3>DockerHub<a class="headerlink" href="#dockerhub" title="Link to this heading"></a></h3>
 <p>The easiest method is to download the latest Docker image from DockerHub:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>pull<span class="w"> </span>sdmtib/travshacl:latest
 </pre></div>
@@ -125,7 +132,7 @@ docker<span class="w"> </span>build<span class="w"> </span>.<span class="w"> </s
 </section>
 </section>
 <section id="example">
-<h2>Example<a class="headerlink" href="#example" title="Permalink to this heading"></a></h2>
+<h2>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h2>
 <p>You can run Trav-SHACL over example data provided in the GitHub repository.
 While it is necessary to clone the repository (or download the example folder) from GitHub, you do not need to build the Docker image yourself.</p>
 <p>Assuming your current working directory contains the <code class="docutils literal notranslate"><span class="pre">example</span></code> folder, you can start the necessary Docker containers as shown below:</p>
@@ -171,7 +178,7 @@ The focus shape, i.e., the shape that was validate when the decision for the ent
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2019-2023, Philipp D. Rohde, Mónica Figuera and Uzoma Nwiwu.</p>
+    <p>&#169; Copyright 2019-2024, Philipp D. Rohde, Mónica Figuera and Uzoma Nwiwu.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
