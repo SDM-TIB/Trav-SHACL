@@ -24,7 +24,7 @@ jobs:
         ref: gh-pages
     - name: Import GPG key for signing commits
       id: import-gpg
-      uses: crazy-max/ghaction-import-gpg@v5
+      uses: crazy-max/ghaction-import-gpg@v6
       with:
         gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
         passphrase: ${{ secrets.GPG_PASSPHRASE }}
