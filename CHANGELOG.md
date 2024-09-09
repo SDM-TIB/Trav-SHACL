@@ -1,3 +1,10 @@
+# v1.7.2 - 09 Sep 2024
+- Mark the JSON format for shape schemas as deprecated
+- Update dependencies
+- Minor updates of documentation
+- Update the Python version for the Docker image (3.11.5 to 3.12.5)
+- Update the Virtuoso version in tests and example to 7.2.13
+
 # v1.7.1 - 06 Apr 2024
 - Raise `NotImplementedError` stating that an unsupported feature was used instead of `UnboundLocalError: cannot access local variable 'dict_1'`
 
