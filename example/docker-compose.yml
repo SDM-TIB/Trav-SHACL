@@ -3,7 +3,7 @@ version: '2'
 services:
   example_data:
     container_name: travshacl_example_data
-    image: prohde/virtuoso-opensource-7:7.2.13-alpine
+    image: prohde/virtuoso-opensource-7:7.2.14-alpine
     volumes:
       - ./data/raw:/database/toLoad
       - ./data/virtuoso:/database
