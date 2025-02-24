@@ -1,3 +1,11 @@
+# v1.8.0 - 24 Feb 2025
+- Add support for Python 3.13
+- Drop support for Python 3.8
+- Update dependencies
+- Update documentation
+- Update the Python version for the Docker image (3.12.5 to 3.12.9)
+- Update the Virtuoso version in tests and example to 7.2.14
+
 # v1.7.2 - 09 Sep 2024
 - Mark the JSON format for shape schemas as deprecated
 - Update dependencies
