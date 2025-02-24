@@ -25,4 +25,5 @@ The following is a list of some of the more important features that are not yet 
 *   ``sh:datatype``
 *   ``sh:hasValue``
 *   ``sh:and``
+*   ``sh:not``
 *   and others
