@@ -380,6 +380,7 @@ class ShapeParser:
                     trav_dict['negated'] = None
                     trav_dict['or'] = {}
                     trav_dict['flag'] = False
+                    trav_dict['sparql'] = None
 
                     if "Graph.items" not in dk:
                         for i in dv:
