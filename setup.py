@@ -28,7 +28,7 @@ setup(
     install_requires=['SPARQLWrapper>=2.0.0', 'rdflib>=6.1.1'],
     python_requires='>=3.8',
     classifiers=[
-        'Development Status :: 5 - Production/Stable ',
+        'Development Status :: 5 - Production/Stable',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3 :: Only',
