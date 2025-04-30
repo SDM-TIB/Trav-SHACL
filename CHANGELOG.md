@@ -1,3 +1,6 @@
+# v1.8.1 - 30 Apr 2025
+- Fix parsing issue for shapes with `sh:property` and `sh:sparql`
+
 # v1.8.0 - 24 Feb 2025
 - Add support for Python 3.13
 - Drop support for Python 3.8
