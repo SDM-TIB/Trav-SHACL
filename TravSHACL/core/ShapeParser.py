@@ -2,6 +2,7 @@
 __author__ = 'Monica Figuera and Philipp D. Rohde'
 
 import json
+import logging
 import os
 from urllib.parse import urlparse
 
@@ -20,6 +21,8 @@ QUERY_TARGET_QUERY = '''SELECT ?query WHERE {{
   <{shape}> a <http://www.w3.org/ns/shacl#NodeShape> ;
       <http://www.w3.org/ns/shacl#targetQuery> ?query .
 }}'''
+
+log = logging.getLogger(__name__)
 
 
 class ShapeParser:
@@ -526,3 +529,5 @@ class ShapeParser:
             return [SPARQLConstraint(id_, o_neg, o_query)]
         elif o_path is None:
             return [MinOnlyConstraint(var_generator, id_, o_path, o_min, o_neg, options, o_datatype, o_value, o_shape_ref, target_def)]
+        log.warning('There was an unsupported constraint, skipping it...')
+        return []
