@@ -1,3 +1,6 @@
+# v1.8.2 - 02 May 2025
+- Skip unsupported constraints; logs a warning instead of throwing an exception
+
 # v1.8.1 - 30 Apr 2025
 - Fix parsing issue for shapes with `sh:property` and `sh:sparql`
 
