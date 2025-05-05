@@ -1,3 +1,7 @@
+# v1.8.3 - 05 May 2025
+- Log a warning message instead of throwing `NotImplementedError`
+- Extend shape parser to recognize sequence paths
+
 # v1.8.2 - 02 May 2025
 - Skip unsupported constraints; logs a warning instead of throwing an exception
 
