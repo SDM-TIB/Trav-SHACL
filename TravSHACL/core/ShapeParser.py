@@ -321,7 +321,8 @@ class ShapeParser:
                             if dict_1 is not None:
                                 exp_dict[str(constraint_id)].append(dict_1.copy())
                             else:
-                                raise NotImplementedError('It seems you are using an unsupported feature. Please, check your shape schema.')
+                                log.warning('There was an unsupported constraint, skipping it...')
+                                # raise NotImplementedError('It seems you are using an unsupported feature. Please, check your shape schema.')
                         else:
                             dict_1 = None
                             for shape_ref in filename.query(query[6].format(qvs=qvs)):
@@ -329,7 +330,8 @@ class ShapeParser:
                             if dict_1 is not None:
                                 exp_dict[str(constraint_id)].append(dict_1.copy())
                             else:
-                                raise NotImplementedError('It seems you are using an unsupported feature. Please, check your shape schema.')
+                               log.warning('There was an unsupported constraint, skipping it...')
+                               # raise NotImplementedError('It seems you are using an unsupported feature. Please, check your shape schema.')
                     else:
                         # detail_dict = detail.asdict()
                         dict_2 = [str(detail['p']), str(detail['o'])]
