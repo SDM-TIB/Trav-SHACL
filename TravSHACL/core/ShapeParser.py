@@ -268,6 +268,14 @@ class ShapeParser:
                 BIND(<http://www.w3.org/ns/shacl#path> AS ?p)
                 BIND(CONCAT('^', str(?o)) AS ?o)
                 FILTER( str(?s) = "{constraint}" )
+            }} UNION {{
+                SELECT ?p (group_concat(?o;separator="/") as ?o) WHERE {{
+                    ?s <http://www.w3.org/ns/shacl#path> ?pathList .
+                    FILTER( str(?s) = "{constraint}" )
+                    BIND(<http://www.w3.org/ns/shacl#path> AS ?p)
+                    ?pathList rdf:rest*/rdf:first ?o .
+                    BIND(CONCAT('<', str(?o), '>') AS ?o)
+                }} GROUP BY ?s
             }}
         }}'''
 
