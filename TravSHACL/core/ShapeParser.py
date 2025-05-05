@@ -537,7 +537,7 @@ class ShapeParser:
                 return [MaxOnlyConstraint(var_generator, id_, o_path, o_max, o_neg, options, o_datatype, o_value, o_shape_ref, target_def)]
         elif o_query is not None:
             return [SPARQLConstraint(id_, o_neg, o_query)]
-        elif o_path is None:
+        elif options is not None:
             return [MinOnlyConstraint(var_generator, id_, o_path, o_min, o_neg, options, o_datatype, o_value, o_shape_ref, target_def)]
         log.warning('There was an unsupported constraint, skipping it...')
         return []
