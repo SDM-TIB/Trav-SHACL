@@ -125,7 +125,8 @@ Now the data is accessible and you can validate it against the provided example 
         max_split_size=256,
         output_dir='./result/',  # directory where the output files will be stored
         order_by_in_queries=False,  # sort the results of SPARQL queries in order to ensure the same order across several runs
-        save_outputs=True  # save outputs to output_dir, alternative value: False
+        save_outputs=True,  # save outputs to output_dir, alternative value: False
+        ignore_parsing_errors=False  # throw exception on parsing error, alternative value: True
     )
 
     result = shape_schema.validate()  # validate the SHACL shape schema
@@ -162,7 +163,8 @@ The following code executes the example from above by passing an ``rdflib.Graph`
         max_split_size=256,
         output_dir='./result/',  # directory where the output files will be stored
         order_by_in_queries=False,  # sort the results of SPARQL queries in order to ensure the same order across several runs
-        save_outputs=True  # save outputs to output_dir, alternative value: False
+        save_outputs=True,  # save outputs to output_dir, alternative value: False
+        ignore_parsing_errors=False  # throw exception on parsing error, alternative value: True
     )
 
     result = shape_schema.validate()  # validate the SHACL shape schema
@@ -188,6 +190,7 @@ Before executing the above script, let us have a look at the different parameter
 * ``output_dir`` (optional) directory where the output files will be stored; default: ``None``
 * ``order_by_in_queries`` (optional) sort the results of all SPARQL queries, ensures the same order in the result logs over several runs, is one of ``[True, False]``; default: ``False``
 * ``save_outputs`` (optional) creates one file each for violated and validated targets, otherwise only statistics and traces will be stored, is one of ``[True, False]``; default: ``False``
+* ``ignore_parsing_errors`` (optional) whether to ignore parsing errors, i.e., logging a warning instead of throwing an exception; default: ``False``
 
 Results: Internal Structure
 ===========================
