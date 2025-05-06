@@ -1,3 +1,7 @@
+# v1.9.0 - 06 May 2025
+- Fix check for parsing shapes with `sh:or` constraints
+- Add switch `ignore_parsing_errors` to `ShapeSchema` to either log a warning or throw an exception for parsing errors
+
 # v1.8.3 - 05 May 2025
 - Log a warning message instead of throwing `NotImplementedError`
 - Extend shape parser to recognize sequence paths
