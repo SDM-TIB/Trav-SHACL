@@ -21,7 +21,8 @@ class ShapeSchema:
                  endpoint_user: str = None, endpoint_password: str = None,
                  graph_traversal: GraphTraversal = GraphTraversal.DFS, heuristics: dict = parse_heuristics("TARGET IN BIG"),
                  use_selective_queries: bool = True, max_split_size: int = 256, output_dir: str = None,
-                 order_by_in_queries: bool = False, save_outputs: bool = False, work_in_parallel: bool = False):
+                 order_by_in_queries: bool = False, save_outputs: bool = False, work_in_parallel: bool = False,
+                 ignore_parsing_errors: bool = False):
         """
         Creates a new shape schema instance.
 
@@ -40,6 +41,7 @@ class ShapeSchema:
         :param order_by_in_queries: indicates whether to use the ORDER BY clause; default: False
         :param save_outputs: indicates whether target classifications will be saved to the output path; default: False
         :param work_in_parallel: indicates whether parallelization will be used; not yet implemented; default: False
+        :param ignore_parsing_errors: whether to ignore parsing errors; default: False
         """
         if schema_format == 'JSON':
             warnings.warn(
@@ -47,11 +49,11 @@ class ShapeSchema:
                 DeprecationWarning, 2
             )
         if isinstance(schema_dir, Graph):
-            self.shapes = ShapeParser().parse_ttl(
+            self.shapes = ShapeParser(ignore_errors=ignore_parsing_errors).parse_ttl(
                 schema_dir, use_selective_queries, max_split_size, order_by_in_queries
             )
         else:
-            self.shapes = ShapeParser().parse_shapes_from_dir(
+            self.shapes = ShapeParser(ignore_errors=ignore_parsing_errors).parse_shapes_from_dir(
                 schema_dir, schema_format, use_selective_queries, max_split_size, order_by_in_queries
             )
         self.shapesDict = {shape.get_id(): shape for shape in self.shapes}  # TODO: use only the dict?

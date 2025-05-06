@@ -28,8 +28,12 @@ log = logging.getLogger(__name__)
 class ShapeParser:
     """Used for parsing shape definitions from files to the internal representation."""
 
-    def __init__(self):
-        pass
+    def __init__(self, ignore_errors=False):
+        """Initialize the shape parser.
+
+        :param ignore_errors: whether to ignore parsing errors, i.e., logging a warning instead of throwing an exception
+        """
+        self.ignore_errors = ignore_errors
 
     def parse_shapes_from_dir(self, path, shape_format, use_selective_queries, max_split_size, order_by_in_queries):
         """
@@ -329,8 +333,10 @@ class ShapeParser:
                             if dict_1 is not None:
                                 exp_dict[str(constraint_id)].append(dict_1.copy())
                             else:
-                                log.warning('There was an unsupported constraint, skipping it...')
-                                # raise NotImplementedError('It seems you are using an unsupported feature. Please, check your shape schema.')
+                                if self.ignore_errors:
+                                    log.warning('There was an unsupported constraint, skipping it...')
+                                else:
+                                    raise NotImplementedError('It seems you are using an unsupported feature. Please, check your shape schema.')
                         else:
                             dict_1 = None
                             for shape_ref in filename.query(query[6].format(qvs=qvs)):
@@ -338,8 +344,10 @@ class ShapeParser:
                             if dict_1 is not None:
                                 exp_dict[str(constraint_id)].append(dict_1.copy())
                             else:
-                               log.warning('There was an unsupported constraint, skipping it...')
-                               # raise NotImplementedError('It seems you are using an unsupported feature. Please, check your shape schema.')
+                                if self.ignore_errors:
+                                    log.warning('There was an unsupported constraint, skipping it...')
+                                else:
+                                    raise NotImplementedError('It seems you are using an unsupported feature. Please, check your shape schema.')
                     else:
                         # detail_dict = detail.asdict()
                         dict_2 = [str(detail['p']), str(detail['o'])]
@@ -476,8 +484,7 @@ class ShapeParser:
 
         return constraints
 
-    @staticmethod
-    def parse_constraint(var_generator, obj, id_, target_def, options=None):
+    def parse_constraint(self, var_generator, obj, id_, target_def, options=None):
         """
         Parses one constraint to the internal representation.
 
@@ -539,5 +546,10 @@ class ShapeParser:
             return [SPARQLConstraint(id_, o_neg, o_query)]
         elif options is not None:
             return [MinOnlyConstraint(var_generator, id_, o_path, o_min, o_neg, options, o_datatype, o_value, o_shape_ref, target_def)]
+
+        if self.ignore_errors:
+            log.warning('There was an unsupported constraint, skipping it...')
+        else:
+            raise NotImplementedError('It seems you are using an unsupported feature. Please, check your shape schema.')
         log.warning('There was an unsupported constraint, skipping it...')
         return []

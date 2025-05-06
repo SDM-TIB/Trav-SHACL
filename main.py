@@ -47,6 +47,9 @@ if __name__ == '__main__':
     parser.add_argument('-j', '--json', action='store_true', default=False,
                         help='Indicates that the SHACL shape schema is expressed in JSON', required=False)
 
+    parser.add_argument('-f', '--force', action='store_true', default=False,
+                        help='Ignore parsing errors, log a warning instead', required=False)
+
     args = parser.parse_args()
     eval_shape_schema(args)
 

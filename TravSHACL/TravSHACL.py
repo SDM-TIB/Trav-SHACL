@@ -22,7 +22,8 @@ def eval_shape_schema(args):
         max_split_size=args.m,
         output_dir=args.outputDir,
         order_by_in_queries=args.orderby,
-        save_outputs=args.outputs
+        save_outputs=args.outputs,
+        ignore_parsing_errors=args.force
     )
 
     report = shape_schema.validate()  # run the evaluation of the SHACL constraints over the specified endpoint
