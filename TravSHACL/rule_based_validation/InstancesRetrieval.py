@@ -75,6 +75,68 @@ class InstancesRetrieval:
 
         return violations
 
+    def execute_node_constraint(self, constraint, focus_nodes, invalid_set):
+        """Evaluate a ``sh:node`` property-level constraint.
+
+        Finds all focus nodes that have **at least one value** of
+        ``constraint.path`` belonging to ``invalid_set`` (i.e. already
+        declared invalid by the referenced shape).  Those focus nodes are
+        returned as violations of the ``sh:node`` constraint.
+
+        The check is batched so that neither the VALUES clause for focus
+        nodes nor the one for invalid values grows beyond the endpoint's
+        practical query-size limit.
+
+        :param constraint: a ``NodeConstraint`` instance carrying ``path``
+            and ``shapeRef``
+        :param focus_nodes: list of focus-node URI strings (without ``<>``)
+        :param invalid_set: set of invalid-instance strings **with** ``<>``
+            as returned by ``Shape.get_invalid_targets()``
+        :return: list of focus-node URIs (without ``<>``) that violate the
+            constraint
+        """
+        if not focus_nodes or not invalid_set:
+            return []
+
+        MAX_FOCUS = 80       # keep VALUES clauses within safe SPARQL limits
+        MAX_INVALID = 200
+        violations = set()
+
+        invalid_list = list(invalid_set)
+        for fi in range(0, len(focus_nodes), MAX_FOCUS):
+            focus_batch = focus_nodes[fi:fi + MAX_FOCUS]
+            focus_values = ' '.join('<' + fn + '>' for fn in focus_batch)
+
+            for ii in range(0, len(invalid_list), MAX_INVALID):
+                inv_batch = invalid_list[ii:ii + MAX_INVALID]
+                inv_values = ' '.join(inv_batch)  # already have <>
+
+                query = (
+                    'SELECT DISTINCT ?focus WHERE {\n'
+                    '  VALUES ?focus { ' + focus_values + ' }\n'
+                    '  VALUES ?val   { ' + inv_values + ' }\n'
+                    '  ?focus ' + constraint.path + ' ?val .\n'
+                    '}'
+                )
+
+                self.stats.update_log(
+                    '\n\nEvaluating sh:node constraint (' + constraint.id + '):\n' + query
+                )
+                start = time.time() * 1000.0
+                bindings = self.endpoint.run_query(query)['results']['bindings']
+                end = time.time() * 1000.0
+                self.stats.update_log('\nelapsed: ' + str(end - start) + ' ms\n')
+                self.stats.record_query_exec_time(end - start)
+                self.stats.record_query()
+                self.stats.update_log(
+                    '\nNumber of sh:node violations found: ' + str(len(bindings)) + '\n'
+                )
+                self.stats.record_number_of_sol_mappings(len(bindings))
+
+                violations.update(b['focus']['value'] for b in bindings)
+
+        return list(violations)
+
     def extract_targets(self, shape):
         """
         Retrieves answers from the SPARQL endpoint.

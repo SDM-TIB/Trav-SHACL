@@ -1,0 +1,12 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix test: <http://test.example.com/> .
+@prefix :     <http://test.example.com/shapes/> .
+
+# Inheriting shape: a focus node must also conform to :ClassC1Shape.
+# sh:node here is a *shape-level* (DirectNodeConstraint) — it applies to
+# the focus node itself rather than to the values of a property path.
+# Any ClassC instance that is invalid in :ClassC1Shape is therefore also
+# invalid here.
+:ClassC2Shape a sh:NodeShape ;
+    sh:targetClass test:ClassC ;
+    sh:node :ClassC1Shape .

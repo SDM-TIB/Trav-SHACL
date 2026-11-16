@@ -4,6 +4,8 @@ __author__ = 'Monica Figuera and Philipp D. Rohde'
 import itertools
 
 from TravSHACL.constraints.SPARQLConstraint import SPARQLConstraint
+from TravSHACL.constraints.NodeConstraint import NodeConstraint
+from TravSHACL.constraints.DirectNodeConstraint import DirectNodeConstraint
 from TravSHACL.utils.VariableGenerator import VariableGenerator
 from TravSHACL.core.RulePattern import RulePattern
 from TravSHACL.sparql.QueryGenerator import QueryGenerator
@@ -94,6 +96,24 @@ class Shape:
         """ Get all SPARQL constraints of the shape """
         return [c for c in self.constraints if type(c) == SPARQLConstraint]
 
+    def get_node_constraints(self):
+        """Return all ``sh:node`` property-level constraints (NodeConstraint).
+
+        These require *all* value nodes of the associated path to conform to
+        the referenced shape.  Validation is deferred until the referenced shape
+        has been fully evaluated.
+        """
+        return [c for c in self.constraints if isinstance(c, NodeConstraint)]
+
+    def get_direct_node_constraints(self):
+        """Return all shape-level ``sh:node`` constraints (DirectNodeConstraint).
+
+        These require the focus node itself to also conform to the referenced
+        shape (shape inheritance).  Validation propagates invalidity from the
+        referenced shape directly.
+        """
+        return [c for c in self.constraints if isinstance(c, DirectNodeConstraint)]
+
     def get_shape_refs(self):
         return [c.get_shape_ref() for c in self.constraints if c.get_shape_ref() is not None]
 
@@ -127,6 +147,12 @@ class Shape:
         for ref in self.referencedShapes.keys():
             for c in self.constraints:
                 if c.path == self.referencedShapes[ref]:
+                    # NodeConstraint and DirectNodeConstraint are validated via a
+                    # separate post-processing step in Validation, not through the
+                    # selective-query filter mechanism.  Skip them here to avoid
+                    # generating an incorrect template_FILTER query.
+                    if isinstance(c, (NodeConstraint, DirectNodeConstraint)):
+                        continue
                     query_valid, query_invalid = self.QueryGenerator.generate_target_query('template_FILTER', [c],
                                                                                            self.targetQueryNoPref,
                                                                                            self.includePrefixes,

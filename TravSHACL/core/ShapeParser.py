@@ -12,10 +12,17 @@ from rdflib import Graph
 from itertools import islice
 
 from TravSHACL.constraints.SPARQLConstraint import SPARQLConstraint
+from TravSHACL.constraints.NodeConstraint import NodeConstraint
+from TravSHACL.constraints.DirectNodeConstraint import DirectNodeConstraint
 from TravSHACL.core.Shape import Shape
 from TravSHACL.utils.VariableGenerator import VariableGenerator
 from TravSHACL.constraints.MaxOnlyConstraint import MaxOnlyConstraint
 from TravSHACL.constraints.MinOnlyConstraint import MinOnlyConstraint
+
+# The full IRI for sh:node – used to distinguish a bare sh:node predicate
+# (which appears as a plain URI reference in constraint details) from the
+# sh:qualifiedValueShape blank-node pattern that is already handled.
+_SH_NODE_IRI = 'http://www.w3.org/ns/shacl#node'
 
 QUERY_TARGET_QUERY = '''SELECT ?query WHERE {{
   <{shape}> a <http://www.w3.org/ns/shacl#NodeShape> ;
@@ -181,6 +188,17 @@ class ShapeParser:
                     valid_flag.append(entry['flag'])
 
             constraints = self.parse_constraints_ttl(const_array, target_def, id_)
+
+            # ── DirectNodeConstraint: sh:node placed directly on the shape ──
+            # These are *not* inside any sh:property block and therefore not
+            # captured by parse_all_const / get_res.  We query for them
+            # separately and append them to the constraint list.
+            for idx, row in enumerate(shapes_graph.query(queries[9].format(shape=name))):
+                node_shape = str(row['node_shape'])
+                node_shape_ref = ('<' + node_shape + '>') if urlparse(node_shape).netloc != '' else node_shape
+                dn_id = id_ + '_c_dn' + str(idx + 1)
+                constraints.append(DirectNodeConstraint(dn_id, node_shape_ref))
+
             include_sparql_prefixes = self.abbreviated_syntax_used(constraints)
             prefixes = None
             referenced_shapes = self.shape_references(const_array)
@@ -218,12 +236,24 @@ class ShapeParser:
     @staticmethod
     def shape_references(constraints):
         """
-        Gets the shapes referenced by the given constraints.
+        Gets the shapes referenced by the given constraints for the inter-shape
+        selective-query filter mechanism (``sh:qualifiedValueShape`` style).
+
+        NodeConstraint references (bare ``sh:node`` inside a property block) are
+        deliberately excluded here.  They are still registered as constraint
+        objects and therefore included in the dependency graph via
+        ``Shape.get_shape_refs()``, but they need a different validation path
+        that must not go through ``__compute_target_queries``.
 
         :param constraints: the constraints to get the referenced shapes for
-        :return: Python dictionary with the referenced shapes and the path referencing the shape
+        :return: Python dictionary with the referenced shapes and the path
+                 referencing the shape (only non-NodeConstraint references)
         """
-        return {c.get('shape'): c.get('path') for c in constraints if c.get('shape') is not None}
+        return {
+            c.get('shape'): c.get('path')
+            for c in constraints
+            if c.get('shape') is not None and not c.get('node_constraint', False)
+        }
 
     @staticmethod
     def chunks(datei, SIZE):
@@ -305,8 +335,18 @@ class ShapeParser:
                                   <{shape}> <http://www.w3.org/ns/shacl#or> ?constraint .
                                 }}
                                 '''
+
+        # Finds sh:node constraints placed *directly* on a node shape (not inside
+        # a sh:property block).  These represent shape-level inheritance and are
+        # turned into DirectNodeConstraint objects.
+        QUERY_DIRECT_NODE_CONSTRAINT = '''SELECT ?node_shape WHERE {{
+            <{shape}> a <http://www.w3.org/ns/shacl#NodeShape> .
+            <{shape}> <http://www.w3.org/ns/shacl#node> ?node_shape .
+        }}'''
+
         return QUERY_SHAPES, QUERY_TARGET_1, QUERY_TARGET_2, QUERY_CONSTRAINTS, QUERY_CONSTRAINT_DETAILS, \
-               QUERY_QVS_REF_1, QUERY_QVS_REF_2, QUERY_SPARQL_CONSTRAINTS, QUERY_OR
+               QUERY_QVS_REF_1, QUERY_QVS_REF_2, QUERY_SPARQL_CONSTRAINTS, QUERY_OR, \
+               QUERY_DIRECT_NODE_CONSTRAINT
 
     def get_res(self, filename, name, query):
         """
@@ -402,6 +442,7 @@ class ShapeParser:
                     trav_dict['or'] = {}
                     trav_dict['flag'] = False
                     trav_dict['sparql'] = None
+                    trav_dict['node_constraint'] = False  # set True for bare sh:node in property
 
                     if "Graph.items" not in dk:
                         for i in dv:
@@ -419,6 +460,16 @@ class ShapeParser:
 
                             if 'valueshape' in str(i[0]).lower():
                                 trav_dict['shape'] = str(i[1])
+
+                            # Bare sh:node inside a property blank node (not
+                            # wrapped in sh:qualifiedValueShape).  Mark this as a
+                            # NodeConstraint so parse_constraint can create the
+                            # right object and shape_references can exclude it
+                            # from the inter-shape filter mechanism.
+                            if str(i[0]) == _SH_NODE_IRI:
+                                trav_dict['shape'] = str(i[1])
+                                trav_dict['node_constraint'] = True
+
                             #                            if 'value' in str(i[1][0]).lower():
                             #                                trav_dict['value'] = str(i[1][1])
                             #                            if 'shape' in str(i[1][0]).lower():
@@ -534,14 +585,35 @@ class ShapeParser:
         if urlparse(datatype).netloc != '' and datatype is not None:  # if the data type is a url, add '<>' to it
             o_datatype = '<' + datatype + '>'
 
+        # Flag set by parse_all_const when sh:node appears as a direct predicate
+        # in a property blank node (not inside sh:qualifiedValueShape).
+        is_node_constraint = obj.get('node_constraint', False)
+
         if o_path is not None:
+            result = []
+
+            if is_node_constraint and o_shape_ref is not None:
+                # sh:node in a property shape: all values of the path must
+                # conform to o_shape_ref.  The shape reference is consumed
+                # entirely by NodeConstraint; cardinality constraints (if
+                # also present via sh:minCount / sh:maxCount) are plain
+                # count checks with no shape reference.
+                result.append(NodeConstraint(id_ + '_node', o_path, o_shape_ref, o_neg))
+                card_shape_ref = None   # cardinality is separate from sh:node
+            else:
+                # qualifiedValueShape or no shape reference at all
+                card_shape_ref = o_shape_ref
+
             if o_min is not None:
-                if o_max is not None:
-                    return [MinOnlyConstraint(var_generator, id_, o_path, o_min, o_neg, options, o_datatype, o_value, o_shape_ref, target_def),
-                            MaxOnlyConstraint(var_generator, id_, o_path, o_max, o_neg, options, o_datatype, o_value, o_shape_ref, target_def)]
-                return [MinOnlyConstraint(var_generator, id_, o_path, o_min, o_neg, options, o_datatype, o_value, o_shape_ref, target_def)]
+                result.append(MinOnlyConstraint(var_generator, id_, o_path, o_min, o_neg, options,
+                                                o_datatype, o_value, card_shape_ref, target_def))
             if o_max is not None:
-                return [MaxOnlyConstraint(var_generator, id_, o_path, o_max, o_neg, options, o_datatype, o_value, o_shape_ref, target_def)]
+                result.append(MaxOnlyConstraint(var_generator, id_, o_path, o_max, o_neg, options,
+                                                o_datatype, o_value, card_shape_ref, target_def))
+
+            if result:
+                return result
+            # o_path present but no min/max and no node constraint → fall through
         elif o_query is not None:
             return [SPARQLConstraint(id_, o_neg, o_query)]
         elif options is not None:

@@ -1,0 +1,13 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix test: <http://test.example.com/> .
+@prefix :     <http://test.example.com/shapes/> .
+
+# All values of test:toC must conform to :ClassCShape (sh:node without cardinality).
+# A focus node is violated as soon as *any* value is invalid in the referenced shape.
+# Instances with no test:toC values satisfy this constraint vacuously.
+:ClassBShape a sh:NodeShape ;
+    sh:targetClass test:ClassB ;
+    sh:property [
+        sh:path test:toC ;
+        sh:node :ClassCShape
+    ] .

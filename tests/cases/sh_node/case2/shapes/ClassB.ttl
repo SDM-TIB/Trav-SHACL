@@ -1,0 +1,17 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix test: <http://test.example.com/> .
+@prefix :     <http://test.example.com/shapes/> .
+
+# Two independent constraints on test:toC:
+#   sh:minCount 1  – must have at least one value (plain cardinality, not qualified)
+#   sh:node        – ALL values must conform to :ClassCShape
+#
+# A focus node is violated if it has no toC values (minCount)
+# OR if any toC value is invalid in :ClassCShape (sh:node).
+:ClassBShape a sh:NodeShape ;
+    sh:targetClass test:ClassB ;
+    sh:property [
+        sh:path     test:toC ;
+        sh:minCount 1 ;
+        sh:node     :ClassCShape
+    ] .
