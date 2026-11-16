@@ -11,7 +11,7 @@ on:
 
 jobs:
   pre_job:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       should_skip: ${{ steps.skip_check.outputs.should_skip }}
     steps:
@@ -24,7 +24,7 @@ jobs:
     needs: pre_job
     if: needs.pre_job.outputs.should_skip != 'true'
     timeout-minutes: 10
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
