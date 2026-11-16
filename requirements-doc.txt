@@ -1,4 +1,4 @@
 sphinx>=4.4.0
-sphinx-rtd-theme==3.0.1
+sphinx-rtd-theme==3.0.2
 sphinx-mdinclude
 sphinxcontrib-bibtex>=2.4.0
