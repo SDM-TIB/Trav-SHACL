@@ -21,7 +21,6 @@ The following is a list of what is supported:
 
 The following is a list of some of the more important features that are not yet covered:
 
-*   ``sh:node``
 *   ``sh:datatype``
 *   ``sh:hasValue``
 *   ``sh:and``
