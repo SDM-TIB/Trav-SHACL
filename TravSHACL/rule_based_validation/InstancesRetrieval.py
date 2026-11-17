@@ -188,9 +188,6 @@ class InstancesRetrieval:
         :param filtering_shape: referenced shape used to filter query, or None
         :return: two sets containing all targets of 'shape': pending targets to validate and directly invalidated targets
         """
-        if self.endpoint.get_endpoint_type() != SPARQLWrapper:
-            return self.extract_targets(shape), []  # FIXME: rdflib cannot handle unbound variables in aggregates, hence, no filtering will be applied
-
         # Valid and invalid instances of the previous evaluated shape (if any)
         prev_val_list = set() if filtering_shape is None else filtering_shape.get_valid_targets()
         prev_inv_list = set() if filtering_shape is None else filtering_shape.get_invalid_targets()
