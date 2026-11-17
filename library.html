@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Trav-SHACL as a Library &mdash; Trav-SHACL 1.9.0 documentation</title>
+  <title>Trav-SHACL as a Library &mdash; Trav-SHACL 1.10.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=aa353e79" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=25d9e9fd"></script>
+      <script src="_static/documentation_options.js?v=76b3955f"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -122,7 +122,7 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 <section id="github">
 <h3>GitHub<a class="headerlink" href="#github" title="Link to this heading"></a></h3>
 <p>Trav-SHACL can also be installed from its source code in GitHub without explicitly cloning the repository:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;git+https://github.com/SDM-TIB/Trav-SHACL#egg=DeTrusty&#39;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s1">'git+https://github.com/SDM-TIB/Trav-SHACL#egg=DeTrusty'</span>
 </pre></div>
 </div>
 </section>
@@ -175,20 +175,20 @@ You can check its accessibility by navigating to <a class="reference external" h
 <p>Now the data is accessible and you can validate it against the provided example shapes.</p>
 <div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">TravSHACL</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_heuristics</span><span class="p">,</span> <span class="n">GraphTraversal</span><span class="p">,</span> <span class="n">ShapeSchema</span>
 
-<span class="n">prio_target</span> <span class="o">=</span> <span class="s1">&#39;TARGET&#39;</span>  <span class="c1"># shapes with target definition are preferred, alternative value: &#39;&#39;</span>
-<span class="n">prio_degree</span> <span class="o">=</span> <span class="s1">&#39;IN&#39;</span>  <span class="c1"># shapes with a higher in-degree are prioritized, alternative value &#39;OUT&#39;</span>
-<span class="n">prio_number</span> <span class="o">=</span> <span class="s1">&#39;BIG&#39;</span>  <span class="c1"># shapes with many constraints are evaluated first, alternative value &#39;SMALL&#39;</span>
+<span class="n">prio_target</span> <span class="o">=</span> <span class="s1">'TARGET'</span>  <span class="c1"># shapes with target definition are preferred, alternative value: ''</span>
+<span class="n">prio_degree</span> <span class="o">=</span> <span class="s1">'IN'</span>  <span class="c1"># shapes with a higher in-degree are prioritized, alternative value 'OUT'</span>
+<span class="n">prio_number</span> <span class="o">=</span> <span class="s1">'BIG'</span>  <span class="c1"># shapes with many constraints are evaluated first, alternative value 'SMALL'</span>
 
 <span class="n">shape_schema</span> <span class="o">=</span> <span class="n">ShapeSchema</span><span class="p">(</span>
-    <span class="n">schema_dir</span><span class="o">=</span><span class="s1">&#39;./shapes/LUBM&#39;</span><span class="p">,</span>
-    <span class="n">endpoint</span><span class="o">=</span><span class="s1">&#39;http://localhost:9090/sparql&#39;</span><span class="p">,</span>
+    <span class="n">schema_dir</span><span class="o">=</span><span class="s1">'./shapes/LUBM'</span><span class="p">,</span>
+    <span class="n">endpoint</span><span class="o">=</span><span class="s1">'http://localhost:9090/sparql'</span><span class="p">,</span>
     <span class="n">endpoint_user</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># username if validating a private endpoint</span>
     <span class="n">endpoint_password</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># password if validating a private endpoint</span>
     <span class="n">graph_traversal</span><span class="o">=</span><span class="n">GraphTraversal</span><span class="o">.</span><span class="n">DFS</span><span class="p">,</span>
-    <span class="n">heuristics</span><span class="o">=</span><span class="n">parse_heuristics</span><span class="p">(</span><span class="n">prio_target</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">prio_degree</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">prio_number</span><span class="p">),</span>
+    <span class="n">heuristics</span><span class="o">=</span><span class="n">parse_heuristics</span><span class="p">(</span><span class="n">prio_target</span> <span class="o">+</span> <span class="s1">' '</span> <span class="o">+</span> <span class="n">prio_degree</span> <span class="o">+</span> <span class="s1">' '</span> <span class="o">+</span> <span class="n">prio_number</span><span class="p">),</span>
     <span class="n">use_selective_queries</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">max_split_size</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span>
-    <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;./result/&#39;</span><span class="p">,</span>  <span class="c1"># directory where the output files will be stored</span>
+    <span class="n">output_dir</span><span class="o">=</span><span class="s1">'./result/'</span><span class="p">,</span>  <span class="c1"># directory where the output files will be stored</span>
     <span class="n">order_by_in_queries</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># sort the results of SPARQL queries in order to ensure the same order across several runs</span>
     <span class="n">save_outputs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># save outputs to output_dir, alternative value: False</span>
     <span class="n">ignore_parsing_errors</span><span class="o">=</span><span class="kc">False</span>  <span class="c1"># throw exception on parsing error, alternative value: True</span>
@@ -208,23 +208,23 @@ The following code executes the example from above by passing an <code class="do
 <span class="kn">from</span><span class="w"> </span><span class="nn">rdflib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Graph</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">TravSHACL</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_heuristics</span><span class="p">,</span> <span class="n">GraphTraversal</span><span class="p">,</span> <span class="n">ShapeSchema</span>
 
-<span class="n">prio_target</span> <span class="o">=</span> <span class="s1">&#39;TARGET&#39;</span>  <span class="c1"># shapes with target definition are preferred, alternative value: &#39;&#39;</span>
-<span class="n">prio_degree</span> <span class="o">=</span> <span class="s1">&#39;IN&#39;</span>  <span class="c1"># shapes with a higher in-degree are prioritized, alternative value &#39;OUT&#39;</span>
-<span class="n">prio_number</span> <span class="o">=</span> <span class="s1">&#39;BIG&#39;</span>  <span class="c1"># shapes with many constraints are evaluated first, alternative value &#39;SMALL&#39;</span>
+<span class="n">prio_target</span> <span class="o">=</span> <span class="s1">'TARGET'</span>  <span class="c1"># shapes with target definition are preferred, alternative value: ''</span>
+<span class="n">prio_degree</span> <span class="o">=</span> <span class="s1">'IN'</span>  <span class="c1"># shapes with a higher in-degree are prioritized, alternative value 'OUT'</span>
+<span class="n">prio_number</span> <span class="o">=</span> <span class="s1">'BIG'</span>  <span class="c1"># shapes with many constraints are evaluated first, alternative value 'SMALL'</span>
 
-<span class="n">schema_dir</span> <span class="o">=</span> <span class="s1">&#39;./shapes/LUBM&#39;</span>
+<span class="n">schema_dir</span> <span class="o">=</span> <span class="s1">'./shapes/LUBM'</span>
 <span class="n">shapes_graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">shape_file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">schema_dir</span><span class="p">):</span>
     <span class="n">shapes_graph</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">schema_dir</span><span class="p">,</span> <span class="n">shape_file</span><span class="p">))</span>  <span class="c1"># reading all shape files into the shapes graph</span>
 
 <span class="n">shape_schema</span> <span class="o">=</span> <span class="n">ShapeSchema</span><span class="p">(</span>
     <span class="n">schema_dir</span><span class="o">=</span><span class="n">shapes_graph</span><span class="p">,</span>  <span class="c1"># passing an RDFlib graph containing the shapes</span>
-    <span class="n">endpoint</span><span class="o">=</span><span class="s1">&#39;http://localhost:9090/sparql&#39;</span><span class="p">,</span>
+    <span class="n">endpoint</span><span class="o">=</span><span class="s1">'http://localhost:9090/sparql'</span><span class="p">,</span>
     <span class="n">graph_traversal</span><span class="o">=</span><span class="n">GraphTraversal</span><span class="o">.</span><span class="n">DFS</span><span class="p">,</span>
-    <span class="n">heuristics</span><span class="o">=</span><span class="n">parse_heuristics</span><span class="p">(</span><span class="n">prio_target</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">prio_degree</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">prio_number</span><span class="p">),</span>
+    <span class="n">heuristics</span><span class="o">=</span><span class="n">parse_heuristics</span><span class="p">(</span><span class="n">prio_target</span> <span class="o">+</span> <span class="s1">' '</span> <span class="o">+</span> <span class="n">prio_degree</span> <span class="o">+</span> <span class="s1">' '</span> <span class="o">+</span> <span class="n">prio_number</span><span class="p">),</span>
     <span class="n">use_selective_queries</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">max_split_size</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span>
-    <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;./result/&#39;</span><span class="p">,</span>  <span class="c1"># directory where the output files will be stored</span>
+    <span class="n">output_dir</span><span class="o">=</span><span class="s1">'./result/'</span><span class="p">,</span>  <span class="c1"># directory where the output files will be stored</span>
     <span class="n">order_by_in_queries</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># sort the results of SPARQL queries in order to ensure the same order across several runs</span>
     <span class="n">save_outputs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># save outputs to output_dir, alternative value: False</span>
     <span class="n">ignore_parsing_errors</span><span class="o">=</span><span class="kc">False</span>  <span class="c1"># throw exception on parsing error, alternative value: True</span>
@@ -267,57 +267,57 @@ The following code executes the example from above by passing an <code class="do
 More insights can be found in the various files that are generated in <code class="docutils literal notranslate"><span class="pre">result</span></code>.
 Let us discuss the printed result first.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{
-  &#39;&lt;http://example.org/GraduateCourseShape&gt;&#39;: {
-    &#39;valid_instances&#39;: {
-      (&#39;&lt;http://example.org/FullProfessorShape&gt;&#39;, &#39;http://www.Department0.University0.edu/FullProfessor9&#39;, True),
-      (&#39;&lt;http://example.org/GraduateCourseShape&gt;&#39;, &#39;http://www.Department0.University0.edu/GraduateCourse3&#39;, True),
-      (&#39;&lt;http://example.org/GraduateCourseShape&gt;&#39;, &#39;http://www.Department0.University0.edu/GraduateCourse16&#39;, True)
-      (&#39;&lt;http://example.org/GraduateCourseShape&gt;&#39;, &#39;http://www.Department0.University0.edu/GraduateCourse33&#39;, True),
-      (&#39;&lt;http://example.org/GraduateCourseShape&gt;&#39;, &#39;http://www.Department0.University0.edu/GraduateCourse42&#39;, True),
-      (&#39;&lt;http://example.org/GraduateStudentShape&gt;&#39;, &#39;http://www.Department0.University0.edu/GraduateStudent0&#39;, True),
-      (&#39;&lt;http://example.org/GraduateStudentShape&gt;&#39;, &#39;http://www.Department0.University0.edu/GraduateStudent91&#39;, True),
-      (&#39;&lt;http://example.org/FullProfessorShape&gt;&#39;, &#39;http://www.Department9.University0.edu/FullProfessor1&#39;, True),
-      (&#39;&lt;http://example.org/GraduateCourseShape&gt;&#39;, &#39;http://www.Department9.University0.edu/GraduateCourse1&#39;, True),
-      (&#39;&lt;http://example.org/GraduateStudentShape&gt;&#39;, &#39;http://www.Department9.University0.edu/GraduateStudent28&#39;, True)
+  '&lt;http://example.org/GraduateCourseShape&gt;': {
+    'valid_instances': {
+      ('&lt;http://example.org/FullProfessorShape&gt;', 'http://www.Department0.University0.edu/FullProfessor9', True),
+      ('&lt;http://example.org/GraduateCourseShape&gt;', 'http://www.Department0.University0.edu/GraduateCourse3', True),
+      ('&lt;http://example.org/GraduateCourseShape&gt;', 'http://www.Department0.University0.edu/GraduateCourse16', True)
+      ('&lt;http://example.org/GraduateCourseShape&gt;', 'http://www.Department0.University0.edu/GraduateCourse33', True),
+      ('&lt;http://example.org/GraduateCourseShape&gt;', 'http://www.Department0.University0.edu/GraduateCourse42', True),
+      ('&lt;http://example.org/GraduateStudentShape&gt;', 'http://www.Department0.University0.edu/GraduateStudent0', True),
+      ('&lt;http://example.org/GraduateStudentShape&gt;', 'http://www.Department0.University0.edu/GraduateStudent91', True),
+      ('&lt;http://example.org/FullProfessorShape&gt;', 'http://www.Department9.University0.edu/FullProfessor1', True),
+      ('&lt;http://example.org/GraduateCourseShape&gt;', 'http://www.Department9.University0.edu/GraduateCourse1', True),
+      ('&lt;http://example.org/GraduateStudentShape&gt;', 'http://www.Department9.University0.edu/GraduateStudent28', True)
     },
-   &#39;invalid_instances&#39;: {
-      (&#39;&lt;http://example.org/GraduateStudentShape&gt;&#39;, &#39;http://www.Department9.University0.edu/GraduateStudent5&#39;, True)
+   'invalid_instances': {
+      ('&lt;http://example.org/GraduateStudentShape&gt;', 'http://www.Department9.University0.edu/GraduateStudent5', True)
     }
   },
-  &#39;&lt;http://example.org/UniversityShape&gt;&#39;: {
-    &#39;valid_instances&#39;: {
-      (&#39;&lt;http://example.org/DepartmentShape&gt;&#39;, &#39;http://www.Department0.University0.edu&#39;, True),
-      (&#39;&lt;http://example.org/DepartmentShape&gt;&#39;, &#39;http://www.Department1.University0.edu&#39;, True),
-      (&#39;&lt;http://example.org/DepartmentShape&gt;&#39;, &#39;http://www.Department9.University0.edu&#39;, True),
-      (&#39;&lt;http://example.org/UniversityShape&gt;&#39;, &#39;http://www.University0.edu&#39;, True)
+  '&lt;http://example.org/UniversityShape&gt;': {
+    'valid_instances': {
+      ('&lt;http://example.org/DepartmentShape&gt;', 'http://www.Department0.University0.edu', True),
+      ('&lt;http://example.org/DepartmentShape&gt;', 'http://www.Department1.University0.edu', True),
+      ('&lt;http://example.org/DepartmentShape&gt;', 'http://www.Department9.University0.edu', True),
+      ('&lt;http://example.org/UniversityShape&gt;', 'http://www.University0.edu', True)
     },
-    &#39;invalid_instances&#39;: {
-        (&#39;&lt;http://example.org/UniversityShape&gt;&#39;, &#39;http://www.University1.edu&#39;, True),
-        (&#39;&lt;http://example.org/UniversityShape&gt;&#39;, &#39;http://www.University2.edu&#39;, True),
-        (&#39;&lt;http://example.org/UniversityShape&gt;&#39;, &#39;http://www.University3.edu&#39;, True),
-        (&#39;&lt;http://example.org/UniversityShape&gt;&#39;, &#39;http://www.University4.edu&#39;, True)
+    'invalid_instances': {
+        ('&lt;http://example.org/UniversityShape&gt;', 'http://www.University1.edu', True),
+        ('&lt;http://example.org/UniversityShape&gt;', 'http://www.University2.edu', True),
+        ('&lt;http://example.org/UniversityShape&gt;', 'http://www.University3.edu', True),
+        ('&lt;http://example.org/UniversityShape&gt;', 'http://www.University4.edu', True)
     }
   },
-  &#39;&lt;http://example.org/DepartmentShape&gt;&#39;: {
-    &#39;valid_instances&#39;: set(),
-    &#39;invalid_instances&#39;: set()
+  '&lt;http://example.org/DepartmentShape&gt;': {
+    'valid_instances': set(),
+    'invalid_instances': set()
   },
-  &#39;&lt;http://example.org/GraduateStudentShape&gt;&#39;: {
-    &#39;valid_instances&#39;: set(),
-    &#39;invalid_instances&#39;: {
-      (&#39;&lt;http://example.org/GraduateStudentShape&gt;&#39;, &#39;http://www.Department2.University0.edu/GraduateStudent7&#39;, True)
+  '&lt;http://example.org/GraduateStudentShape&gt;': {
+    'valid_instances': set(),
+    'invalid_instances': {
+      ('&lt;http://example.org/GraduateStudentShape&gt;', 'http://www.Department2.University0.edu/GraduateStudent7', True)
     }
   },
-  &#39;&lt;http://example.org/FullProfessorShape&gt;&#39;: {
-    &#39;valid_instances&#39;: set(),
-    &#39;invalid_instances&#39;: {
-      (&#39;&lt;http://example.org/FullProfessorShape&gt;&#39;, &#39;http://www.Department1.University0.edu/FullProfessor0&#39;, True),
-      (&#39;&lt;http://example.org/FullProfessorShape&gt;&#39;, &#39;http://www.Department2.University0.edu/FullProfessor2&#39;, True),
-      (&#39;&lt;http://example.org/FullProfessorShape&gt;&#39;, &#39;http://www.Department5.University0.edu/FullProfessor3&#39;, True)
+  '&lt;http://example.org/FullProfessorShape&gt;': {
+    'valid_instances': set(),
+    'invalid_instances': {
+      ('&lt;http://example.org/FullProfessorShape&gt;', 'http://www.Department1.University0.edu/FullProfessor0', True),
+      ('&lt;http://example.org/FullProfessorShape&gt;', 'http://www.Department2.University0.edu/FullProfessor2', True),
+      ('&lt;http://example.org/FullProfessorShape&gt;', 'http://www.Department5.University0.edu/FullProfessor3', True)
     }
   },
-  &#39;unbound&#39;: {
-    &#39;valid_instances&#39;: set()
+  'unbound': {
+    'valid_instances': set()
   }
 }
 </pre></div>

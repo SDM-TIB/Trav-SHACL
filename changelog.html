@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Changelog &mdash; Trav-SHACL 1.9.0 documentation</title>
+  <title>Changelog &mdash; Trav-SHACL 1.10.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=aa353e79" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=25d9e9fd"></script>
+      <script src="_static/documentation_options.js?v=76b3955f"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -86,6 +86,19 @@
 <h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 </div>
+<section id="v1-10-0-17-nov-2026">
+<h2>v1.10.0 - 17 Nov 2026<a class="headerlink" href="#v1-10-0-17-nov-2026" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Add support for <code class="docutils literal notranslate"><span class="pre">sh:node</span></code></p></li>
+<li><p>Require <code class="docutils literal notranslate"><span class="pre">rdflib&gt;=7.0.0</span></code></p></li>
+<li><p>Apply target filters also for in-memory graph validation (originally skipped due to bug in older versions of <code class="docutils literal notranslate"><span class="pre">rdflib</span></code>)</p></li>
+<li><p>Fix SPARQL endpoint singleton causing all tests to be executed against Virtuoso even when supposed to run against the in-memory graph</p></li>
+<li><p>Improve code quality</p></li>
+<li><p>Update dependencies</p></li>
+<li><p>Update the Python version for the Docker image (3.12.10 to 3.12.16)</p></li>
+<li><p>Update base image to Debian Trixie</p></li>
+</ul>
+</section>
 <section id="v1-9-0-06-may-2025">
 <h2>v1.9.0 - 06 May 2025<a class="headerlink" href="#v1-9-0-06-may-2025" title="Link to this heading"></a></h2>
 <ul class="simple">
