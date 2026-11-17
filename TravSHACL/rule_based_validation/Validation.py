@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__author__ = 'Monica Figuera'
+__author__ = 'Monica Figuera and Philipp D. Rohde'
 
 import time
 
@@ -149,89 +149,82 @@ class Validation:
                     shapes_state[next_focus_shape_name]['inferred'].add((target[0], target[1], not target[2]))
                     shapes_state[next_focus_shape_name]['remaining_targets_count'] -= 1
 
-        # ── sh:node in a property shape (NodeConstraint) ──────────────────────
-        # All value nodes of the constraint's path must conform to the referenced
-        # shape.  We can only perform this check once the referenced shape has
-        # been fully evaluated (i.e., appears in visited_shapes).  If it has not
-        # been evaluated yet the check is deferred and the target is left pending
-        # so the rule-pattern mechanism can still catch violations later.
-        node_constraints = next_focus_shape.get_node_constraints()
-        for nc in node_constraints:
-            ref_shape = self.shapes_dict.get(nc.shapeRef)
-            if ref_shape is None or ref_shape.get_id() not in state.visited_shapes:
-                # Referenced shape not evaluated yet – skip; rule patterns will
-                # handle the ordering for regular min/max constraints, but for
-                # NodeConstraints we log a warning and proceed without filtering.
-                self.stats.update_log(
-                    '\n[sh:node] Referenced shape ' + str(nc.shapeRef) +
-                    ' not yet evaluated; NodeConstraint check deferred.\n'
-                )
-                continue
-            invalid_set = ref_shape.get_invalid_targets()
-            if not invalid_set:
-                continue  # referenced shape has no invalid instances → no new violations
-            violations = self.InstRetrieval.execute_node_constraint(
-                constraint=nc,
-                focus_nodes=[p[1] for p in pending],
-                invalid_set=invalid_set
-            )
-            violation_set = set(violations)
-            pending = {t for t in pending if t[1] not in violation_set}
-            for invalid in violations:
-                target = (next_focus_shape_name, invalid, False)
-                self.register_target(target, 'violated', next_focus_shape_name, shapes_state)
-                shapes_state[next_focus_shape_name]['inferred'].add((target[0], target[1], not target[2]))
-                shapes_state[next_focus_shape_name]['remaining_targets_count'] -= 1
-
-        # ── sh:node directly on a node shape (DirectNodeConstraint) ───────────
-        # The focus node itself must conform to the referenced shape.  We
-        # propagate invalidity: any pending target that is already invalid in
-        # the referenced shape is immediately marked as violated here too.
-        direct_node_constraints = next_focus_shape.get_direct_node_constraints()
-        for dnc in direct_node_constraints:
-            ref_shape = self.shapes_dict.get(dnc.shapeRef)
-            if ref_shape is None or ref_shape.get_id() not in state.visited_shapes:
-                self.stats.update_log(
-                    '\n[sh:node direct] Referenced shape ' + str(dnc.shapeRef) +
-                    ' not yet evaluated; DirectNodeConstraint check deferred to '
-                    '_post_process_node_constraints.\n'
-                )
-                continue
-            invalid_set = ref_shape.get_invalid_targets()
-            if not invalid_set:
-                continue
-            new_pending = set()
-            for target in pending:
-                if '<' + target[1] + '>' in invalid_set:
-                    self.register_target(target, 'violated', next_focus_shape_name, shapes_state)
-                    shapes_state[next_focus_shape_name]['inferred'].add((target[0], target[1], not target[2]))
-                    shapes_state[next_focus_shape_name]['remaining_targets_count'] -= 1
-                else:
-                    new_pending.add(target)
-            pending = new_pending
-
-        # ── Fast path: shape has *only* sh:node constraints ────────────────────
-        # If the shape carries no min/max or SPARQL constraints — only
-        # NodeConstraint and/or DirectNodeConstraint — the rule-pattern
-        # mechanism has nothing to evaluate.  Every target that survived the
-        # checks above is trivially valid; register it immediately so the
-        # target is not left "unbound".
-        has_cardinality_or_sparql = any(
-            c.min != -1 or c.max != -1 or isinstance(c, type(next_focus_shape.get_sparql_constraints()[0]))
-            for c in next_focus_shape.get_constraints()
-        ) if next_focus_shape.get_sparql_constraints() else any(
-            c.min != -1 or c.max != -1
-            for c in next_focus_shape.get_constraints()
-        )
-        if not has_cardinality_or_sparql and (node_constraints or direct_node_constraints):
-            for target in pending:
-                self.register_target(target, 'valid', next_focus_shape_name, shapes_state)
-                shapes_state[next_focus_shape_name]['inferred'].add(target)
-            shapes_state[next_focus_shape_name]['remaining_targets_count'] = 0
-            return set()
+        # sh:node constraints (see the helper methods below)
+        pending = self._check_node_constraints(state, next_focus_shape, pending, shapes_state)
+        pending = self._check_direct_node_constraints(state, next_focus_shape, pending, shapes_state)
+        pending = self._accept_targets_of_node_only_shape(next_focus_shape, pending, shapes_state)
 
         shapes_state[next_focus_shape_name]['remaining_targets_count'] = len(pending)
         return pending
+
+    def _register_violation(self, shape_name, target, shapes_state):
+        """Registers ``target`` as violated and keeps the bookkeeping of the shape's state consistent."""
+        self.register_target(target, 'violated', shape_name, shapes_state)
+        shapes_state[shape_name]['inferred'].add((target[0], target[1], not target[2]))
+        shapes_state[shape_name]['remaining_targets_count'] -= 1
+
+    def _invalid_targets_of_referenced_shape(self, state, constraint, label):
+        """Returns the invalid targets of the shape referenced by an sh:node constraint.
+
+        Returns None as long as the referenced shape has not been evaluated yet; the check is then deferred to
+        :meth:`_post_process_node_constraints`.
+        """
+        ref_shape = self.shapes_dict.get(constraint.shapeRef)
+        if ref_shape is None or ref_shape.get_id() not in state.visited_shapes:
+            self.stats.update_log(
+                '\n' + label + ' Referenced shape ' + str(constraint.shapeRef) +
+                ' not yet evaluated; check deferred to _post_process_node_constraints.\n'
+            )
+            return None
+        return ref_shape.get_invalid_targets()
+
+    def _check_node_constraints(self, state, shape, pending, shapes_state):
+        """sh:node inside a property shape: all values of the path must conform to the referenced shape.
+
+        A pending target is violated if at least one of its values is invalid in the referenced shape.
+        """
+        shape_name = shape.get_id()
+        for constraint in shape.get_node_constraints():
+            invalid_set = self._invalid_targets_of_referenced_shape(state, constraint, '[sh:node]')
+            if not invalid_set:
+                continue  # deferred, or the referenced shape has no invalid instances
+            violations = set(self.InstRetrieval.execute_node_constraint(
+                constraint=constraint,
+                focus_nodes=[p[1] for p in pending],
+                invalid_set=invalid_set
+            ))
+            for invalid in violations:
+                self._register_violation(shape_name, (shape_name, invalid, False), shapes_state)
+            pending = {t for t in pending if t[1] not in violations}
+        return pending
+
+    def _check_direct_node_constraints(self, state, shape, pending, shapes_state):
+        """sh:node directly on a node shape: a target invalid in the referenced shape is invalid here, too."""
+        shape_name = shape.get_id()
+        for constraint in shape.get_direct_node_constraints():
+            invalid_set = self._invalid_targets_of_referenced_shape(state, constraint, '[sh:node direct]')
+            if not invalid_set:
+                continue
+            violated = {t for t in pending if '<' + t[1] + '>' in invalid_set}
+            for target in violated:
+                self._register_violation(shape_name, target, shapes_state)
+            pending = {t for t in pending if t not in violated}
+        return pending
+
+    def _accept_targets_of_node_only_shape(self, shape, pending, shapes_state):
+        """Registers all remaining targets as valid if the shape has *only* sh:node constraints.
+
+        Such a shape has no cardinality or SPARQL constraints, so the rule-pattern mechanism has nothing left to
+        evaluate and every target that survived the sh:node checks is valid.  Returns the targets still pending.
+        """
+        constraints = shape.get_constraints()
+        if not constraints or not all(isinstance(c, (NodeConstraint, DirectNodeConstraint)) for c in constraints):
+            return pending
+        shape_name = shape.get_id()
+        for target in pending:
+            self.register_target(target, 'valid', shape_name, shapes_state)
+            shapes_state[shape_name]['inferred'].add(target)
+        return set()
 
     def _post_process_node_constraints(self, state):
         """Correct sh:node violations for shapes evaluated before their referenced shape.
@@ -243,70 +236,42 @@ class Validation:
         a :class:`NodeConstraint` or :class:`DirectNodeConstraint`, looks at
         the currently-registered *valid* instances, and reclassifies any that
         should have been declared violated.
-
-        Both the shape's own ``targets`` dict and the per-shape entry in
-        ``shapes_state`` are updated so that :meth:`validation_output` returns
-        consistent results.
         """
-        shapes_state = state.shapes_state
-
         for shape_name, shape in self.shapes_dict.items():
-            # ── NodeConstraint (sh:node in property shape) ─────────────────
-            for nc in shape.get_node_constraints():
-                ref_shape = self.shapes_dict.get(nc.shapeRef)
-                if ref_shape is None:
-                    continue
-                invalid_set = ref_shape.get_invalid_targets()
-                if not invalid_set:
-                    continue
+            for constraint in shape.get_node_constraints() + shape.get_direct_node_constraints():
+                self._reclassify_late_violations(state.shapes_state, shape_name, shape, constraint)
 
-                valid_tuples = set(shapes_state[shape_name]['registered_targets']['valid'])
-                currently_valid = [t[1] for t in valid_tuples]
-                if not currently_valid:
-                    continue
+    def _reclassify_late_violations(self, shapes_state, shape_name, shape, constraint):
+        """Moves targets of ``shape`` from valid to violated if ``constraint`` is violated by them.
 
-                violations = self.InstRetrieval.execute_node_constraint(
-                    constraint=nc,
-                    focus_nodes=currently_valid,
-                    invalid_set=invalid_set
-                )
-                if not violations:
-                    continue
+        Both the shape's own ``targets`` dict and the per-shape entry in ``shapes_state`` are updated so that
+        :meth:`validation_output` returns consistent results.
+        """
+        ref_shape = self.shapes_dict.get(constraint.shapeRef)
+        invalid_set = ref_shape.get_invalid_targets() if ref_shape is not None else None
+        if not invalid_set:
+            return
 
-                violation_uris = set(violations)
-                to_remove = {t for t in valid_tuples if t[1] in violation_uris}
-                shapes_state[shape_name]['registered_targets']['valid'] -= to_remove
-                for uri in violation_uris:
-                    shape.targets['valid'].discard('<' + uri + '>')
-                for uri in violation_uris:
-                    self.register_target((shape_name, uri, False), 'violated', shape_name, shapes_state)
-                self.stats.update_log(
-                    '\n[post-process sh:node] ' + str(len(violation_uris)) +
-                    ' late violation(s) reclassified for shape ' + shape_name + '\n'
-                )
+        valid = set(shapes_state[shape_name]['registered_targets']['valid'])
+        if isinstance(constraint, DirectNodeConstraint):
+            label = '[post-process sh:node direct]'
+            violated = {t for t in valid if '<' + t[1] + '>' in invalid_set}
+        else:
+            label = '[post-process sh:node]'
+            violating = set(self.InstRetrieval.execute_node_constraint(
+                constraint=constraint, focus_nodes=[t[1] for t in valid], invalid_set=invalid_set
+            ))
+            violated = {t for t in valid if t[1] in violating}
+        if not violated:
+            return
 
-            # ── DirectNodeConstraint (sh:node on node shape) ───────────────
-            for dnc in shape.get_direct_node_constraints():
-                ref_shape = self.shapes_dict.get(dnc.shapeRef)
-                if ref_shape is None:
-                    continue
-                invalid_set = ref_shape.get_invalid_targets()
-                if not invalid_set:
-                    continue
-
-                valid_tuples = set(shapes_state[shape_name]['registered_targets']['valid'])
-                to_remove = {t for t in valid_tuples if '<' + t[1] + '>' in invalid_set}
-                if not to_remove:
-                    continue
-
-                shapes_state[shape_name]['registered_targets']['valid'] -= to_remove
-                for t in to_remove:
-                    shape.targets['valid'].discard('<' + t[1] + '>')
-                    self.register_target((shape_name, t[1], False), 'violated', shape_name, shapes_state)
-                self.stats.update_log(
-                    '\n[post-process sh:node direct] ' + str(len(to_remove)) +
-                    ' late violation(s) reclassified for shape ' + shape_name + '\n'
-                )
+        shapes_state[shape_name]['registered_targets']['valid'] -= violated
+        for t in violated:
+            shape.targets['valid'].discard('<' + t[1] + '>')
+            self.register_target((shape_name, t[1], False), 'violated', shape_name, shapes_state)
+        self.stats.update_log(
+            '\n' + label + ' ' + str(len(violated)) + ' late violation(s) reclassified for shape ' + shape_name + '\n'
+        )
 
     @staticmethod
     def get_evaluated_out_neighbor(focus_shape, visited_shapes, state):
