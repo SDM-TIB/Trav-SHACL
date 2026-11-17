@@ -1,3 +1,13 @@
+# v1.10.0 - 17 Nov 2026
+- Add support for `sh:node`
+- Require `rdflib>=7.0.0`
+- Apply target filters also for in-memory graph validation (originally skipped due to bug in older versions of `rdflib`)
+- Fix SPARQL endpoint singleton causing all tests to be executed against Virtuoso even when supposed to run against the in-memory graph
+- Improve code quality
+- Update dependencies
+- Update the Python version for the Docker image (3.12.10 to 3.12.16)
+- Update base image to Debian Trixie
+
 # v1.9.0 - 06 May 2025
 - Fix check for parsing shapes with `sh:or` constraints
 - Add switch `ignore_parsing_errors` to `ShapeSchema` to either log a warning or throw an exception for parsing errors
