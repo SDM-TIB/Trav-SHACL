@@ -104,7 +104,8 @@ class TestNodeConstraintParsing:
         from TravSHACL.core.ShapeSchema import ShapeSchema
         from TravSHACL.core.GraphTraversal import GraphTraversal
         from TravSHACL import parse_heuristics
-        import tempfile, os
+        import tempfile
+        import os
         ttl_a = """
         @prefix sh:   <http://www.w3.org/ns/shacl#> .
         @prefix ex:   <http://example.org/> .
@@ -167,11 +168,11 @@ class TestNodeConstraintParsing:
         shapes = self._parse(ttl)
         shape_a = next(s for s in shapes if s.get_id().endswith('/A>'))
 
-        node_cs  = shape_a.get_node_constraints()
-        min_cs   = [c for c in shape_a.get_constraints() if isinstance(c, MinOnlyConstraint)]
+        node_cs = shape_a.get_node_constraints()
+        min_cs = [c for c in shape_a.get_constraints() if isinstance(c, MinOnlyConstraint)]
 
         assert len(node_cs) == 1, 'Expected one NodeConstraint'
-        assert len(min_cs)  == 1, 'Expected one MinOnlyConstraint'
+        assert len(min_cs) == 1, 'Expected one MinOnlyConstraint'
         # The MinOnlyConstraint must carry NO shape reference (the cardinality
         # is a plain count, not a qualified-value-shape count).
         assert min_cs[0].shapeRef is None, \

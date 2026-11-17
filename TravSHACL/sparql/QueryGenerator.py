@@ -329,11 +329,25 @@ class QueryBuilder:
                 for entry in self.union_triples:
                     if entry.split('#', 3)[0] == group:
                         if entry.split('#', 3)[2] == 'min':
-                            current_group.append(self.cardinality_graph_pattern(target_node_statement, focus_node_var,
-                                                           entry.split('#', 4)[4], False, entry.split('#', 4)[3]))
+                            current_group.append(
+                                self.cardinality_graph_pattern(
+                                    target_node_statement=target_node_statement,
+                                    focus_node_var=focus_node_var,
+                                    triple_pattern=entry.split('#', 4)[4],
+                                    max_=False,
+                                    card=entry.split('#', 4)[3]
+                                )
+                            )
                         if entry.split('#', 3)[2] == 'max':
-                            current_group.append(self.cardinality_graph_pattern(target_node_statement, focus_node_var,
-                                                           entry.split('#', 4)[4], True, entry.split('#', 4)[3]))
+                            current_group.append(
+                                self.cardinality_graph_pattern(
+                                    target_node_statement=target_node_statement,
+                                    focus_node_var=focus_node_var,
+                                    triple_pattern=entry.split('#', 4)[4],
+                                    max_=True,
+                                    card=entry.split('#', 4)[3]
+                                )
+                            )
                         # self.triples.remove(entry.split('#', 2)[2])
                     # entry.split('#', 2)[1] can be used for grouping if there are more than just the path constraint
                 # print(current_group)
@@ -420,8 +434,7 @@ class QueryBuilder:
 
         selective_closing_braces = '}}' if self.include_selectivity and self.target_query is not None else ''
 
-        if len(self.constraints) == 1 and isinstance(self.constraints[0], MaxOnlyConstraint) and self.constraints[
-            0].get_shape_ref() is None:
+        if len(self.constraints) == 1 and isinstance(self.constraints[0], MaxOnlyConstraint) and self.constraints[0].get_shape_ref() is None:
             target_node = ''
             if self.include_selectivity and self.target_query is not None:
                 target_node = get_target_node_statement(self.target_query) + '.\n'

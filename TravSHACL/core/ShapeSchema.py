@@ -161,7 +161,11 @@ class ShapeSchema:
     def validate(self):
         """Executes the validation of the shape network."""
         start = self.get_starting_point()
-        node_order = self.graphTraversal.traverse_graph(self.dependencies, self.reverse_dependencies, start[0])  # TODO: deal with more than one possible starting point
+        node_order = self.graphTraversal.traverse_graph(
+            self.dependencies,
+            self.reverse_dependencies,
+            start[0]
+        )  # TODO: deal with more than one possible starting point
 
         for s in self.shapes:
             s.compute_constraint_queries()

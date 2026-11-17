@@ -8,7 +8,8 @@ from TravSHACL.constraints.Constraint import Constraint
 class MinOnlyConstraint(Constraint):
     """This class represents min constraints, i.e., a constraint for the minimal occurrence of a path."""
 
-    def __init__(self, var_generator, id_, path, min_, is_pos, options, datatype=None, value=None, shape_ref=None, target_def=None):
+    def __init__(self, var_generator, id_, path, min_, is_pos, options,
+                 datatype=None, value=None, shape_ref=None, target_def=None):
         """
         Creates a new min constraint.
 

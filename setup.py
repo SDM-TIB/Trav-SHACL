@@ -10,7 +10,14 @@ with open('README.md', 'r', encoding='utf-8') as fh:
 setup(
     name='TravSHACL',
     version=version,
-    packages=['TravSHACL', 'TravSHACL.constraints', 'TravSHACL.core', 'TravSHACL.rule_based_validation', 'TravSHACL.sparql', 'TravSHACL.utils'],
+    packages=[
+        'TravSHACL',
+        'TravSHACL.constraints',
+        'TravSHACL.core',
+        'TravSHACL.rule_based_validation',
+        'TravSHACL.sparql',
+        'TravSHACL.utils'
+    ],
     license='GNU/GPLv3',
     author='Mónica Figuera, Philipp D. Rohde',
     author_email='philipp.rohde@tib.eu',
@@ -22,7 +29,8 @@ setup(
         'Issue Tracker': 'https://github.com/SDM-TIB/Trav-SHACL/issues'
     },
     download_url='https://github.com/SDM-TIB/Trav-SHACL/archive/refs/tags/v' + version + '.tar.gz',
-    description='A SHACL validator capable of planning the traversal and execution of the validation of a shape schema to detect violations early.',
+    description='A SHACL validator capable of planning the traversal and execution of the validation of a shape '
+                'schema to detect violations early.',
     long_description=long_description,
     long_description_content_type='text/markdown',
     install_requires=['SPARQLWrapper>=2.0.0', 'rdflib>=7.0.0', 'pyparsing>=3.1.0'],

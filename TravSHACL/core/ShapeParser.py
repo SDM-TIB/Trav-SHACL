@@ -181,7 +181,7 @@ class ShapeParser:
                                              query=queries)
             const_array = list(cons_dict.values())  # change the format to an array
 
-            #valid_flag = [entry['flag'] for entry in const_array if entry['flag']]
+            # valid_flag = [entry['flag'] for entry in const_array if entry['flag']]
             valid_flag = []
             for entry in const_array:
                 if 'flag' in entry.keys():
@@ -345,8 +345,8 @@ class ShapeParser:
         }}'''
 
         return QUERY_SHAPES, QUERY_TARGET_1, QUERY_TARGET_2, QUERY_CONSTRAINTS, QUERY_CONSTRAINT_DETAILS, \
-               QUERY_QVS_REF_1, QUERY_QVS_REF_2, QUERY_SPARQL_CONSTRAINTS, QUERY_OR, \
-               QUERY_DIRECT_NODE_CONSTRAINT
+            QUERY_QVS_REF_1, QUERY_QVS_REF_2, QUERY_SPARQL_CONSTRAINTS, QUERY_OR, \
+            QUERY_DIRECT_NODE_CONSTRAINT
 
     def get_res(self, filename, name, query):
         """
@@ -528,10 +528,16 @@ class ShapeParser:
                 or_constraints = []
                 for key in constraint['or'].keys():
                     sub_constraint = constraint['or'][key]
-                    or_constraints.extend(self.parse_constraint(var_generator, sub_constraint, constraints_id + '_c' + str(i + 1), target_def, None))
-                constraints.extend(self.parse_constraint(var_generator, constraint, constraints_id + '_c' + str(i + 1), target_def, or_constraints))
+                    or_constraints.extend(
+                        self.parse_constraint(var_generator, sub_constraint, constraints_id + '_c' + str(i + 1),
+                                              target_def, None))
+                constraints.extend(
+                    self.parse_constraint(var_generator, constraint, constraints_id + '_c' + str(i + 1),
+                                          target_def, or_constraints))
             else:
-                constraints.extend(self.parse_constraint(var_generator, constraint, constraints_id + '_c' + str(i + 1), target_def, None))
+                constraints.extend(
+                    self.parse_constraint(var_generator, constraint, constraints_id + '_c' + str(i + 1),
+                                          target_def, None))
 
         return constraints
 
@@ -617,7 +623,8 @@ class ShapeParser:
         elif o_query is not None:
             return [SPARQLConstraint(id_, o_neg, o_query)]
         elif options is not None:
-            return [MinOnlyConstraint(var_generator, id_, o_path, o_min, o_neg, options, o_datatype, o_value, o_shape_ref, target_def)]
+            return [MinOnlyConstraint(var_generator, id_, o_path, o_min, o_neg, options,
+                                      o_datatype, o_value, o_shape_ref, target_def)]
 
         if self.ignore_errors:
             log.warning('There was an unsupported constraint, skipping it...')

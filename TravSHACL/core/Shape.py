@@ -94,7 +94,7 @@ class Shape:
 
     def get_sparql_constraints(self):
         """ Get all SPARQL constraints of the shape """
-        return [c for c in self.constraints if type(c) == SPARQLConstraint]
+        return [c for c in self.constraints if isinstance(c, SPARQLConstraint)]
 
     def get_node_constraints(self):
         """Return all ``sh:node`` property-level constraints (NodeConstraint).
@@ -153,7 +153,8 @@ class Shape:
                     # generating an incorrect template_FILTER query.
                     if isinstance(c, (NodeConstraint, DirectNodeConstraint)):
                         continue
-                    query_valid, query_invalid = self.QueryGenerator.generate_target_query('template_FILTER', [c],
+                    query_valid, query_invalid = self.QueryGenerator.generate_target_query('template_FILTER',
+                                                                                           [c],
                                                                                            self.targetQueryNoPref,
                                                                                            self.includePrefixes,
                                                                                            self.ORDERBYinQueries)
@@ -259,5 +260,6 @@ class Shape:
             if len(or_constraints) == 0:
                 return
             else:
-                return self.QueryGenerator.options_query(or_constraints, self.targetQuery, self.includePrefixes, self.ORDERBYinQueries)
+                return self.QueryGenerator.options_query(or_constraints, self.targetQuery,
+                                                         self.includePrefixes, self.ORDERBYinQueries)
         return

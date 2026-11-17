@@ -590,7 +590,8 @@ class Validation:
         :param shapes_state: dictionary storing validation's state of each shape
         """
         rule_map = state.rule_map
-        negated = self.negate_unmatchable_heads(state, rule_map, state.evaluated_predicates, shape_name, shapes_state, state.preds_to_shapes)
+        negated = self.negate_unmatchable_heads(state, rule_map, state.evaluated_predicates,
+                                                shape_name, shapes_state, state.preds_to_shapes)
         inferred = self.apply_rules(state, state.remaining_targets, rule_map, shape_name, shapes_state, state.preds_to_shapes)
         if negated or inferred:
             self.saturate_remaining(state, shape_name, shapes_state)
@@ -784,7 +785,7 @@ class Validation:
                                   '      sh:focusNode  <' + violation[1] + '> ;\n' +\
                                   '      sh:sourceShape  ' + violation[0] + ' ]'
 
-            output_ttl = '@prefix sh: <http://www.w3.org/ns/shacl#> . \n\n' + output_ttl + ' .'            
+            output_ttl = '@prefix sh: <http://www.w3.org/ns/shacl#> . \n\n' + output_ttl + ' .'
             validation_report = fileManagement.open_file(self.output_dir_name, 'validationReport.ttl')
             validation_report.write(output_ttl)
             fileManagement.close_file(validation_report)

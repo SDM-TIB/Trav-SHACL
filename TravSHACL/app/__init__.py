@@ -17,10 +17,13 @@ HEURISTICS = {
     'properties': 'big'
 }
 
+
 @app.route('/validate', methods=['GET', 'POST'])
 def validation():
     if request.method == 'GET':
-        return render_template('validate.jinja2', schema_path=app.config['SCHEMA_PATH'], endpoint=app.config['ENDPOINT'])
+        return render_template('validate.jinja2',
+                               schema_path=app.config['SCHEMA_PATH'],
+                               endpoint=app.config['ENDPOINT'])
     SPARQLEndpoint.instance = None  # Needs to be reset since it is a singleton and won't change otherwise
     schema_path = request.form.get('schemaDir', None)
     endpoint = request.form.get('external_endpoint', None)
@@ -44,6 +47,7 @@ def validation():
     result_html = travshacl_to_html_table(result, stop - start)
     return render_template("result.jinja2", html=result_html)
 
+
 def travshacl_to_html_table(trav_result, time_used):
     parsed_result = []
 
@@ -61,7 +65,12 @@ def travshacl_to_html_table(trav_result, time_used):
                     shape_ = shape_[1:]
                 if shape_[-1] == '>':
                     shape_ = shape_[:-1]
-                parsed_result.append({'shape': shape_, 'finished@shape': finished_at, 'validation result': validation_result.replace('_instances',''), 'instance': instance[1]})
+                parsed_result.append({
+                    'shape': shape_,
+                    'finished@shape': finished_at,
+                    'validation result': validation_result.replace('_instances', ''),
+                    'instance': instance[1]
+                })
 
     html = '<div>Trav-SHACL returned ' + str(len(parsed_result)) + ' validation results in ' + str(time_used) + ' seconds.<br><br><table border="0px" style="border-spacing: 10px; margin-left: auto; margin-right: auto;">'
 
@@ -87,6 +96,7 @@ def travshacl_to_html_table(trav_result, time_used):
 
     html += '</table></div>'
     return html
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
