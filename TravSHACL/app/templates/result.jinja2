@@ -16,6 +16,10 @@
     <div><dt>Endpoint</dt><dd>{{ endpoint }}</dd></div>
 </dl>
 
+{% for notice in notices %}
+<div class="alert alert-warning" role="status">{{ notice }}</div>
+{% endfor %}
+
 {% if counts.total > 0 %}
 <div class="tally" aria-label="Share of valid and invalid entities">
     <div class="tally-numbers">

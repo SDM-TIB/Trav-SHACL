@@ -204,10 +204,41 @@ select {
   border-radius: 4px;
 }
 
+.alert p { margin: 4px 0 0; }
+.alert .alert-hint { margin-top: 8px; }
+
 .alert-danger {
   color: #8a2a24;
   background: var(--invalid-bg);
   border-color: #efc4be;
+}
+
+.alert-warning {
+  color: #5f4a00;
+  background: #fff6d6;
+  border-color: #ecd98a;
+}
+
+.alert details { margin-top: 10px; font-size: 13px; }
+.alert summary { cursor: pointer; }
+
+.alert pre {
+  margin: 6px 0 0;
+  padding: 8px 10px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 4px;
+}
+
+input[aria-invalid="true"] { border-color: var(--invalid); }
+
+.field-error {
+  margin: 4px 0 0;
+  color: var(--invalid);
+  font-size: 13px;
+  font-weight: 600;
 }
 
 /* Result page */

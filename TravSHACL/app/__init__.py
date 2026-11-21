@@ -1,4 +1,3 @@
-import logging
 import os
 import time
 from pathlib import Path
@@ -6,6 +5,7 @@ from pathlib import Path
 from flask import Flask, request, render_template
 from werkzeug.middleware.proxy_fix import ProxyFix
 
+from TravSHACL.app.diagnostics import UserFacingError, check_endpoint, check_schema_dir, explain_exception
 from TravSHACL.core.GraphTraversal import GraphTraversal
 from TravSHACL.core.ShapeSchema import ShapeSchema
 from TravSHACL.sparql.SPARQLEndpoint import SPARQLEndpoint
@@ -44,10 +44,9 @@ DEFAULT_OPTIONS = {
     'properties': 'big',
     'selective': 'yes',
     'max_split_size': '256',
-    'order_by': 'no'
+    'order_by': 'no',
+    'ignore_errors': 'no'
 }
-
-logger = logging.getLogger(__name__)
 
 
 @app.context_processor
@@ -70,15 +69,13 @@ def validation():
     endpoint = (request.form.get('external_endpoint') or '').strip()
     options = {key: request.form.get(key, default) for key, default in DEFAULT_OPTIONS.items()}
 
-    if not schema_path or not endpoint:
-        return _render_form(schema_path, endpoint, options, error='Please provide both the shape schema path and the endpoint URL.'), 400
-
+    stage = 'shapes'  # tells where an unexpected exception came from
     try:
         config = _parse_options(options)
-    except ValueError as e:
-        return _render_form(schema_path, endpoint, options, error=str(e)), 400
+        # Fail fast with a helpful message instead of running into an obscure error later on.
+        check_schema_dir(schema_path)
+        endpoint_has_data = check_endpoint(endpoint)
 
-    try:
         SPARQLEndpoint.instance = None  # Needs to be reset since it is a singleton and won't change otherwise
         shape_schema = ShapeSchema(
             schema_dir=schema_path,
@@ -90,17 +87,21 @@ def validation():
             max_split_size=config['max_split_size'],
             output_dir=None,
             order_by_in_queries=config['order_by'],
-            save_outputs=False
+            save_outputs=False,
+            ignore_parsing_errors=config['ignore_errors']
         )
 
+        stage = 'validation'
         start = time.time()
         result = shape_schema.validate()
         stop = time.time()
     except Exception as e:
-        logger.exception('Validation failed')
-        message = str(e) or e.__class__.__name__
-        return _render_form(schema_path, endpoint, options,
-                            error='The validation could not be completed: ' + message), 500
+        error = explain_exception(e, stage, schema_path, endpoint)
+        if error.status == 500:  # unexpected; everything else is explained to the user and needs no stack trace
+            app.logger.exception('Validation failed')
+        else:
+            app.logger.warning('%s: %s', error.title, error.details or error.message)
+        return _render_form(schema_path, endpoint, options, error=error), error.status
 
     rows = travshacl_to_rows(result)
     counts = {
@@ -108,8 +109,17 @@ def validation():
         'valid': sum(1 for r in rows if r['result'] == 'valid'),
         'invalid': sum(1 for r in rows if r['result'] == 'invalid')
     }
+    notices = []
+    if counts['total'] == 0:
+        # Name the likely causes of an empty result.
+        if not endpoint_has_data:
+            notices.append('The endpoint is reachable, but it returned no triples. '
+                           'Check that the data is loaded and that the endpoint URL points to the right dataset.')
+        if not any(shape.targetDef is not None for shape in shape_schema.shapes):
+            notices.append('None of the shapes defines a target, for example with sh:targetClass. '
+                           'Without targets, there are no entities to validate.')
     return render_template('result.jinja2', title='Trav-SHACL - Validation Result',
-                           rows=rows, counts=counts, elapsed=stop - start,
+                           rows=rows, counts=counts, elapsed=stop - start, notices=notices,
                            schema_path=schema_path, endpoint=endpoint, options=options)
 
 
@@ -119,23 +129,27 @@ def _render_form(schema_path, endpoint, options, error=None):
                            options_changed=options != DEFAULT_OPTIONS)
 
 
+def _invalid_option(message):
+    return UserFacingError('Invalid option', message)
+
+
 def _parse_options(options):
     """Validates the advanced options of the form and translates them for ShapeSchema."""
     if options['traversal'] not in ('DFS', 'BFS'):
-        raise ValueError('The graph traversal has to be either DFS or BFS.')
+        raise _invalid_option('The graph traversal has to be either DFS or BFS.')
     if options['degree'] not in ('in', 'out', 'none'):
-        raise ValueError('The degree heuristic has to be one of in, out, or none.')
+        raise _invalid_option('The degree heuristic has to be one of in, out, or none.')
     if options['properties'] not in ('big', 'small', 'none'):
-        raise ValueError('The size heuristic has to be one of big, small, or none.')
-    for key in ('target', 'selective', 'order_by'):
+        raise _invalid_option('The size heuristic has to be one of big, small, or none.')
+    for key in ('target', 'selective', 'order_by', 'ignore_errors'):
         if options[key] not in ('yes', 'no'):
-            raise ValueError('Invalid value for the option "' + key + '".')
+            raise _invalid_option('Invalid value for the option "' + key + '".')
     try:
         max_split_size = int(options['max_split_size'])
     except ValueError:
-        raise ValueError('The maximum number of instances per query has to be a whole number.') from None
+        raise _invalid_option('The maximum number of instances per query has to be a whole number.') from None
     if max_split_size < 1:
-        raise ValueError('The maximum number of instances per query has to be at least 1.')
+        raise _invalid_option('The maximum number of instances per query has to be at least 1.')
 
     return {
         'traversal': GraphTraversal[options['traversal']],
@@ -146,7 +160,8 @@ def _parse_options(options):
         },
         'selective': options['selective'] == 'yes',
         'max_split_size': max_split_size,
-        'order_by': options['order_by'] == 'yes'
+        'order_by': options['order_by'] == 'yes',
+        'ignore_errors': options['ignore_errors'] == 'yes'
     }
 
 

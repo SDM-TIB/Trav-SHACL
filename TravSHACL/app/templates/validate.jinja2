@@ -8,19 +8,31 @@
 <h1>Validate a shape schema</h1>
 
 {% if error %}
-<div class="alert alert-danger" role="alert">{{ error }}</div>
+<div class="alert alert-danger" role="alert">
+    <strong>{{ error.title }}</strong>
+    <p>{{ error.message }}</p>
+    {% if error.hint %}<p class="alert-hint">{{ error.hint }}</p>{% endif %}
+    {% if error.details %}
+    <details>
+        <summary>Technical details</summary>
+        <pre>{{ error.details }}</pre>
+    </details>
+    {% endif %}
+</div>
 {% endif %}
 
 <form method="post" action="{{ url_for('validation') }}" id="validate-form">
     <div class="field">
         <label for="schemaDir">Shape schema location</label>
-        <input id="schemaDir" name="schemaDir" type="text" value="{{ schema_path }}" required spellcheck="false" autocomplete="off" />
+        <input id="schemaDir" name="schemaDir" type="text" value="{{ schema_path }}" required spellcheck="false" autocomplete="off"{% if error and error.field == 'schemaDir' %} aria-invalid="true" aria-describedby="schemaDir-error" autofocus{% endif %} />
+        {% if error and error.field == 'schemaDir' %}<p class="field-error" id="schemaDir-error">{{ error.title }}</p>{% endif %}
         <p class="hint">Path to the directory with your SHACL shapes, as seen from the machine or container running Trav-SHACL.</p>
     </div>
 
     <div class="field">
         <label for="external_endpoint">SPARQL endpoint</label>
-        <input id="external_endpoint" name="external_endpoint" type="url" value="{{ endpoint }}" required spellcheck="false" autocomplete="off" />
+        <input id="external_endpoint" name="external_endpoint" type="url" value="{{ endpoint }}" required spellcheck="false" autocomplete="off"{% if error and error.field == 'external_endpoint' %} aria-invalid="true" aria-describedby="external_endpoint-error" autofocus{% endif %} />
+        {% if error and error.field == 'external_endpoint' %}<p class="field-error" id="external_endpoint-error">{{ error.title }}</p>{% endif %}
         <p class="hint">Has to be reachable from the machine or container running Trav-SHACL.</p>
     </div>
 
@@ -69,6 +81,13 @@
                 <select id="order_by" name="order_by">
                     <option value="no"{% if options.order_by == 'no' %} selected{% endif %}>No</option>
                     <option value="yes"{% if options.order_by == 'yes' %} selected{% endif %}>Yes</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="ignore_errors">Unsupported constraints</label>
+                <select id="ignore_errors" name="ignore_errors">
+                    <option value="no"{% if options.ignore_errors == 'no' %} selected{% endif %}>Stop with an error</option>
+                    <option value="yes"{% if options.ignore_errors == 'yes' %} selected{% endif %}>Skip and continue</option>
                 </select>
             </div>
             <div class="field">
