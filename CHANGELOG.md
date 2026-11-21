@@ -1,3 +1,13 @@
+# v1.11.0 - 21 Nov 2026
+- Revamp the web interface of the Docker image in the style of DeTrusty (navigation bar with version, home page, favicon, responsive layout)
+- Add the advanced options (graph traversal, heuristics, selective queries, `ORDER BY`, maximum split size, handling of unsupported constraints) to the validation form
+- Add summary, filtering, search, sorting, pagination, and CSV export to the validation result
+- Check the shape schema location and the SPARQL endpoint before validating and report common problems in the web interface
+- Show likely causes in the web interface if the validation returns no results
+- Add environment variable `ENDPOINT_CHECK_TIMEOUT` to configure the timeout of the endpoint check
+- Fix values in the validation result of the web interface not being HTML-escaped
+- Fix misaligned columns in the validation result of the web interface if a cell is empty
+
 # v1.10.0 - 17 Nov 2026
 - Add support for `sh:node`
 - Require `rdflib>=7.0.0`
