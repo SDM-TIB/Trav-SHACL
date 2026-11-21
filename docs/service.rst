@@ -73,22 +73,43 @@ This will create two Docker containers:
    The SPARQL endpoint might take a few seconds in order to be started.
    You can check its accessibility by navigating to `http://localhost:9090/sparql <http://localhost:9090/sparql>`_
 
-The Trav-SHACL service is accessible at `http://localhost:9091/validate <http://localhost:9091/validate>`_.
-The current version of the interface has only two inputs:
+The Trav-SHACL service is accessible at `http://localhost:9091 <http://localhost:9091>`_.
+The home page briefly introduces Trav-SHACL and links to the validation form at `http://localhost:9091/validate <http://localhost:9091/validate>`_.
+The form has two required inputs:
 
-* ``Validate integrity constraints in`` the path to the SHACL shape schema within the Docker container
-* ``Endpoint`` URL of the SPARQL endpoint to be evaluated; must be accessible from within the Docker container
+* ``Shape schema location`` the path to the SHACL shape schema within the Docker container
+* ``SPARQL endpoint`` URL of the SPARQL endpoint to be evaluated; must be accessible from within the Docker container
 
-You can run the example by setting the path to the SHACL shapes to ``/shapes/LUBM`` and the endpoint URL to ``http://travshacl_example_data:8890/sparql``.
+Below these inputs, the section ``Advanced options`` allows you to change how the validation is planned and executed:
+the graph traversal (depth-first or breadth-first), the heuristics for selecting the seed shape, whether more selective queries are used, whether ``ORDER BY`` is added to the queries, how unsupported constraints are handled, and the maximum number of instances per query.
+The defaults are ``Depth-first``, a target-first heuristic with a preference for a higher in-degree and bigger shapes, selective queries, no ``ORDER BY``, stopping with an error for unsupported constraints, and 256 instances per query.
+
+You can run the example by setting the shape schema location to ``/shapes/LUBM`` and the endpoint URL to ``http://travshacl_example_data:8890/sparql``.
 After pressing the ``Validate`` button, Trav-SHACL starts the validation.
 Once the validation is done, the result will be displayed in form of a table.
+
+Common problems are reported in the form instead of failing with an internal server error.
+The form is shown again with your inputs preserved, the affected field is highlighted, and the message explains what went wrong and what you can do about it.
+Before the validation starts, Trav-SHACL checks that
+
+* the shape schema location exists, is a readable directory, and contains ``.ttl`` files; a file that is not valid Turtle is named together with the line of the syntax error
+* the endpoint URL is well-formed and that a SPARQL endpoint answers there; refused connections, unknown hosts, timeouts, TLS problems, missing authentication, wrong URL paths, and servers that do not return SPARQL results are told apart
+
+Problems that occur while the validation is running, e.g., an endpoint that stops responding or shapes with unsupported constraints, are reported in the same way.
+The check of the endpoint waits ten seconds for an answer; set the environment variable ``ENDPOINT_CHECK_TIMEOUT`` (in seconds) to change this.
+If the validation finishes without results, the result page points out likely causes, i.e., an endpoint without data and shapes without targets.
 
 .. image:: _images/validation_result_service.png
    :alt: Trav-SHACL Architecture
    :align: center
 
-The column ``instance`` shows the entity for which the satisfaction of the SHACL constraints is reported.
-The ``shape`` column indicates to which shape of the shape schema the entity belongs.
-The validation result is reported in the column ``validation result``.
-Valid entities have a green entry ``valid`` while violations are marked with a red ``invalid``.
-The focus shape, i.e., the shape that was validate when the decision for the entity was made, is included in the column ``finished@shape``.
+The column ``Instance`` shows the entity for which the satisfaction of the SHACL constraints is reported.
+The ``Shape`` column indicates to which shape of the shape schema the entity belongs.
+The validation result is reported in the column ``Validation result``.
+Valid entities are marked ``valid`` in green while violations are marked ``invalid`` in red.
+The focus shape, i.e., the shape that was validate when the decision for the entity was made, is included in the column ``Finished at shape``.
+
+Above the table, the number of valid and invalid entities is summarized.
+The table can be filtered by validation result, searched for instances and shapes, and sorted by clicking on a column header.
+Large results are split into pages of 100 rows.
+The currently filtered results can be exported with ``Download CSV``.
