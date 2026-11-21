@@ -1,21 +1,88 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Trav-SHACL Interface</title>
-    <style>
-        h1, div { text-align: center }
-    </style>
-</head>
-<body>
-    <h1>Validate a Shape Schema with Trav-SHACL</h1>
-    <div>
-        <form method="post">
-            <label for="schemaDir"> Validate integrity constraints in:   </label><input id="schemaDir" name="schemaDir" type="text" value="{{ schema_path }}"><br><br>
-            <label for="external_endpoint"> Endpoint: </label><input id="external_endpoint" name="external_endpoint" type="text" value="{{ endpoint }}">
-            <br><br>
-            <input type="submit" value="Validate">
-        </form>
+{% extends "base.jinja2" %}
+
+{% block head %}
+    <script src="{{ url_for('static', filename='js/travshacl-validate.js') }}" defer></script>
+{% endblock %}
+
+{% block content %}
+<h1>Validate a shape schema</h1>
+
+{% if error %}
+<div class="alert alert-danger" role="alert">{{ error }}</div>
+{% endif %}
+
+<form method="post" action="{{ url_for('validation') }}" id="validate-form">
+    <div class="field">
+        <label for="schemaDir">Shape schema location</label>
+        <input id="schemaDir" name="schemaDir" type="text" value="{{ schema_path }}" required spellcheck="false" autocomplete="off" />
+        <p class="hint">Path to the directory with your SHACL shapes, as seen from the machine or container running Trav-SHACL.</p>
     </div>
-</body>
-</html>
+
+    <div class="field">
+        <label for="external_endpoint">SPARQL endpoint</label>
+        <input id="external_endpoint" name="external_endpoint" type="url" value="{{ endpoint }}" required spellcheck="false" autocomplete="off" />
+        <p class="hint">Has to be reachable from the machine or container running Trav-SHACL.</p>
+    </div>
+
+    <details class="advanced"{% if options_changed %} open{% endif %}>
+        <summary>Advanced options</summary>
+        <div class="options-grid">
+            <div class="field">
+                <label for="traversal">Graph traversal</label>
+                <select id="traversal" name="traversal">
+                    <option value="DFS"{% if options.traversal == 'DFS' %} selected{% endif %}>Depth-first</option>
+                    <option value="BFS"{% if options.traversal == 'BFS' %} selected{% endif %}>Breadth-first</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="target">Start with shapes that have a target</label>
+                <select id="target" name="target">
+                    <option value="yes"{% if options.target == 'yes' %} selected{% endif %}>Yes</option>
+                    <option value="no"{% if options.target == 'no' %} selected{% endif %}>No</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="degree">Prefer shapes with a higher</label>
+                <select id="degree" name="degree">
+                    <option value="in"{% if options.degree == 'in' %} selected{% endif %}>In-degree</option>
+                    <option value="out"{% if options.degree == 'out' %} selected{% endif %}>Out-degree</option>
+                    <option value="none"{% if options.degree == 'none' %} selected{% endif %}>No preference</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="properties">Prefer shapes that are</label>
+                <select id="properties" name="properties">
+                    <option value="big"{% if options.properties == 'big' %} selected{% endif %}>Big</option>
+                    <option value="small"{% if options.properties == 'small' %} selected{% endif %}>Small</option>
+                    <option value="none"{% if options.properties == 'none' %} selected{% endif %}>No preference</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="selective">Use more selective queries</label>
+                <select id="selective" name="selective">
+                    <option value="yes"{% if options.selective == 'yes' %} selected{% endif %}>Yes</option>
+                    <option value="no"{% if options.selective == 'no' %} selected{% endif %}>No</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="order_by">Sort query results (ORDER BY)</label>
+                <select id="order_by" name="order_by">
+                    <option value="no"{% if options.order_by == 'no' %} selected{% endif %}>No</option>
+                    <option value="yes"{% if options.order_by == 'yes' %} selected{% endif %}>Yes</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="max_split_size">Maximum instances per query</label>
+                <input id="max_split_size" name="max_split_size" type="number" min="1" step="1" value="{{ options.max_split_size }}" />
+            </div>
+        </div>
+    </details>
+
+    <div class="actions">
+        <button type="submit" class="button" id="validate-button">Validate</button>
+        <span class="status" id="validate-status" role="status" aria-live="polite" hidden>
+            <span class="spinner" aria-hidden="true"></span>Validating. Large schemas can take a while.
+        </span>
+    </div>
+</form>
+{% endblock %}

@@ -1,14 +1,74 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Trav-SHACL Interface</title>
-    <style>
-        h1, div { text-align: center }
-    </style>
-</head>
-<body>
-    <h1>Validation Result</h1>
-    {{ html|safe }}
-</body>
-</html>
+{% extends "base.jinja2" %}
+
+{% block head %}
+    <script src="{{ url_for('static', filename='js/travshacl-result.js') }}" defer></script>
+{% endblock %}
+
+{% block content %}
+<h1>Validation result</h1>
+<p class="subtitle">
+    Trav-SHACL returned {{ counts.total }} result{{ '' if counts.total == 1 else 's' }}
+    in {{ '%.2f'|format(elapsed) }} seconds.
+</p>
+
+<dl class="summary">
+    <div><dt>Shape schema</dt><dd>{{ schema_path }}</dd></div>
+    <div><dt>Endpoint</dt><dd>{{ endpoint }}</dd></div>
+</dl>
+
+{% if counts.total > 0 %}
+<div class="tally" aria-label="Share of valid and invalid entities">
+    <div class="tally-numbers">
+        <span class="valid-text"><strong>{{ counts.valid }}</strong> valid</span>
+        <span class="invalid-text"><strong>{{ counts.invalid }}</strong> invalid</span>
+    </div>
+    <div class="tally-bar" aria-hidden="true">
+        <span class="tally-valid" style="width: {{ (counts.valid * 100 / counts.total)|round(2) }}%"></span>
+        <span class="tally-invalid" style="width: {{ (counts.invalid * 100 / counts.total)|round(2) }}%"></span>
+    </div>
+</div>
+
+<div class="toolbar" id="result-toolbar" hidden>
+    <div class="segmented" role="group" aria-label="Filter by validation result">
+        <button type="button" data-filter="all" aria-pressed="true">All</button>
+        <button type="button" data-filter="valid" aria-pressed="false">Valid</button>
+        <button type="button" data-filter="invalid" aria-pressed="false">Invalid</button>
+    </div>
+    <input type="search" id="result-search" placeholder="Search instances and shapes" aria-label="Search instances and shapes" />
+    <button type="button" class="button button-secondary" id="download-csv">Download CSV</button>
+</div>
+
+<div class="table-wrap">
+<table class="results" id="result-table">
+    <thead>
+        <tr>
+            <th scope="col" data-sort="instance">Instance</th>
+            <th scope="col" data-sort="shape">Shape</th>
+            <th scope="col" data-sort="result">Validation result</th>
+            <th scope="col" data-sort="finished">Finished at shape</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for row in rows %}
+        <tr data-result="{{ row.result }}">
+            <td class="iri">{{ row.instance }}</td>
+            <td class="iri">{{ row.shape }}</td>
+            <td><span class="badge badge-{{ 'valid' if row.result == 'valid' else 'invalid' }}">{{ row.result }}</span></td>
+            <td class="iri">{{ row.finished_at }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+<p class="empty" id="result-empty" hidden>No results match the current filter.</p>
+<nav class="pager" id="result-pager" aria-label="Result pages" hidden>
+    <button type="button" class="button button-secondary" id="page-prev">Previous</button>
+    <span id="page-info"></span>
+    <button type="button" class="button button-secondary" id="page-next">Next</button>
+</nav>
+{% else %}
+<p class="empty">The validation finished without any results. Check that the shapes define targets and that the endpoint contains matching data.</p>
+{% endif %}
+
+<p class="actions"><a class="button button-secondary" href="{{ url_for('validation') }}">Run another validation</a></p>
+{% endblock %}

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}{{ title }}{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}" />
+    <link href="{{ url_for('static', filename='css/travshacl.css') }}" rel="stylesheet" type="text/css" />
+    {% block head %}{% endblock %}
+</head>
+<body>
+<nav class="navbar">
+    <a href="{{ url_for('home') }}" {% if request.endpoint == 'home' %}class="active" aria-current="page"{% endif %}>Home</a>
+    <a href="{{ url_for('validation') }}" {% if request.endpoint == 'validation' %}class="active" aria-current="page"{% endif %}>Validate</a>
+    <span class="navbar-version">{{ version_string }}</span>
+</nav>
+<main class="container">
+{% block content %}{% endblock %}
+</main>
+</body>
+</html>

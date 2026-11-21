@@ -1,0 +1,12 @@
+{% extends "base.jinja2" %}
+
+{% block content %}
+<h1>Trav-SHACL</h1>
+<p class="subtitle">A SHACL validator that plans the order of validation to find violations early.</p>
+<p class="prose">Trav-SHACL validates a SHACL shape schema against an RDF graph that is accessible via a
+SPARQL endpoint. It traverses the dependencies between the shapes and rewrites its queries based on the
+entities that are already known to be invalid. This way, violations are reported early and unnecessary
+work is avoided.</p>
+<p class="prose">To start, provide the location of your shape schema and the URL of the SPARQL endpoint to check.</p>
+<p><a class="button" href="{{ url_for('validation') }}">Validate a shape schema</a></p>
+{% endblock %}
