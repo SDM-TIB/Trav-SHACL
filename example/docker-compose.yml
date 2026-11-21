@@ -16,6 +16,8 @@ services:
   example_engine:
     container_name: travshacl_example_engine
     image: sdmtib/travshacl:latest
+    build:
+      context: ../
     volumes:
       - ./shapes:/shapes
     mem_limit: 4g
