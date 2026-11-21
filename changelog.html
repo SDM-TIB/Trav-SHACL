@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Changelog &mdash; Trav-SHACL 1.10.0 documentation</title>
+  <title>Changelog &mdash; Trav-SHACL 1.11.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=aa353e79" />
@@ -14,7 +14,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=76b3955f"></script>
+      <script src="_static/documentation_options.js?v=6475a945"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -86,6 +86,19 @@
 <h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 </div>
+<section id="v1-11-0-21-nov-2026">
+<h2>v1.11.0 - 21 Nov 2026<a class="headerlink" href="#v1-11-0-21-nov-2026" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Revamp the web interface of the Docker image in the style of DeTrusty (navigation bar with version, home page, favicon, responsive layout)</p></li>
+<li><p>Add the advanced options (graph traversal, heuristics, selective queries, <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code>, maximum split size, handling of unsupported constraints) to the validation form</p></li>
+<li><p>Add summary, filtering, search, sorting, pagination, and CSV export to the validation result</p></li>
+<li><p>Check the shape schema location and the SPARQL endpoint before validating and report common problems in the web interface</p></li>
+<li><p>Show likely causes in the web interface if the validation returns no results</p></li>
+<li><p>Add environment variable <code class="docutils literal notranslate"><span class="pre">ENDPOINT_CHECK_TIMEOUT</span></code> to configure the timeout of the endpoint check</p></li>
+<li><p>Fix values in the validation result of the web interface not being HTML-escaped</p></li>
+<li><p>Fix misaligned columns in the validation result of the web interface if a cell is empty</p></li>
+</ul>
+</section>
 <section id="v1-10-0-17-nov-2026">
 <h2>v1.10.0 - 17 Nov 2026<a class="headerlink" href="#v1-10-0-17-nov-2026" title="Link to this heading"></a></h2>
 <ul class="simple">

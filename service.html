@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Trav-SHACL as a Service &mdash; Trav-SHACL 1.10.0 documentation</title>
+  <title>Trav-SHACL as a Service &mdash; Trav-SHACL 1.11.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=aa353e79" />
@@ -14,7 +14,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=76b3955f"></script>
+      <script src="_static/documentation_options.js?v=6475a945"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -144,21 +144,39 @@ While it is necessary to clone the repository (or download the example folder) f
 <p>The SPARQL endpoint might take a few seconds in order to be started.
 You can check its accessibility by navigating to <a class="reference external" href="http://localhost:9090/sparql">http://localhost:9090/sparql</a></p>
 </div>
-<p>The Trav-SHACL service is accessible at <a class="reference external" href="http://localhost:9091/validate">http://localhost:9091/validate</a>.
-The current version of the interface has only two inputs:</p>
+<p>The Trav-SHACL service is accessible at <a class="reference external" href="http://localhost:9091">http://localhost:9091</a>.
+The home page briefly introduces Trav-SHACL and links to the validation form at <a class="reference external" href="http://localhost:9091/validate">http://localhost:9091/validate</a>.
+The form has two required inputs:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">Validate</span> <span class="pre">integrity</span> <span class="pre">constraints</span> <span class="pre">in</span></code> the path to the SHACL shape schema within the Docker container</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Endpoint</span></code> URL of the SPARQL endpoint to be evaluated; must be accessible from within the Docker container</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Shape</span> <span class="pre">schema</span> <span class="pre">location</span></code> the path to the SHACL shape schema within the Docker container</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SPARQL</span> <span class="pre">endpoint</span></code> URL of the SPARQL endpoint to be evaluated; must be accessible from within the Docker container</p></li>
 </ul>
-<p>You can run the example by setting the path to the SHACL shapes to <code class="docutils literal notranslate"><span class="pre">/shapes/LUBM</span></code> and the endpoint URL to <code class="docutils literal notranslate"><span class="pre">http://travshacl_example_data:8890/sparql</span></code>.
+<p>Below these inputs, the section <code class="docutils literal notranslate"><span class="pre">Advanced</span> <span class="pre">options</span></code> allows you to change how the validation is planned and executed:
+the graph traversal (depth-first or breadth-first), the heuristics for selecting the seed shape, whether more selective queries are used, whether <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> is added to the queries, how unsupported constraints are handled, and the maximum number of instances per query.
+The defaults are <code class="docutils literal notranslate"><span class="pre">Depth-first</span></code>, a target-first heuristic with a preference for a higher in-degree and bigger shapes, selective queries, no <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code>, stopping with an error for unsupported constraints, and 256 instances per query.</p>
+<p>You can run the example by setting the shape schema location to <code class="docutils literal notranslate"><span class="pre">/shapes/LUBM</span></code> and the endpoint URL to <code class="docutils literal notranslate"><span class="pre">http://travshacl_example_data:8890/sparql</span></code>.
 After pressing the <code class="docutils literal notranslate"><span class="pre">Validate</span></code> button, Trav-SHACL starts the validation.
 Once the validation is done, the result will be displayed in form of a table.</p>
+<p>Common problems are reported in the form instead of failing with an internal server error.
+The form is shown again with your inputs preserved, the affected field is highlighted, and the message explains what went wrong and what you can do about it.
+Before the validation starts, Trav-SHACL checks that</p>
+<ul class="simple">
+<li><p>the shape schema location exists, is a readable directory, and contains <code class="docutils literal notranslate"><span class="pre">.ttl</span></code> files; a file that is not valid Turtle is named together with the line of the syntax error</p></li>
+<li><p>the endpoint URL is well-formed and that a SPARQL endpoint answers there; refused connections, unknown hosts, timeouts, TLS problems, missing authentication, wrong URL paths, and servers that do not return SPARQL results are told apart</p></li>
+</ul>
+<p>Problems that occur while the validation is running, e.g., an endpoint that stops responding or shapes with unsupported constraints, are reported in the same way.
+The check of the endpoint waits ten seconds for an answer; set the environment variable <code class="docutils literal notranslate"><span class="pre">ENDPOINT_CHECK_TIMEOUT</span></code> (in seconds) to change this.
+If the validation finishes without results, the result page points out likely causes, i.e., an endpoint without data and shapes without targets.</p>
 <img alt="Trav-SHACL Architecture" class="align-center" src="_images/validation_result_service.png" />
-<p>The column <code class="docutils literal notranslate"><span class="pre">instance</span></code> shows the entity for which the satisfaction of the SHACL constraints is reported.
-The <code class="docutils literal notranslate"><span class="pre">shape</span></code> column indicates to which shape of the shape schema the entity belongs.
-The validation result is reported in the column <code class="docutils literal notranslate"><span class="pre">validation</span> <span class="pre">result</span></code>.
-Valid entities have a green entry <code class="docutils literal notranslate"><span class="pre">valid</span></code> while violations are marked with a red <code class="docutils literal notranslate"><span class="pre">invalid</span></code>.
-The focus shape, i.e., the shape that was validate when the decision for the entity was made, is included in the column <code class="docutils literal notranslate"><span class="pre">finished&#64;shape</span></code>.</p>
+<p>The column <code class="docutils literal notranslate"><span class="pre">Instance</span></code> shows the entity for which the satisfaction of the SHACL constraints is reported.
+The <code class="docutils literal notranslate"><span class="pre">Shape</span></code> column indicates to which shape of the shape schema the entity belongs.
+The validation result is reported in the column <code class="docutils literal notranslate"><span class="pre">Validation</span> <span class="pre">result</span></code>.
+Valid entities are marked <code class="docutils literal notranslate"><span class="pre">valid</span></code> in green while violations are marked <code class="docutils literal notranslate"><span class="pre">invalid</span></code> in red.
+The focus shape, i.e., the shape that was validate when the decision for the entity was made, is included in the column <code class="docutils literal notranslate"><span class="pre">Finished</span> <span class="pre">at</span> <span class="pre">shape</span></code>.</p>
+<p>Above the table, the number of valid and invalid entities is summarized.
+The table can be filtered by validation result, searched for instances and shapes, and sorted by clicking on a column header.
+Large results are split into pages of 100 rows.
+The currently filtered results can be exported with <code class="docutils literal notranslate"><span class="pre">Download</span> <span class="pre">CSV</span></code>.</p>
 </section>
 </section>
 
