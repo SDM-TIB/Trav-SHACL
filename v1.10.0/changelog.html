@@ -1,0 +1,344 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Changelog &mdash; Trav-SHACL 1.10.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=aa353e79" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=76b3955f"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="References" href="references.html" />
+    <link rel="prev" title="Contributors" href="contributors.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html">
+            
+              <img src="_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Trav-SHACL</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="library.html">Trav-SHACL as a Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="service.html">Trav-SHACL as a Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="feature.html">Features and Limitations</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Trav-SHACL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Changelog</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="changelog">
+<h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<section id="v1-10-0-17-nov-2026">
+<h2>v1.10.0 - 17 Nov 2026<a class="headerlink" href="#v1-10-0-17-nov-2026" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Add support for <code class="docutils literal notranslate"><span class="pre">sh:node</span></code></p></li>
+<li><p>Require <code class="docutils literal notranslate"><span class="pre">rdflib&gt;=7.0.0</span></code></p></li>
+<li><p>Apply target filters also for in-memory graph validation (originally skipped due to bug in older versions of <code class="docutils literal notranslate"><span class="pre">rdflib</span></code>)</p></li>
+<li><p>Fix SPARQL endpoint singleton causing all tests to be executed against Virtuoso even when supposed to run against the in-memory graph</p></li>
+<li><p>Improve code quality</p></li>
+<li><p>Update dependencies</p></li>
+<li><p>Update the Python version for the Docker image (3.12.10 to 3.12.16)</p></li>
+<li><p>Update base image to Debian Trixie</p></li>
+</ul>
+</section>
+<section id="v1-9-0-06-may-2025">
+<h2>v1.9.0 - 06 May 2025<a class="headerlink" href="#v1-9-0-06-may-2025" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Fix check for parsing shapes with <code class="docutils literal notranslate"><span class="pre">sh:or</span></code> constraints</p></li>
+<li><p>Add switch <code class="docutils literal notranslate"><span class="pre">ignore_parsing_errors</span></code> to <code class="docutils literal notranslate"><span class="pre">ShapeSchema</span></code> to either log a warning or throw an exception for parsing errors</p></li>
+</ul>
+</section>
+<section id="v1-8-3-05-may-2025">
+<h2>v1.8.3 - 05 May 2025<a class="headerlink" href="#v1-8-3-05-may-2025" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Log a warning message instead of throwing <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code></p></li>
+<li><p>Extend shape parser to recognize sequence paths</p></li>
+</ul>
+</section>
+<section id="v1-8-2-02-may-2025">
+<h2>v1.8.2 - 02 May 2025<a class="headerlink" href="#v1-8-2-02-may-2025" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Skip unsupported constraints; logs a warning instead of throwing an exception</p></li>
+</ul>
+</section>
+<section id="v1-8-1-30-apr-2025">
+<h2>v1.8.1 - 30 Apr 2025<a class="headerlink" href="#v1-8-1-30-apr-2025" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Fix parsing issue for shapes with <code class="docutils literal notranslate"><span class="pre">sh:property</span></code> and <code class="docutils literal notranslate"><span class="pre">sh:sparql</span></code></p></li>
+</ul>
+</section>
+<section id="v1-8-0-24-feb-2025">
+<h2>v1.8.0 - 24 Feb 2025<a class="headerlink" href="#v1-8-0-24-feb-2025" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Add support for Python 3.13</p></li>
+<li><p>Drop support for Python 3.8</p></li>
+<li><p>Update dependencies</p></li>
+<li><p>Update documentation</p></li>
+<li><p>Update the Python version for the Docker image (3.12.5 to 3.12.9)</p></li>
+<li><p>Update the Virtuoso version in tests and example to 7.2.14</p></li>
+</ul>
+</section>
+<section id="v1-7-2-09-sep-2024">
+<h2>v1.7.2 - 09 Sep 2024<a class="headerlink" href="#v1-7-2-09-sep-2024" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Mark the JSON format for shape schemas as deprecated</p></li>
+<li><p>Update dependencies</p></li>
+<li><p>Minor updates of documentation</p></li>
+<li><p>Update the Python version for the Docker image (3.11.5 to 3.12.5)</p></li>
+<li><p>Update the Virtuoso version in tests and example to 7.2.13</p></li>
+</ul>
+</section>
+<section id="v1-7-1-06-apr-2024">
+<h2>v1.7.1 - 06 Apr 2024<a class="headerlink" href="#v1-7-1-06-apr-2024" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Raise <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> stating that an unsupported feature was used instead of <code class="docutils literal notranslate"><span class="pre">UnboundLocalError:</span> <span class="pre">cannot</span> <span class="pre">access</span> <span class="pre">local</span> <span class="pre">variable</span> <span class="pre">'dict_1'</span></code></p></li>
+</ul>
+</section>
+<section id="v1-7-0-23-nov-2023">
+<h2>v1.7.0 - 23 Nov 2023<a class="headerlink" href="#v1-7-0-23-nov-2023" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Add feature to pass an <code class="docutils literal notranslate"><span class="pre">rdflib.Graph</span></code> instead of a schema directory</p></li>
+</ul>
+</section>
+<section id="v1-6-0-14-nov-2023">
+<h2>v1.6.0 - 14 Nov 2023<a class="headerlink" href="#v1-6-0-14-nov-2023" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Add feature to validate private SPARQL endpoints via HTTP Basic Auth</p></li>
+<li><p>Add Python 3.12 support</p></li>
+<li><p>Minor maintenance updates</p></li>
+</ul>
+</section>
+<section id="v1-5-1-17-oct-2023">
+<h2>v1.5.1 - 17 Oct 2023<a class="headerlink" href="#v1-5-1-17-oct-2023" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Fix necessity of adding a slash (/) at the end of the output path</p></li>
+<li><p>Update trace keeping</p></li>
+<li><p>Minor updates of documentation</p></li>
+</ul>
+</section>
+<section id="v1-5-0-21-sep-2023">
+<h2>v1.5.0 - 21 Sep 2023<a class="headerlink" href="#v1-5-0-21-sep-2023" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Fix parameter <code class="docutils literal notranslate"><span class="pre">endpoint</span></code> for Flask app</p></li>
+<li><p>Reduce the number of entities in the example</p></li>
+<li><p>Update the Python version for the Docker image (3.9.13 to 3.11.5)</p></li>
+<li><p>Update the Virtuoso version in tests and example to 7.2.10</p></li>
+<li><p>Update GitHub Action for the test suite to run in parallel</p></li>
+<li><p>Update init method of <code class="docutils literal notranslate"><span class="pre">ShapeSchema</span></code></p>
+<ul>
+<li><p>All parameters are now keyword-only and typed</p></li>
+<li><p>Only <code class="docutils literal notranslate"><span class="pre">shape_dir</span></code> and <code class="docutils literal notranslate"><span class="pre">endpoint</span></code> are required</p></li>
+<li><p>Add default values for the remaining parameters</p></li>
+</ul>
+</li>
+<li><p>Code clean up and structural improvements</p></li>
+<li><p>Add documentation to GitHub pages</p></li>
+</ul>
+</section>
+<section id="v1-4-2-19-jul-2023">
+<h2>v1.4.2 - 19 Jul 2023<a class="headerlink" href="#v1-4-2-19-jul-2023" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>The raw representation of OR constraints is no longer kept after parsing the constraint</p></li>
+<li><p>Fix issue with OR query when there are no constraints</p></li>
+</ul>
+</section>
+<section id="v1-4-1-18-jul-2023">
+<h2>v1.4.1 - 18 Jul 2023<a class="headerlink" href="#v1-4-1-18-jul-2023" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Refactor parsing of OR constraints</p></li>
+</ul>
+</section>
+<section id="v1-4-0-13-jul-2023">
+<h2>v1.4.0 - 13 Jul 2023<a class="headerlink" href="#v1-4-0-13-jul-2023" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Add capability of executing simple OR constraints, i.e., minimal or maximal occurrence of a predicate</p></li>
+<li><p>Add capability to handle inverse paths <code class="docutils literal notranslate"><span class="pre">sh:path</span> <span class="pre">[</span> <span class="pre">sh:inversePath</span> <span class="pre">ex:your_predicate</span> <span class="pre">]</span></code></p></li>
+<li><p>Add test cases for the above-mentioned features</p></li>
+<li><p>Update dependencies</p></li>
+<li><p>Drop Python 3.7 support</p></li>
+<li><p>Add Python 3.11 support</p></li>
+</ul>
+</section>
+<section id="v1-3-2-09-jul-2023">
+<h2>v1.3.2 - 09 Jul 2023<a class="headerlink" href="#v1-3-2-09-jul-2023" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Add option for creating only one single connected component to <code class="docutils literal notranslate"><span class="pre">TravSHACL.core.GraphTraversal.traverse_graph()</span></code></p></li>
+</ul>
+</section>
+<section id="v1-3-1-27-jun-2023">
+<h2>v1.3.1 - 27 Jun 2023<a class="headerlink" href="#v1-3-1-27-jun-2023" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Remove print of execution time</p></li>
+</ul>
+</section>
+<section id="v1-3-0-17-feb-2023">
+<h2>v1.3.0 - 17 Feb 2023<a class="headerlink" href="#v1-3-0-17-feb-2023" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Add feature for basic SPARQL constraints</p></li>
+<li><p>Add feature to validate RDFLib graphs</p></li>
+<li><p>Improve finding of shape files</p></li>
+<li><p>Easier import of important parts of Trav-SHACL</p></li>
+<li><p>Add more test cases</p></li>
+</ul>
+</section>
+<section id="v1-2-0-01-feb-2023">
+<h2>v1.2.0 - 01 Feb 2023<a class="headerlink" href="#v1-2-0-01-feb-2023" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Add feature of target query in RDF input</p></li>
+</ul>
+</section>
+<section id="v1-1-2-30-jan-2023">
+<h2>v1.1.2 - 30 Jan 2023<a class="headerlink" href="#v1-1-2-30-jan-2023" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Fix referencing shapes when using TTL input</p></li>
+<li><p>Print report to console only if it is not stored in file</p></li>
+</ul>
+</section>
+<section id="v1-1-1-15-dec-2022">
+<h2>v1.1.1 - 15 Dec 2022<a class="headerlink" href="#v1-1-1-15-dec-2022" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Fix not changing endpoint URL when using the interface</p></li>
+</ul>
+</section>
+<section id="v1-1-0-14-dec-2022">
+<h2>v1.1.0 - 14 Dec 2022<a class="headerlink" href="#v1-1-0-14-dec-2022" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Temporary fix for <code class="docutils literal notranslate"><span class="pre">MinMaxConstraints</span></code></p></li>
+<li><p>Add simple validation interface</p></li>
+<li><p>Add parsing of more than one shape per file (in Turtle format only)</p></li>
+<li><p>Fix issue with multiple connected components in the SHACL schema</p></li>
+<li><p>Fix for referencing shapes when using Turtle format</p></li>
+</ul>
+</section>
+<section id="v1-0-2-03-aug-2022">
+<h2>v1.0.2 - 03 Aug 2022<a class="headerlink" href="#v1-0-2-03-aug-2022" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Fix inferred state of targets of shape without constraints</p></li>
+<li><p>Include the type statement for the referencing shape in max inter-shape constraint queries</p></li>
+</ul>
+</section>
+<section id="v1-0-1-02-aug-2022">
+<h2>v1.0.1 - 02 Aug 2022<a class="headerlink" href="#v1-0-1-02-aug-2022" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Fix max constraint query for cases where the target query contains several triple patterns</p></li>
+</ul>
+</section>
+<section id="v1-0-0-13-jul-2022">
+<h2>v1.0.0 - 13 Jul 2022<a class="headerlink" href="#v1-0-0-13-jul-2022" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>First release of Trav-SHACL</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="contributors.html" class="btn btn-neutral float-left" title="Contributors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="references.html" class="btn btn-neutral float-right" title="References" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019-2024, Philipp D. Rohde, Mónica Figuera and Uzoma Nwiwu.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Trav-SHACL</span>
+    v1.10.0
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Releases</dt>
+      <dd><a href="../v1.11.0/changelog.html">v1.11.0 (latest)</a></dd>
+      <dd><a href="changelog.html">v1.10.0</a></dd>
+      <dd><a href="../v1.9.0/changelog.html">v1.9.0</a></dd>
+      <dd><a href="../v1.8.3/changelog.html">v1.8.3</a></dd>
+      <dd><a href="../v1.7.2/changelog.html">v1.7.2</a></dd>
+      <dd><a href="../v1.6.0/changelog.html">v1.6.0</a></dd>
+      <dd><a href="../v1.5.1/changelog.html">v1.5.1</a></dd>
+    </dl>
+  </div>
+</div>
+
+<style>.wy-side-nav-search > div.version { display: none; }</style><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
