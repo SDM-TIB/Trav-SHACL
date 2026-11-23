@@ -1,3 +1,7 @@
+# Unreleased
+- Add the possibility to upload the shapes as a single Turtle file in the web interface; the file is stored in a temporary directory that is deleted after the validation
+- Add environment variable `MAX_UPLOAD_SIZE_MB` to limit the size of uploaded shapes files (default: 10)
+
 # v1.11.0 - 21 Nov 2026
 - Revamp the web interface of the Docker image in the style of DeTrusty (navigation bar with version, home page, favicon, responsive layout)
 - Add the advanced options (graph traversal, heuristics, selective queries, `ORDER BY`, maximum split size, handling of unsupported constraints) to the validation form

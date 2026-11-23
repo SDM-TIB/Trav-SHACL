@@ -222,3 +222,83 @@ def test_escaping_of_error_values(client, server):
     r = post(client, '<script>alert(1)</script>', server + '/ok')
     assert b'<script>alert(1)</script>' not in r.data
     assert b'&lt;script&gt;' in r.data
+
+
+# --- uploaded shapes file ------------------------------------------------------------------------------------------
+
+def upload(client, endpoint, content, filename='my shapes.ttl', **extra):
+    import io
+    data = {'external_endpoint': endpoint, 'shapesFile': (io.BytesIO(content), filename), **extra}
+    return client.post('/validate', data=data, content_type='multipart/form-data')
+
+
+@pytest.fixture
+def temp_dirs(monkeypatch):
+    """Records the temporary directories created for uploads."""
+    import tempfile
+    created = []
+    original = tempfile.mkdtemp
+
+    def recording(*args, **kwargs):
+        path = original(*args, **kwargs)
+        created.append(path)
+        return path
+
+    monkeypatch.setattr('TravSHACL.app.tempfile.mkdtemp', recording)
+    return created
+
+
+def test_upload_is_validated_and_deleted(client, server, temp_dirs):
+    import os
+    r = upload(client, server + '/ok', NO_TARGET_SHAPE.encode())
+    assert r.status_code == 200
+    assert b'uploaded file: my shapes.ttl' in r.data
+    assert len(temp_dirs) == 1 and not os.path.exists(temp_dirs[0])
+
+
+def test_upload_is_deleted_after_error(client, server, temp_dirs):
+    import os
+    r = upload(client, server + '/404', NO_TARGET_SHAPE.encode())
+    assert r.status_code == 502
+    assert len(temp_dirs) == 1 and not os.path.exists(temp_dirs[0])
+
+
+def test_upload_malformed_file_is_named_and_deleted(client, server, temp_dirs):
+    import os
+    r = upload(client, server + '/ok', b'this is :: not turtle {{', filename='broken.ttl')
+    assert r.status_code == 400
+    assert b'broken.ttl' in r.data and b'not valid Turtle' in r.data
+    assert temp_dirs[0].encode() not in r.data  # the temporary path is not leaked
+    assert not os.path.exists(temp_dirs[0])
+
+
+def test_upload_wrong_extension(client, server, temp_dirs):
+    import os
+    r = upload(client, server + '/ok', b'x', filename='shapes.txt')
+    assert r.status_code == 400
+    assert b'Unsupported shapes file' in r.data
+    assert not os.path.exists(temp_dirs[0])
+
+
+def test_upload_empty_file(client, server):
+    r = upload(client, server + '/ok', b'')
+    assert r.status_code == 400
+    assert b'Shapes file is empty' in r.data
+
+
+def test_upload_takes_precedence_over_location(client, server):
+    r = upload(client, server + '/ok', NO_TARGET_SHAPE.encode(), schemaDir='/does/not/exist')
+    assert r.status_code == 200
+
+
+def test_upload_filename_cannot_escape_temp_dir(client, server, tmp_path):
+    r = upload(client, server + '/ok', NO_TARGET_SHAPE.encode(), filename='../../' + tmp_path.name + '.ttl')
+    assert r.status_code == 200
+    assert not list(tmp_path.parent.glob(tmp_path.name + '.ttl'))
+
+
+def test_upload_too_large(client, server, monkeypatch):
+    monkeypatch.setitem(flask_app.config, 'MAX_CONTENT_LENGTH', 100)
+    r = upload(client, server + '/ok', b'#' * 1000)
+    assert r.status_code == 413
+    assert b'Shapes file too large' in r.data

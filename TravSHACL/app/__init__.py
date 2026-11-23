@@ -1,11 +1,14 @@
 import os
+import shutil
+import tempfile
 import time
 from pathlib import Path
 
 from flask import Flask, request, render_template
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-from TravSHACL.app.diagnostics import UserFacingError, check_endpoint, check_schema_dir, explain_exception
+from TravSHACL.app.diagnostics import UserFacingError, check_endpoint, check_schema_dir, explain_exception, \
+    save_uploaded_shapes
 from TravSHACL.core.GraphTraversal import GraphTraversal
 from TravSHACL.core.ShapeSchema import ShapeSchema
 from TravSHACL.sparql.SPARQLEndpoint import SPARQLEndpoint
@@ -34,6 +37,8 @@ app.wsgi_app = ProxyFix(app.wsgi_app, x_prefix=1)  # support running behind a re
 app.config['SCHEMA_PATH'] = os.environ.get('SCHEMA_PATH', '/path/to/your/shacl')
 app.config['ENDPOINT'] = os.environ.get('ENDPOINT', 'https://example.org/sparql')
 app.config['VERSION'] = __version__
+# Upper limit for the size of an uploaded shapes file (in MiB); larger requests are rejected with HTTP 413.
+app.config['MAX_CONTENT_LENGTH'] = int(os.environ.get('MAX_UPLOAD_SIZE_MB', '10')) * 1024 * 1024
 app.config['VERSION_STRING'] = 'Trav-SHACL v' + __version__
 
 # Defaults of the advanced options; they are identical to what the interface used before the options were exposed.
@@ -47,6 +52,15 @@ DEFAULT_OPTIONS = {
     'order_by': 'no',
     'ignore_errors': 'no'
 }
+
+
+@app.errorhandler(413)
+def upload_too_large(_):
+    limit = app.config['MAX_CONTENT_LENGTH'] // (1024 * 1024)
+    error = UserFacingError('Shapes file too large', 'The uploaded file exceeds the limit of ' + str(limit) + ' MiB.',
+                            hint='Split the shapes or raise the limit with the environment variable MAX_UPLOAD_SIZE_MB.',
+                            field='shapesFile', status=413)
+    return _render_form('', app.config['ENDPOINT'], dict(DEFAULT_OPTIONS), error=error), 413
 
 
 @app.context_processor
@@ -68,9 +82,16 @@ def validation():
     schema_path = (request.form.get('schemaDir') or '').strip()
     endpoint = (request.form.get('external_endpoint') or '').strip()
     options = {key: request.form.get(key, default) for key, default in DEFAULT_OPTIONS.items()}
+    shapes_file = request.files.get('shapesFile')
+    uploaded = shapes_file is not None and bool(shapes_file.filename)
 
+    # An uploaded file takes precedence over the location. It is copied into a temporary directory that only exists
+    # for the duration of the request and is removed afterwards, no matter whether the validation succeeded.
+    temp_dir = tempfile.mkdtemp(prefix='travshacl-') if uploaded else None
     stage = 'shapes'  # tells where an unexpected exception came from
     try:
+        if uploaded:
+            schema_path = save_uploaded_shapes(shapes_file, temp_dir)
         config = _parse_options(options)
         # Fail fast with a helpful message instead of running into an obscure error later on.
         check_schema_dir(schema_path)
@@ -96,12 +117,20 @@ def validation():
         result = shape_schema.validate()
         stop = time.time()
     except Exception as e:
-        error = explain_exception(e, stage, schema_path, endpoint)
+        # The temporary directory is still needed here since explaining the error may parse the shape files again.
+        error = explain_exception(e, stage, schema_path, endpoint, upload_name=shapes_file.filename if uploaded else None)
         if error.status == 500:  # unexpected; everything else is explained to the user and needs no stack trace
             app.logger.exception('Validation failed')
         else:
             app.logger.warning('%s: %s', error.title, error.details or error.message)
-        return _render_form(schema_path, endpoint, options, error=error), error.status
+        form_path = '' if uploaded else schema_path  # never show the (deleted) temporary path
+        return _render_form(form_path, endpoint, options, error=error), error.status
+    finally:
+        if temp_dir is not None:
+            shutil.rmtree(temp_dir, ignore_errors=True)
+
+    if uploaded:
+        schema_path = 'uploaded file: ' + os.path.basename(shapes_file.filename)
 
     rows = travshacl_to_rows(result)
     counts = {
