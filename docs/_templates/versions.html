@@ -1,0 +1,36 @@
+{# Version switcher injected into the RTD sidebar. Provided by sphinx-multiversion. #}
+{%- if versions %}
+{#- release_order (newest first) is set by the Makefile; fall back to the (alphabetical) default order #}
+{%- if release_order %}
+  {%- set latest = release_order.split(",")[0] %}
+{%- elif versions.tags %}
+  {%- set latest = (versions.tags|reverse|first).name %}
+{%- else %}
+  {%- set latest = "" %}
+{%- endif %}
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> {{ project }}</span>
+    {{ current_version.name }}{% if current_version.name == latest %} (latest){% endif %}
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Releases</dt>
+      {%- if release_order %}
+        {%- for name in release_order.split(",") %}
+          {%- for item in versions.tags if item.name == name %}
+      <dd><a href="{{ item.url }}">{{ item.name }}{% if item.name == latest %} (latest){% endif %}</a></dd>
+          {%- endfor %}
+        {%- endfor %}
+      {%- else %}
+        {%- for item in versions.tags|reverse %}
+      <dd><a href="{{ item.url }}">{{ item.name }}{% if item.name == latest %} (latest){% endif %}</a></dd>
+        {%- endfor %}
+      {%- endif %}
+    </dl>
+  </div>
+</div>
+{# Old releases are built with their own conf.py; hide the sidebar version there, too. #}
+<style>.wy-side-nav-search > div.version { display: none; }</style>
+{%- endif %}
