@@ -227,8 +227,13 @@ def test_escaping_of_error_values(client, server):
 # --- uploaded shapes file ------------------------------------------------------------------------------------------
 
 def upload(client, endpoint, content, filename='my shapes.ttl', **extra):
+    return upload_many(client, endpoint, [(filename, content)], **extra)
+
+
+def upload_many(client, endpoint, files, **extra):
     import io
-    data = {'external_endpoint': endpoint, 'shapesFile': (io.BytesIO(content), filename), **extra}
+    data = {'external_endpoint': endpoint, 'shapesFile': [(io.BytesIO(content), name) for name, content in files],
+            **extra}
     return client.post('/validate', data=data, content_type='multipart/form-data')
 
 
@@ -301,4 +306,58 @@ def test_upload_too_large(client, server, monkeypatch):
     monkeypatch.setitem(flask_app.config, 'MAX_CONTENT_LENGTH', 100)
     r = upload(client, server + '/ok', b'#' * 1000)
     assert r.status_code == 413
-    assert b'Shapes file too large' in r.data
+    assert b'Shapes too large' in r.data
+
+
+def test_multiple_uploads_are_validated_from_one_temp_dir_and_deleted(client, server, temp_dirs, monkeypatch):
+    import os
+    seen = {}
+    from TravSHACL.app import ShapeSchema
+    original = ShapeSchema
+
+    def spy(*args, **kwargs):
+        seen['files'] = sorted(os.listdir(kwargs['schema_dir']))
+        seen['dir'] = kwargs['schema_dir']
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr('TravSHACL.app.ShapeSchema', spy)
+    second = NO_TARGET_SHAPE.replace('ex:S ', 'ex:T ').encode()
+    r = upload_many(client, server + '/ok', [('a.ttl', NO_TARGET_SHAPE.encode()), ('b.ttl', second)])
+    assert r.status_code == 200
+    assert b'uploaded files: a.ttl, b.ttl' in r.data
+    assert seen['files'] == ['001_a.ttl', '002_b.ttl']
+    assert len(temp_dirs) == 1 and seen['dir'] == temp_dirs[0] and not os.path.exists(temp_dirs[0])
+
+
+def test_multiple_uploads_with_same_name_do_not_overwrite(client, server, monkeypatch):
+    import os
+    seen = {}
+    from TravSHACL.app import ShapeSchema
+    original = ShapeSchema
+
+    def spy(*args, **kwargs):
+        seen['files'] = os.listdir(kwargs['schema_dir'])
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr('TravSHACL.app.ShapeSchema', spy)
+    r = upload_many(client, server + '/ok', [('s.ttl', NO_TARGET_SHAPE.encode())] * 2)
+    assert r.status_code == 200
+    assert len(seen['files']) == 2
+
+
+def test_multiple_uploads_name_the_broken_file(client, server, temp_dirs):
+    import os
+    r = upload_many(client, server + '/ok', [('good.ttl', NO_TARGET_SHAPE.encode()),
+                                             ('bad file.ttl', b'this is :: not turtle {{')])
+    assert r.status_code == 400
+    assert b'bad file.ttl' in r.data and b'not valid Turtle' in r.data
+    assert b'good.ttl' not in r.data and b'002_' not in r.data
+    assert not os.path.exists(temp_dirs[0])
+
+
+def test_one_wrong_extension_rejects_all_and_deletes(client, server, temp_dirs):
+    import os
+    r = upload_many(client, server + '/ok', [('good.ttl', NO_TARGET_SHAPE.encode()), ('notes.txt', b'x')])
+    assert r.status_code == 400
+    assert b'notes.txt' in r.data and b'Unsupported shapes file' in r.data
+    assert not os.path.exists(temp_dirs[0])

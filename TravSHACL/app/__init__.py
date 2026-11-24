@@ -37,7 +37,7 @@ app.wsgi_app = ProxyFix(app.wsgi_app, x_prefix=1)  # support running behind a re
 app.config['SCHEMA_PATH'] = os.environ.get('SCHEMA_PATH', '/path/to/your/shacl')
 app.config['ENDPOINT'] = os.environ.get('ENDPOINT', 'https://example.org/sparql')
 app.config['VERSION'] = __version__
-# Upper limit for the size of an uploaded shapes file (in MiB); larger requests are rejected with HTTP 413.
+# Upper limit for the total size of the uploaded shapes files (in MiB); larger requests are rejected with HTTP 413.
 app.config['MAX_CONTENT_LENGTH'] = int(os.environ.get('MAX_UPLOAD_SIZE_MB', '10')) * 1024 * 1024
 app.config['VERSION_STRING'] = 'Trav-SHACL v' + __version__
 
@@ -57,8 +57,8 @@ DEFAULT_OPTIONS = {
 @app.errorhandler(413)
 def upload_too_large(_):
     limit = app.config['MAX_CONTENT_LENGTH'] // (1024 * 1024)
-    error = UserFacingError('Shapes file too large', 'The uploaded file exceeds the limit of ' + str(limit) + ' MiB.',
-                            hint='Split the shapes or raise the limit with the environment variable MAX_UPLOAD_SIZE_MB.',
+    error = UserFacingError('Shapes too large', 'The uploaded files exceed the limit of ' + str(limit) + ' MiB.',
+                            hint='Upload fewer files or raise the limit with the environment variable MAX_UPLOAD_SIZE_MB.',
                             field='shapesFile', status=413)
     return _render_form('', app.config['ENDPOINT'], dict(DEFAULT_OPTIONS), error=error), 413
 
@@ -82,16 +82,18 @@ def validation():
     schema_path = (request.form.get('schemaDir') or '').strip()
     endpoint = (request.form.get('external_endpoint') or '').strip()
     options = {key: request.form.get(key, default) for key, default in DEFAULT_OPTIONS.items()}
-    shapes_file = request.files.get('shapesFile')
-    uploaded = shapes_file is not None and bool(shapes_file.filename)
+    shapes_files = [file for file in request.files.getlist('shapesFile') if file.filename]
+    uploaded = bool(shapes_files)
+    upload_names = None
 
-    # An uploaded file takes precedence over the location. It is copied into a temporary directory that only exists
+    # Uploaded files take precedence over the location. They are copied into a temporary directory that only exists
     # for the duration of the request and is removed afterwards, no matter whether the validation succeeded.
     temp_dir = tempfile.mkdtemp(prefix='travshacl-') if uploaded else None
     stage = 'shapes'  # tells where an unexpected exception came from
     try:
         if uploaded:
-            schema_path = save_uploaded_shapes(shapes_file, temp_dir)
+            upload_names = save_uploaded_shapes(shapes_files, temp_dir)
+            schema_path = temp_dir
         config = _parse_options(options)
         # Fail fast with a helpful message instead of running into an obscure error later on.
         check_schema_dir(schema_path)
@@ -118,7 +120,7 @@ def validation():
         stop = time.time()
     except Exception as e:
         # The temporary directory is still needed here since explaining the error may parse the shape files again.
-        error = explain_exception(e, stage, schema_path, endpoint, upload_name=shapes_file.filename if uploaded else None)
+        error = explain_exception(e, stage, schema_path, endpoint, upload_names=upload_names)
         if error.status == 500:  # unexpected; everything else is explained to the user and needs no stack trace
             app.logger.exception('Validation failed')
         else:
@@ -130,7 +132,8 @@ def validation():
             shutil.rmtree(temp_dir, ignore_errors=True)
 
     if uploaded:
-        schema_path = 'uploaded file: ' + os.path.basename(shapes_file.filename)
+        schema_path = 'uploaded ' + ('file' if len(upload_names) == 1 else 'files') + ': ' \
+                      + ', '.join(upload_names.values())
 
     rows = travshacl_to_rows(result)
     counts = {

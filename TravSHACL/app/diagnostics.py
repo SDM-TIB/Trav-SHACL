@@ -13,6 +13,7 @@ import urllib.error
 from urllib.parse import urlsplit
 
 from rdflib import Graph
+from werkzeug.utils import secure_filename
 from SPARQLWrapper import SPARQLWrapper, JSON
 from SPARQLWrapper.SPARQLExceptions import SPARQLWrapperException, Unauthorized, EndPointNotFound, QueryBadFormed
 
@@ -62,27 +63,34 @@ def find_shape_files(path):
             if os.path.splitext(file)[1].lower() == extension]
 
 
-def save_uploaded_shapes(file, directory):
-    """Stores an uploaded shapes file in the given (temporary) directory and returns that directory.
+def save_uploaded_shapes(files, directory):
+    """Stores the uploaded shapes files in the given (temporary) directory.
 
-    The original file name is deliberately not used for the stored file to rule out path traversal.
+    The files are stored under a sanitized name with a running number as prefix. The latter keeps files with the
+    same name apart, the former rules out path traversal via the name sent by the client.
 
-    :param file: the uploaded file (werkzeug FileStorage)
-    :param directory: directory the file is saved to
+    :param files: the uploaded files (list of werkzeug FileStorage)
+    :param directory: directory the files are saved to
+    :return: dict mapping the stored file name to the name of the file as uploaded
     """
     field = 'shapesFile'
-    name = file.filename or ''
-    if os.path.splitext(name)[1].lower() != ShapeParser.get_file_extension('SHACL'):
-        raise UserFacingError('Unsupported shapes file',
-                              'The file \"' + os.path.basename(name) + '\" is not a Turtle file.',
-                              hint='Upload a single SHACL shapes file in Turtle syntax with the extension .ttl.',
-                              field=field)
-    target = os.path.join(directory, 'shapes' + ShapeParser.get_file_extension('SHACL'))
-    file.save(target)
-    if os.path.getsize(target) == 0:
-        raise UserFacingError('Shapes file is empty', 'The file \"' + os.path.basename(name) + '\" has no content.',
-                              field=field)
-    return directory
+    extension = ShapeParser.get_file_extension('SHACL')
+    names = {}
+    for index, file in enumerate(files, start=1):
+        original = os.path.basename((file.filename or '').replace('\\', '/'))
+        if os.path.splitext(original)[1].lower() != extension:
+            raise UserFacingError('Unsupported shapes file',
+                                  'The file "' + original + '" is not a Turtle file.',
+                                  hint='Upload SHACL shapes in Turtle syntax, i.e., files with the extension '
+                                       + extension + '.',
+                                  field=field)
+        stored = '{:03d}_{}'.format(index, secure_filename(original) or 'shapes' + extension)
+        target = os.path.join(directory, stored)
+        file.save(target)
+        if os.path.getsize(target) == 0:
+            raise UserFacingError('Shapes file is empty', 'The file "' + original + '" has no content.', field=field)
+        names[stored] = original
+    return names
 
 
 def check_schema_dir(path):
@@ -275,7 +283,7 @@ def explain_endpoint_error(exc, url, during_validation=False):
 # errors during validation
 # ---------------------------------------------------------------------------------------------------------------------
 
-def explain_exception(exc, stage, schema_path, endpoint, upload_name=None):
+def explain_exception(exc, stage, schema_path, endpoint, upload_names=None):
     """
     Translates an unexpected exception into a message for the user.
 
@@ -283,7 +291,7 @@ def explain_exception(exc, stage, schema_path, endpoint, upload_name=None):
     :param stage: 'shapes' while the shape schema is read, 'validation' while the validation is running
     :param schema_path: the shape schema location
     :param endpoint: the URL of the SPARQL endpoint
-    :param upload_name: name of the uploaded shapes file, if the shapes were uploaded instead of read from a location
+    :param upload_names: maps stored to original file names, if the shapes were uploaded instead of read from a location
     """
     if isinstance(exc, UserFacingError):
         return exc
@@ -300,13 +308,14 @@ def explain_exception(exc, stage, schema_path, endpoint, upload_name=None):
         culprit = find_unparsable_file(schema_path)
         if culprit is not None:
             file, parse_error = culprit
-            name = upload_name or os.path.relpath(file, schema_path)
+            name = upload_names.get(os.path.basename(file), os.path.basename(file)) if upload_names \
+                else os.path.relpath(file, schema_path)
             return UserFacingError(
                 'Shape file could not be read',
                 'The file ' + name + ' is not valid Turtle: ' + _summarize_parse_error(parse_error) + '.',
                 hint='Fix the syntax error in the file and try again.',
-                field='shapesFile' if upload_name else 'schemaDir',
-                details=(upload_name or file) + '\n' + details)
+                field='shapesFile' if upload_names else 'schemaDir',
+                details=(name if upload_names else file) + '\n' + details)
         return UserFacingError('Shape schema could not be read',
                                'The shapes in "' + schema_path + '" could not be processed.',
                                hint='Check that the shapes are valid SHACL in Turtle syntax.',

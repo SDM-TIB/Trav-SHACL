@@ -26,14 +26,14 @@
         <label for="schemaDir">Shape schema location</label>
         <input id="schemaDir" name="schemaDir" type="text" value="{{ schema_path }}" spellcheck="false" autocomplete="off"{% if error and error.field == 'schemaDir' %} aria-invalid="true" aria-describedby="schemaDir-error" autofocus{% endif %} />
         {% if error and error.field == 'schemaDir' %}<p class="field-error" id="schemaDir-error">{{ error.title }}</p>{% endif %}
-        <p class="hint">Path to the directory with your SHACL shapes, as seen from the machine or container running Trav-SHACL. Not needed if you upload a file below.</p>
+        <p class="hint">Path to the directory with your SHACL shapes, as seen from the machine or container running Trav-SHACL. Not needed if you upload files below.</p>
     </div>
 
     <div class="field">
-        <label for="shapesFile">or upload a shapes file</label>
-        <input id="shapesFile" name="shapesFile" type="file" accept=".ttl,text/turtle"{% if error and error.field == 'shapesFile' %} aria-invalid="true" aria-describedby="shapesFile-error" autofocus{% endif %} />
+        <label for="shapesFile">or upload shape files</label>
+        <input id="shapesFile" name="shapesFile" type="file" multiple accept=".ttl,text/turtle"{% if error and error.field == 'shapesFile' %} aria-invalid="true" aria-describedby="shapesFile-error" autofocus{% endif %} />
         {% if error and error.field == 'shapesFile' %}<p class="field-error" id="shapesFile-error">{{ error.title }}</p>{% endif %}
-        <p class="hint">A single Turtle (.ttl) file with all shapes. It is stored in a temporary directory only for the validation and deleted afterwards. An uploaded file takes precedence over the location above.</p>
+        <p class="hint">One or more Turtle (.ttl) files; select several at once to upload a whole shape schema. The files are stored in a temporary directory only for the validation and deleted afterwards. Uploaded files take precedence over the location above.</p>
     </div>
 
     <div class="field">
